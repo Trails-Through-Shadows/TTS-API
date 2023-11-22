@@ -18,7 +18,17 @@ def get_class_by_tablename(tablename: str) -> Base | None:
     :param tablename: String with name of table.
     :return: Class reference or None.
     """
-    for c in Base.registry._class_registry.values():
-        if hasattr(c, "__tablename__") and c.__tablename__ == tablename:
+    # find object with tablename in packages
+    from itertools import chain
+
+    def get_all_subclasses(cls):
+        return list(
+            chain.from_iterable(
+                [list(chain.from_iterable([[x], get_all_subclasses(x)])) for x in cls.__subclasses__()])
+        )
+
+    for c in get_all_subclasses(Base):
+        if hasattr(c, '__tablename__') and c.__tablename__ == tablename:
+            print("Found class:", c.__name__)
             return c
     return None
