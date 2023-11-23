@@ -3,6 +3,9 @@ from sqlalchemy.orm import sessionmaker
 
 from .init_db import db_init
 
+# todo make config file or smthng
+#   plus session checking (any type of login)
+
 conn_params = {
     'user': "communist",
     'password': "yourPasswordIsMyPassword",
