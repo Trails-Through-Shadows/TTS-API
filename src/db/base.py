@@ -1,8 +1,23 @@
 from sqlalchemy.orm import as_declarative, declared_attr
 
+from typing import Coroutine as Cor
+
+from sqlalchemy import ForeignKey
+from sqlalchemy import func
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm import selectinload
+
 
 @as_declarative()
-class Base:
+class Base(AsyncAttrs):
     """
     Base class for all models.
 
@@ -19,7 +34,7 @@ class Base:
         return cls.__name__
 
 
-def get_class_by_tablename(tablename: str) -> Base | None:
+async def get_class_by_tablename(tablename: str) -> Mapped | None:
     """Return class reference mapped to table.
 
     :param tablename: String with name of table.

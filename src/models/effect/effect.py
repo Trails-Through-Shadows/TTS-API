@@ -1,6 +1,7 @@
 import enum
 from sqlalchemy import Column, Integer, Enum
 from src.db.base import Base
+from pydantic import BaseModel
 
 
 class EffectType(int, enum.Enum):
@@ -62,9 +63,17 @@ class Effect(Base):
         return f"<Effect(id={self.id}, type={self.type}, duration={self.duration}, range={self.range}, strength={self.strength})>"
 
     def __str__(self):
-        return (f"Effect "
-                f"  id={self.id}, "
-                f"  type={self.type.value}, "
-                f"  duration={self.duration}, "
-                f"  range={self.range.value}, "
-                f"  strength={self.strength} ")
+        return (f"Effect \n"
+                f"  id={self.id}, \n"
+                f"  type={self.type.value}, \n"
+                f"  duration={self.duration}, \n"
+                f"  range={self.range.value}, \n"
+                f"  strength={self.strength} \n")
+
+
+class EffectParam(BaseModel):
+    id: int
+    type: EffectType
+    duration: int
+    range: EffectRange
+    strength: int = None
