@@ -1,4 +1,16 @@
+# venv
 /src/.venv/
+/.venv/
+
+# idea
 /src/.idea/
 /.idea/
+
+# pycache
+/**/__pycache__/
+
+# env
+/src/db/.env
+
+# testing
 /src/testing stuff/

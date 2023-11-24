@@ -21,4 +21,16 @@
 - https://github.com/tiangolo/full-stack-fastapi-postgresql
     - under construction
     - old fast api
-    - 
+
+## How to run
+
+1. Create virtual environment
+    - `python3 -m venv .venv`
+    - `source .venv/bin/activate`
+2. Install dependencies
+    - `pip install -r requirements.txt`
+3. Create .env file
+    - `cp .env.example .env`
+    - update .env file with your credentials
+4. Run app
+    - `uvicorn src.main:app --reload`
