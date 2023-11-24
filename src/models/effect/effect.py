@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, Enum
 from src.db.base import Base
 
 
-class EffectType(enum.Enum):
+class EffectType(int, enum.Enum):
     PUSH = 1
     PULL = 2
     FORCED_MOVEMENT_IMMUNITY = 3
