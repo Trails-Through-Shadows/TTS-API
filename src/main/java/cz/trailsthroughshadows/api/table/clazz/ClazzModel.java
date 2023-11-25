@@ -2,6 +2,7 @@ package cz.trailsthroughshadows.api.table.clazz;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.repository.Query;
 
 @Data
 @NoArgsConstructor
@@ -12,7 +13,7 @@ public class ClazzModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter(AccessLevel.NONE)//zručení jen getteru
+    @Setter(AccessLevel.NONE)//zručení jen setteru
     private Integer id;
 
     private String name;
