@@ -1,16 +1,14 @@
-# venv
-/src/.venv/
-/.venv/
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# idea
-/src/.idea/
-/.idea/
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
 
-# pycache
-/**/__pycache__/
 
-# env
-/src/db/.env
-
-# testing
-/src/testing stuff/
+### VS Code ###
+.vscode/

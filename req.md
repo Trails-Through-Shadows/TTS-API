@@ -1,0 +1,3 @@
+- controller - to jsou ty reálné operace s tabulkama (restovký přijímač) taková ta spojovačka mezi url a db
+- repository - to jak se s tou tabulkou bude pracovat (specifikují se tu metody je to interface)
+- model - tu jsou ty spojení a namapování a to jak ta tabulka vypadá
