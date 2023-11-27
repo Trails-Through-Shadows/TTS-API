@@ -1,15 +1,14 @@
-package cz.trailsthroughshadows.api.table.clazz;
+package cz.trailsthroughshadows.api.summon;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.repository.Query;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Class")
-public class ClazzModel {
+@Table(name = "Summon")
+public class SummonModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,9 +16,10 @@ public class ClazzModel {
     private Integer id;
 
     private String name;
-    private int baseHealth;
+    private int duration;
+    private int health;
 
-    //get all
+
 
 
 }

@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.clazz;
+package cz.trailsthroughshadows.api.summon;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 
-public interface ClazzRepo extends JpaRepository<ClazzModel,Integer> {
+public interface SummonRepo extends JpaRepository<SummonModel,Integer> {
 
     @Query("SELECT c FROM SummonModel c")
-    Collection<ClazzModel> getAll();
+    Collection<SummonModel> getAll();
 }
