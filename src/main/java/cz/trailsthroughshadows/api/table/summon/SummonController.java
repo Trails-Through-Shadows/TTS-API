@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.summon;
+package cz.trailsthroughshadows.api.table.summon;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

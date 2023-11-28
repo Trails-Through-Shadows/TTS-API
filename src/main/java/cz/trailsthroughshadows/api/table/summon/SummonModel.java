@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.summon;
+package cz.trailsthroughshadows.api.table.summon;
 
 import jakarta.persistence.*;
 import lombok.*;
