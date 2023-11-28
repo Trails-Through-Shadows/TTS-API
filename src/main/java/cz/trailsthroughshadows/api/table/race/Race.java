@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.clazz;
+package cz.trailsthroughshadows.api.table.race;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,18 +7,14 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Class")
-public class Clazz {
+@Table(name = "Race")
+public class Race {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)//zručení jen setteru
+    @Setter(AccessLevel.NONE)
     private Integer id;
 
-    @Column
     private String name;
-
-    @Column
-    private int baseHealth;
 
 }
