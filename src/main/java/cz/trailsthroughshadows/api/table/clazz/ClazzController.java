@@ -14,20 +14,20 @@ public class ClazzController {
     private ClazzRepo repository;
 
     @GetMapping("/{id}")
-    public ClazzModel findById(@PathVariable int id) {
+    public Clazz findById(@PathVariable int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid class Id:" + id));
     }
 
     @GetMapping("/")
-    public Collection<ClazzModel> findClass() {
+    public Collection<Clazz> findClass() {
         return repository.getAll();
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ClazzModel updateClass(
-            @PathVariable("id") final String id, @RequestBody final ClazzModel clazz) {
+    public Clazz updateClass(
+            @PathVariable("id") final String id, @RequestBody final Clazz clazz) {
         return clazz;
     }
 }

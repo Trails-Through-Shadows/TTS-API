@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "Summon")
-public class SummonModel {
+public class Summon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

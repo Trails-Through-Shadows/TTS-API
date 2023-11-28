@@ -2,14 +2,13 @@ package cz.trailsthroughshadows.api.table.clazz;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.repository.Query;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "Class")
-public class ClazzModel {
+public class Clazz {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

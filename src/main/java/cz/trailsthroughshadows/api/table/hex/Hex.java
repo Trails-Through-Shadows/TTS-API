@@ -10,24 +10,25 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "Hex")
-public class HexModel {
+public class Hex {
 
     @EmbeddedId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)//zručení jen setteru
+    @Setter(AccessLevel.NONE)
     private HexKey key;
 
+    private int xCord;
+    private int yCord;
 
     @Embeddable
     public class HexKey implements Serializable {
 
-        @Column(name = "idPart", nullable = false)
+        @Column(name = "idPart", nullable = false) // TODO  mapping to idPart but it is also id
         private int idPart;
 
         @Column(name = "id", nullable = false)
         private int id;
 
-        /** getters and setters **/
     }
 
 

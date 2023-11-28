@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 
-public interface ClazzRepo extends JpaRepository<ClazzModel,Integer> {
+public interface ClazzRepo extends JpaRepository<Clazz,Integer> {
 
-    @Query("SELECT c FROM SummonModel c")
-    Collection<ClazzModel> getAll();
+    @Query("SELECT c FROM Summon c")
+    Collection<Clazz> getAll();
 }

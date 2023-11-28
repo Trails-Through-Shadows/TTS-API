@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api;
 
-import cz.trailsthroughshadows.api.table.clazz.ClazzModel;
+import cz.trailsthroughshadows.api.table.clazz.Clazz;
 import cz.trailsthroughshadows.api.table.clazz.ClazzRepo;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class TtsApiApplication implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        ClazzModel claz = new ClazzModel(53,"reeeeee",10);
+        Clazz claz = new Clazz(53,"reeeeee",10);
         log.info(claz);
 
         clazz.save(claz);

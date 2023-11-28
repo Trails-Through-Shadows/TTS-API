@@ -14,20 +14,20 @@ public class SummonController {
     private SummonRepo repository;
 
     @GetMapping("/{id}")
-    public SummonModel findById(@PathVariable int id) {
+    public Summon findById(@PathVariable int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid summon Id:" + id));
     }
 
     @GetMapping("/")
-    public Collection<SummonModel> findClass() {
+    public Collection<Summon> findClass() {
         return repository.getAll();
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public SummonModel updateClass(
-            @PathVariable("id") final String id, @RequestBody final SummonModel summon) {
+    public Summon updateClass(
+            @PathVariable("id") final String id, @RequestBody final Summon summon) {
         return summon;
     }
 }
