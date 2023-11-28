@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
+import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,6 @@ public class Enemy {
     @Column(nullable = false)
     private int defence;
 
+    @Transient
+    private Hex hex;
 }
