@@ -21,7 +21,7 @@ public class HexEnemy {
     @Embeddable
     public class HexEnemyId implements Serializable {
         @Column(nullable = false)
-        private Hex.IdHex idHex;
+        private Hex.HexId idHex;
 
         @Column(nullable = false)
         private int idEnemy;
