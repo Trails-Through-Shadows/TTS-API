@@ -12,16 +12,19 @@ public class Campaign {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
-    private Integer id;
+    private int id;
 
-
+    @Column(name = "idLicense", nullable = false)
     private int idLicense;
 
-    private String name;
-    private int baseHealth;
+    @Column(name = "currentLocation", nullable = false)
+    private int currentLocation;
 
-    //get all
+    @Column(name = "reputation", nullable = false)
+    private int reputation;
+
+    @Column(name = "partyXp", nullable = false)
+    private int partyXp;
 
 
 }

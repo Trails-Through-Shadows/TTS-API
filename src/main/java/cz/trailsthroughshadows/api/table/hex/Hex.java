@@ -15,13 +15,13 @@ public class Hex {
     @EmbeddedId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private HexKey key;
+    private HexId key;
 
     private int xCord;
     private int yCord;
 
     @Embeddable
-    public class HexKey implements Serializable {
+    public class HexId implements Serializable {
 
         @Column(name = "idPart", nullable = false) // TODO  mapping to idPart but it is also id
         private int idPart;
