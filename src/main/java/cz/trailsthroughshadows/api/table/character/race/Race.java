@@ -1,21 +1,20 @@
-package cz.trailsthroughshadows.api.table.part;
+package cz.trailsthroughshadows.api.table.character.race;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "Part")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Part {
+@Entity
+@Table(name = "Race")
+public class Race {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Integer id;
 
-    @Column(length = 30)
-    private String tag;
-}
+    private String name;
 
+}

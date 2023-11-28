@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.hex;
+package cz.trailsthroughshadows.api.table.schematic.hex;
 
 import jakarta.persistence.*;
 import lombok.*;

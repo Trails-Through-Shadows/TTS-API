@@ -1,9 +1,8 @@
-package cz.trailsthroughshadows.api.table.part;
+package cz.trailsthroughshadows.api.table.schematic.part;
 
-import cz.trailsthroughshadows.api.table.location.Location;
+import cz.trailsthroughshadows.api.table.schematic.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
 
 import java.io.Serializable;
 

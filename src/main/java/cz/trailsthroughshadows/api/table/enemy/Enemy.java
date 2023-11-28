@@ -13,14 +13,13 @@ public class Enemy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name", nullable = false, length = 45)
+    @Column(nullable = false, length = 45)
     private String name;
 
-    @Column(name = "health", nullable = false)
+    @Column(nullable = false)
     private int health;
 
-    @Column(name = "defence", nullable = false)
+    @Column(nullable = false)
     private int defence;
 
-    // Additional attributes and relationships if any
 }

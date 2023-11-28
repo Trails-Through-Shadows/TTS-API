@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.path;
+package cz.trailsthroughshadows.api.table.schematic.path;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

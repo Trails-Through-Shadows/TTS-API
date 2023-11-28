@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.part;
+package cz.trailsthroughshadows.api.table.schematic.part;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

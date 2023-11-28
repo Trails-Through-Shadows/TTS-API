@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.race;
+package cz.trailsthroughshadows.api.table.character.race;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

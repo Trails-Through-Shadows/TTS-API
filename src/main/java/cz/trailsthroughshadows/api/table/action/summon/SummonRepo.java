@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.summon;
+package cz.trailsthroughshadows.api.table.action.summon;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;

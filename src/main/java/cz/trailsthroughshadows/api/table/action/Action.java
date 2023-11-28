@@ -15,6 +15,6 @@ public class Action {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "title", nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String title;
 }

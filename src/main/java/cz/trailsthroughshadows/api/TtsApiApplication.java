@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api;
 
-import cz.trailsthroughshadows.api.table.clazz.Clazz;
-import cz.trailsthroughshadows.api.table.clazz.ClazzRepo;
+import cz.trailsthroughshadows.api.table.character.clazz.Clazz;
+import cz.trailsthroughshadows.api.table.character.clazz.ClazzRepo;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;

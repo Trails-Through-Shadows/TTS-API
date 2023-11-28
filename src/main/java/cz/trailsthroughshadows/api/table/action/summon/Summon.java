@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.clazz;
+package cz.trailsthroughshadows.api.table.action.summon;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,18 +7,19 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Class")
-public class Clazz {
+@Table(name = "Summon")
+public class Summon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)//zručení jen setteru
     private Integer id;
 
-    @Column
     private String name;
+    private int duration;
+    private int health;
 
-    @Column
-    private int baseHealth;
+
+
 
 }

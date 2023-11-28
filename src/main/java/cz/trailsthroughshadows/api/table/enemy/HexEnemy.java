@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
-import cz.trailsthroughshadows.api.table.hex.Hex;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,19 +11,22 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HexEnemy {
-    @Id
-    private HexEnemyId id;
 
-    @Column(nullable = false)
-    private int amount;
+    @EmbeddedId
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    private HexEnemyId key;
 
     @Embeddable
     public class HexEnemyId implements Serializable {
         @Column(nullable = false)
-        private Hex.HexId idHex;
+        private int idHex;
 
         @Column(nullable = false)
-        private int idEnemy;
+        private int idLocation;
+
+        @Column(nullable = false)
+        private int idPart;
     }
 }
 

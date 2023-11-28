@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.campaign;
 
-import cz.trailsthroughshadows.api.table.location.Location;
+import cz.trailsthroughshadows.api.table.schematic.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
 

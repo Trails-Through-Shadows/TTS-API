@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.clazz;
+package cz.trailsthroughshadows.api.table.enemy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -7,27 +7,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/Class")
-public class ClazzController {
+@RequestMapping("/api/Enemy")
+public class EnemyController {
 
     @Autowired
-    private ClazzRepo repository;
+    private EnemyRepo repository;
 
     @GetMapping("/{id}")
-    public Clazz findById(@PathVariable int id) {
+    public Enemy findById(@PathVariable int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid class Id:" + id));
     }
 
     @GetMapping("/")
-    public Collection<Clazz> findClass() {
+    public Collection<Enemy> findClass() {
         return repository.getAll();
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Clazz updateClass(
-            @PathVariable("id") final String id, @RequestBody final Clazz clazz) {
-        return clazz;
+    public Enemy updateClass(
+            @PathVariable("id") final String id, @RequestBody final Enemy enemy) {
+        return enemy;
     }
+
 }

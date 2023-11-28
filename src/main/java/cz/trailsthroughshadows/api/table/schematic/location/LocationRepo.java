@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.location;
+package cz.trailsthroughshadows.api.table.schematic.location;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
