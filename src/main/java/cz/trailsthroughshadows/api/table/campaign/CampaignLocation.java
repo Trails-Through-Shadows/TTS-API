@@ -27,7 +27,8 @@ public class CampaignLocation {
     private Location location;
 
     @Embeddable
-    public class CampaignLocationId implements Serializable {
+    @Data
+    public static class CampaignLocationId implements Serializable {
         @Column(nullable = false)
         private int idCampaign;
 

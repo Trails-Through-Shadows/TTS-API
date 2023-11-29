@@ -7,10 +7,10 @@ import lombok.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "LocationPart")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "LocationPart")
 public class LocationPart {
 
     @EmbeddedId
@@ -18,17 +18,12 @@ public class LocationPart {
     private LocationPartId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idLocation")
-    @JoinColumn(name = "idLocation", insertable = false, updatable = false)
+    @JoinTable(name = "Part", joinColumns = @JoinColumn(name = "idPart"))
     private Location location;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idPart")
-    @JoinColumn(name = "idPart", insertable = false, updatable = false)
-    private Part part;
-
     @Embeddable
-    public class LocationPartId implements Serializable {
+    @Data
+    public static class LocationPartId implements Serializable {
         @Column(nullable = false)
         private int idLocation;
 

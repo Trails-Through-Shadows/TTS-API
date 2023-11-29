@@ -18,7 +18,8 @@ public class HexEnemy {
     private HexEnemyId key;
 
     @Embeddable
-    public class HexEnemyId implements Serializable {
+    @Data
+    public static class HexEnemyId implements Serializable {
         @Column(nullable = false)
         private int idHex;
 

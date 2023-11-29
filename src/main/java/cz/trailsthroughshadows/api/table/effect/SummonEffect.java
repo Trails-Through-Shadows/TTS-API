@@ -13,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Effect")
+@Table(name = "SummonEffect")
 public class SummonEffect {
 
 
@@ -22,7 +22,8 @@ public class SummonEffect {
     @Setter(AccessLevel.NONE)
     private SummonEffectKey key;
 
-    public class SummonEffectKey implements Serializable {
+    @Data
+    public static class SummonEffectKey implements Serializable {
         @Column(nullable = false)
         private int idSummon;
         @Column(nullable = false)

@@ -21,6 +21,7 @@ public class Hex {
     private int yCord;
 
     @Embeddable
+    @Data
     public class HexId implements Serializable {
 
         @Column(name = "idPart", nullable = false) // TODO  mapping to idPart but it is also id

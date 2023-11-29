@@ -20,7 +20,8 @@ public class Inventory {
     private int amount;
 
     @Embeddable
-    public class InventoryId implements Serializable {
+    @Data
+    public static class InventoryId implements Serializable {
         @Column(nullable = false)
         private int idCharacter;
 

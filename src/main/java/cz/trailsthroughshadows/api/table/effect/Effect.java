@@ -15,13 +15,8 @@ public class Effect {
     @Setter(AccessLevel.NONE)
     private Integer id;
 
-
-//    @Column(columnDefinition = "INT")
-//    @Enumerated(EnumType.ORDINAL)
-//    private EffectType type;
-
-    @Column(columnDefinition = "INT")
-    @Enumerated(EnumType.ORDINAL)
+    @Column()
+    @Enumerated(EnumType.STRING)
     private EffectRange range;
 
     @Column
@@ -31,8 +26,15 @@ public class Effect {
     private Integer strength;
 
     public enum EffectType {
-        PUSH, PULL, FORCED_MOVEMENT_IMMUNITY, POISON, POISON_IMMUNITY, FIRE, FIRE_IMMUNITY, BLEED, BLEED_IMMUNITY, DISARM, DISARM_IMMUNITY, STUN, STUN_IMMUNITY, CONFUSION, CONFUSION_IMMUNITY, CHARM, CHARM_IMMUNITY, FEAR, FEAR_IMMUNITY, INVISIBILITY, SHIELD, BONUS_HEALTH, BONUS_DAMAGE, BONUS_MOVEMENT;
-
+        PUSH,
+        PULL,
+        FORCED_MOVEMENT_IMMUNITY,
+        POISON, POISON_IMMUNITY,
+        FIRE, FIRE_IMMUNITY, BLEED, BLEED_IMMUNITY,
+        DISARM, DISARM_IMMUNITY, STUN, STUN_IMMUNITY,
+        CONFUSION, CONFUSION_IMMUNITY, CHARM, CHARM_IMMUNITY,
+        FEAR, FEAR_IMMUNITY, INVISIBILITY, SHIELD, BONUS_HEALTH,
+        BONUS_DAMAGE, BONUS_MOVEMENT;
     }
 
     public enum EffectRange {
