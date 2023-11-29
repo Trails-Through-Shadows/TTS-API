@@ -12,23 +12,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Location {
-    enum LocationType {
-        CITY,
-        DUNGEON,
-        MARKET,
-        QUEST,
-    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private int id;
 
-    @ManyToMany(fetch = FetchType.EAGER) // TODO: EAGER is not good
+    @ManyToMany(fetch = FetchType.EAGER) // TODO: EAGER is not good, we need LAZY
     @JoinTable(
-        name = "LocationPart",
-        joinColumns = @JoinColumn(name = "idLocation"),
-        inverseJoinColumns = @JoinColumn(name = "idPart")
+            name = "LocationPart",
+            joinColumns = @JoinColumn(name = "idLocation"),
+            inverseJoinColumns = @JoinColumn(name = "idPart")
     )
     private List<Part> parts;
 
@@ -44,4 +39,12 @@ public class Location {
 
     @Column
     private String description;
+
+
+    enum LocationType {
+        CITY,
+        DUNGEON,
+        MARKET,
+        QUEST,
+    }
 }

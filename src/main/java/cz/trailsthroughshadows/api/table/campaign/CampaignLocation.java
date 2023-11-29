@@ -26,15 +26,6 @@ public class CampaignLocation {
     @JoinColumn(name = "idLocation", insertable = false, updatable = false)
     private Location location;
 
-    @Column
-    private boolean finished;
-
-    @Column
-    private boolean visited;
-
-    @Column
-    private LocalDateTime completed;
-
     @Embeddable
     public class CampaignLocationId implements Serializable {
         @Column(nullable = false)

@@ -18,10 +18,12 @@ public class LocationPart {
     private LocationPartId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("idLocation")
     @JoinColumn(name = "idLocation", insertable = false, updatable = false)
     private Location location;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("idPart")
     @JoinColumn(name = "idPart", insertable = false, updatable = false)
     private Part part;
 

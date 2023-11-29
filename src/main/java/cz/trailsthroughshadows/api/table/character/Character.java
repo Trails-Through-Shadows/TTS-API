@@ -21,9 +21,9 @@ public class Character {
     @Setter(AccessLevel.NONE)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idCampaign")
-    private Campaign campaign;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "idAdventure")
+//    private Adventure adventure; // todo make Adventure class
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idClass")
@@ -31,7 +31,7 @@ public class Character {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idRace")
-    private Race location;
+    private Race race;
 
     @Column
     private int level;

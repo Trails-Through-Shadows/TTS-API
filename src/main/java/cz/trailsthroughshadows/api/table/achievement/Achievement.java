@@ -22,19 +22,5 @@ public class Achievement {
     private String description;
     @Column(nullable = false)
     private int xpReward;
-    @Column(nullable = false)
-    private int progress;
-    @Column(nullable = false)
-    private boolean claimed;
-
-    // make foreign key
-    //
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idCampaign", referencedColumnName = "id", insertable = false, updatable = false)
-    private Campaign idCampaign; //mby class CampaignModel
-
-
-    //get all
-
 
 }
