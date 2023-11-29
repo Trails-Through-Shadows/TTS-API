@@ -1,13 +1,17 @@
 package cz.trailsthroughshadows.api.table.schematic.location;
 
 import cz.trailsthroughshadows.api.table.schematic.part.LocationPart;
+import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
-@Entity
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Location")
@@ -15,30 +19,35 @@ public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private int id;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "LocationPart", joinColumns = @JoinColumn(name = "idLocation"))
-    private List<LocationPart> parts;
-
-    @Column(nullable = false, length = 100)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(length = 30)
+    @Column(name = "tag")
     private String tag;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private LocationType type;
+    @Column(name = "type", nullable = false)
+    private Location.Type type;
 
-    @Column
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    enum LocationType {
-        CITY,
-        DUNGEON,
-        MARKET,
-        QUEST,
+    @OneToMany(mappedBy = "idLocation", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<LocationPart> locationParts;
+
+    // Skipping n-to-n relationship, there is no additional data in that table
+    @ToString.Include(name = "locationParts") // Including replacement field in toString
+    public List<Part> getLocationParts() {
+        if (locationParts == null) return null;
+        return locationParts.stream().map(LocationPart::getPart).toList();
     }
+
+    public enum Type {
+        CITY, DUNGEON, MARKET, QUEST
+    }
+
 }
+

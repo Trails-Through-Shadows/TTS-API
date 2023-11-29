@@ -1,10 +1,15 @@
 package cz.trailsthroughshadows.api.table.schematic.part;
 
+import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
+import java.util.List;
+
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Part")
@@ -12,10 +17,12 @@ public class Part {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
-    private Integer id;
+    private int id;
 
-    @Column(length = 30)
+    @Column(name = "tag")
     private String tag;
-}
 
+    @OneToMany(mappedBy = "key.idPart", fetch = FetchType.LAZY)
+    private List<Hex> hexes;
+
+}

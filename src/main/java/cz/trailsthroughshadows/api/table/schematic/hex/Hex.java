@@ -1,36 +1,39 @@
 package cz.trailsthroughshadows.api.table.schematic.hex;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "Hex")
 public class Hex {
 
     @EmbeddedId
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private HexId key;
 
+    @Column(name = "xCord")
     private int xCord;
+
+    @Column(name = "yCord")
     private int yCord;
 
-    @Embeddable
     @Data
-    public class HexId implements Serializable {
+    @Embeddable
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class HexId implements Serializable {
 
-        @Column(name = "idPart", nullable = false) // TODO  mapping to idPart but it is also id
+        @Column(name = "idPart", nullable = false)
         private int idPart;
 
         @Column(name = "id", nullable = false)
         private int id;
 
     }
-
-
 }

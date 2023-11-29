@@ -1,10 +1,9 @@
 package cz.trailsthroughshadows.api.table.schematic.part;
 
-import cz.trailsthroughshadows.api.table.schematic.location.Location;
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -13,22 +12,16 @@ import java.io.Serializable;
 @Table(name = "LocationPart")
 public class LocationPart {
 
-    @EmbeddedId
-    @Setter(AccessLevel.NONE)
-    private LocationPartId id;
+    @Id
+    @Column(name = "idLocation")
+    private int idLocation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "Part", joinColumns = @JoinColumn(name = "idPart"))
-    private Location location;
+    @Id
+    @Column(name = "idPart")
+    private int idPart;
 
-    @Embeddable
-    @Data
-    public static class LocationPartId implements Serializable {
-        @Column(nullable = false)
-        private int idLocation;
+    @ManyToOne
+    @JoinColumn(name = "idPart", insertable = false, updatable = false)
+    private Part part;
 
-        @Column(nullable = false)
-        private int idPart;
-    }
 }
-
