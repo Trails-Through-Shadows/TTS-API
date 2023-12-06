@@ -1,7 +1,6 @@
 package cz.trailsthroughshadows.api.table.action.movement;
 
 
-import cz.trailsthroughshadows.api.table.action.restorecards.RestoreCards;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.MovementEffect;
 import jakarta.persistence.*;

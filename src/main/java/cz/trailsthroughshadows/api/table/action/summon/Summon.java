@@ -1,8 +1,6 @@
 package cz.trailsthroughshadows.api.table.action.summon;
 
-import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.effect.MovementEffect;
 import cz.trailsthroughshadows.api.table.effect.SummonEffect;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,7 +16,7 @@ public class Summon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)//zručení jen setteru
+    @Setter(AccessLevel.NONE)//zrušení jen setteru
     private Integer id;
 
     @Column(nullable = false)
@@ -46,17 +44,5 @@ public class Summon {
         if (effects == null) return null;
         return effects.stream().map(SummonEffect::getEffect).toList();
     }
-
-
-//    @OneToMany(mappedBy = "idMovement", fetch = FetchType.LAZY)
-//    @ToString.Exclude
-//    private Collection<MovementEffect> effects;
-//
-//    // Skipping n-to-n relationship, there is no additional data in that table
-//    @ToString.Include(name = "effects") // Including replacement field in toString
-//    public Collection<Effect> getEffects() {
-//        if (effects == null) return null;
-//        return effects.stream().map(MovementEffect::getEffect).toList();
-//    }
 
 }

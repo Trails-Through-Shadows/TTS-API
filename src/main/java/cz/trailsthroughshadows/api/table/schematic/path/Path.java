@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.path;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

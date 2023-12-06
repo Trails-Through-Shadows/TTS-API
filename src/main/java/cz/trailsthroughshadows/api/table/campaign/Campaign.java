@@ -1,7 +1,9 @@
 package cz.trailsthroughshadows.api.table.campaign;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor

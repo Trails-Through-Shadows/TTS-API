@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.action.skill;
 
-import cz.trailsthroughshadows.api.table.effect.AttackEffect;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.SkillEffect;
 import jakarta.persistence.*;
