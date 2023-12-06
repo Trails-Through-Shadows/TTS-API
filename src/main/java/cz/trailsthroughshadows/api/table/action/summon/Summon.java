@@ -29,7 +29,7 @@ public class Summon {
     private Integer health;
 
     @Column
-    private Integer idAction;
+    private Integer idAction;  //todo foreign key
 
     @OneToMany(mappedBy = "summon")
     private Collection<SummonAction> actions;
