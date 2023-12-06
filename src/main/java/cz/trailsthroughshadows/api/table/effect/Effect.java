@@ -15,7 +15,7 @@ public class Effect {
     @Setter(AccessLevel.NONE)
     private Integer id;
 
-    @Column()
+    @Column
     @Enumerated(EnumType.STRING)
     private EffectRange range;
 
@@ -34,13 +34,13 @@ public class Effect {
         DISARM, DISARM_IMMUNITY, STUN, STUN_IMMUNITY,
         CONFUSION, CONFUSION_IMMUNITY, CHARM, CHARM_IMMUNITY,
         FEAR, FEAR_IMMUNITY, INVISIBILITY, SHIELD, BONUS_HEALTH,
-        BONUS_DAMAGE, BONUS_MOVEMENT;
+        BONUS_DAMAGE, BONUS_MOVEMENT
     }
 
     public enum EffectRange {
         SELF,
         ENEMY,
         ALLY,
-        ALL;
+        ALL
     }
 }

@@ -14,7 +14,7 @@ public class AchievementController {
     private AchievementRepo repository;
 
     @GetMapping("/{id}")
-    public Summon findById(@PathVariable int id) {
+    public Achievement findById(@PathVariable int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid achievement Id:" + id));
     }

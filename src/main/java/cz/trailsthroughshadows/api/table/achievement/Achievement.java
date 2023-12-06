@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.achievement;
 
-import cz.trailsthroughshadows.api.table.campaign.Campaign;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +12,7 @@ public class Achievement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)//zručení jen setteru
+    @Setter(AccessLevel.NONE) //zrušení jen setteru
     private Integer id;
 
     @Column(nullable = false, length = 50)

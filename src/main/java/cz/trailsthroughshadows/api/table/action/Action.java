@@ -1,9 +1,7 @@
 package cz.trailsthroughshadows.api.table.action;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "Action")
@@ -13,8 +11,23 @@ import lombok.NoArgsConstructor;
 public class Action {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private int id;
 
     @Column(nullable = false, length = 50)
     private String title;
+
+    @Column
+    private String description;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Discard discard;
+
+    enum Discard {
+        PERNAMENT,
+        SHORT_REST,
+        LONG_REST,
+        NEVER
+    }
 }

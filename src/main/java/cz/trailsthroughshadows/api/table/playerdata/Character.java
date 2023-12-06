@@ -1,6 +1,5 @@
-package cz.trailsthroughshadows.api.table.character;
+package cz.trailsthroughshadows.api.table.playerdata;
 
-import cz.trailsthroughshadows.api.table.campaign.Campaign;
 import cz.trailsthroughshadows.api.table.character.clazz.Clazz;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.character.race.Race;

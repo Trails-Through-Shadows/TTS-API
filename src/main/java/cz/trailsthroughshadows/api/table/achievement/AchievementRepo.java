@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 
-public interface AchievementRepo extends JpaRepository<Summon,Integer> {
+public interface AchievementRepo extends JpaRepository<Achievement, Integer> {
 
     //get all
-    @Query("SELECT c FROM Summon c")
+    @Query("SELECT c FROM Achievement c")
     Collection<Summon> getAll();
 
 }

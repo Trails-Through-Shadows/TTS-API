@@ -15,10 +15,10 @@ public class Clazz {
     @Setter(AccessLevel.NONE)//zručení jen setteru
     private Integer id;
 
-    @Column
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column
+    @Column(nullable = false)
     private int baseHealth;
 
 }

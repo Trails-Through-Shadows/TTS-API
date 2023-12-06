@@ -15,6 +15,7 @@ public class Race {
     @Setter(AccessLevel.NONE)
     private Integer id;
 
+    @Column(nullable = false, length = 50)
     private String name;
 
 }

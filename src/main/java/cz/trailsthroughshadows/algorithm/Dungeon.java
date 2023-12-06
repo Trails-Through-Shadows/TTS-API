@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.algorithm;
 
-import cz.trailsthroughshadows.api.table.character.Character;
+import cz.trailsthroughshadows.api.table.playerdata.Character;
 import cz.trailsthroughshadows.api.table.enemy.Enemy;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.schematic.location.Location;
