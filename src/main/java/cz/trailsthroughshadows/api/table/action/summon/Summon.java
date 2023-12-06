@@ -1,7 +1,13 @@
 package cz.trailsthroughshadows.api.table.action.summon;
 
+import cz.trailsthroughshadows.api.table.action.Action;
+import cz.trailsthroughshadows.api.table.effect.Effect;
+import cz.trailsthroughshadows.api.table.effect.MovementEffect;
+import cz.trailsthroughshadows.api.table.effect.SummonEffect;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collection;
 
 @Data
 @NoArgsConstructor
@@ -15,11 +21,42 @@ public class Summon {
     @Setter(AccessLevel.NONE)//zručení jen setteru
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
-    private int duration;
-    private int health;
+
+    @Column
+    private Integer duration;
+
+    @Column
+    private Integer health;
+
+    @Column
+    private Integer idAction;
+
+    @OneToMany(mappedBy = "summon")
+    private Collection<SummonAction> actions;
+
+    @OneToMany(mappedBy = "idSummon", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Collection<SummonEffect> effects;
+
+    // Skipping n-to-n relationship, there is no additional data in that table
+    @ToString.Include(name = "effects") // Including replacement field in toString
+    public Collection<Effect> getEffects() {
+        if (effects == null) return null;
+        return effects.stream().map(SummonEffect::getEffect).toList();
+    }
 
 
-
+//    @OneToMany(mappedBy = "idMovement", fetch = FetchType.LAZY)
+//    @ToString.Exclude
+//    private Collection<MovementEffect> effects;
+//
+//    // Skipping n-to-n relationship, there is no additional data in that table
+//    @ToString.Include(name = "effects") // Including replacement field in toString
+//    public Collection<Effect> getEffects() {
+//        if (effects == null) return null;
+//        return effects.stream().map(MovementEffect::getEffect).toList();
+//    }
 
 }

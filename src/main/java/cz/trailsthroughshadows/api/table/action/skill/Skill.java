@@ -1,19 +1,19 @@
-package cz.trailsthroughshadows.api.table.action.attack;
-
+package cz.trailsthroughshadows.api.table.action.skill;
 
 import cz.trailsthroughshadows.api.table.effect.AttackEffect;
 import cz.trailsthroughshadows.api.table.effect.Effect;
+import cz.trailsthroughshadows.api.table.effect.SkillEffect;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Collection;
 
 @Entity
-@Table(name = "Attack")
+@Table(name = "Skill")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Attack {
+public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
@@ -22,9 +22,6 @@ public class Attack {
     @Column(nullable = false)
     private int range;
 
-    @Column(nullable = false)
-    private int damage;
-
     @Column
     private Integer area;
 
@@ -32,19 +29,16 @@ public class Attack {
     @Enumerated(EnumType.STRING)
     private Effect.EffectRange target;
 
-    @Column(nullable = false)
-    private int numAttacks;
-
-    @OneToMany(mappedBy = "idAttack", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "idSkill", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Collection<AttackEffect> effects;
+    private Collection<SkillEffect> effects;
 
 
     // Skipping n-to-n relationship, there is no additional data in that table
     @ToString.Include(name = "effects") // Including replacement field in toString
     public Collection<Effect> getEffects() {
         if (effects == null) return null;
-        return effects.stream().map(AttackEffect::getEffect).toList();
+        return effects.stream().map(SkillEffect::getEffect).toList();
     }
 
 }

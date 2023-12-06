@@ -1,7 +1,10 @@
 package cz.trailsthroughshadows.api.table.action;
 
+import cz.trailsthroughshadows.api.table.action.summon.SummonAction;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collection;
 
 @Entity
 @Table(name = "Action")
@@ -23,6 +26,10 @@ public class Action {
     @Column
     @Enumerated(EnumType.STRING)
     private Discard discard;
+
+    @OneToMany(mappedBy = "action")
+    private Collection<SummonAction> summons;
+    
 
     enum Discard {
         PERNAMENT,

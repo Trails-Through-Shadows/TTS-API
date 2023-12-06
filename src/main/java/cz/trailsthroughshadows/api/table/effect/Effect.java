@@ -20,6 +20,10 @@ public class Effect {
     private EffectRange range;
 
     @Column
+    @Enumerated(EnumType.STRING)
+    private EffectType type;
+
+    @Column
     private int duration;
 
     @Column
