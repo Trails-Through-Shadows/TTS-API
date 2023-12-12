@@ -18,13 +18,13 @@ public class Hex {
     private HexId key;
 
     @Column(name = "rCord", nullable = false)
-    private int rCord;
+    private int r;
 
     @Column(name = "qCord", nullable = false)
-    private int qCord;
+    private int q;
 
     @Column(name = "sCord", nullable = false)
-    private int sCord;
+    private int s;
 
     @Data
     @Embeddable
