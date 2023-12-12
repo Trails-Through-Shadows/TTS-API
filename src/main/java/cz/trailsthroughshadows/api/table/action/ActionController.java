@@ -37,5 +37,4 @@ public class ActionController {
         return repository.getAll();
     }
 
-
 }
