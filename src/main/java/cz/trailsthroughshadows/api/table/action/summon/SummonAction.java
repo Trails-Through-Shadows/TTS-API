@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.function.IntBinaryOperator;
 
 @Data
 @NoArgsConstructor
@@ -19,10 +20,13 @@ public class SummonAction {
     @EmbeddedId
     private SummonActionId id;
 
-    @Transient
+    @ManyToOne()
+    @JoinColumn(name = "idSummon")
     private Summon summon;
 
-    @Transient
+    @ManyToOne()
+    @MapKey(name = "idAction")
+    @JoinColumn(name = "idAction")
     private Action action;
 
 
@@ -34,12 +38,10 @@ public class SummonAction {
     @AllArgsConstructor
     @Data
     public static class SummonActionId implements Serializable {
-        //@Column(name = "idSummon")
-        @ManyToOne()
-        private Summon summon;
-        //@Column(name = "idAction")
-        @ManyToOne()
-        private Action action;
+        @Column()
+        private Integer idSummon;
+        @Column()
+        private Integer idAction;
     }
 }
 

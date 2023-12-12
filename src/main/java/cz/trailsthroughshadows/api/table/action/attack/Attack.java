@@ -30,7 +30,7 @@ public class Attack {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Effect.EffectRange target;
+    private Effect.EffectTarget target;
 
     @Column(nullable = false)
     private int numAttacks;

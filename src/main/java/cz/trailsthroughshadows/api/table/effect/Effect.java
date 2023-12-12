@@ -19,7 +19,7 @@ public class Effect {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private EffectRange range;
+    private EffectTarget target;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -60,7 +60,7 @@ public class Effect {
         BONUS_MOVEMENT,
     }
 
-    public enum EffectRange implements Serializable {
+    public enum EffectTarget implements Serializable {
         SELF,
         ONE,
         ALL
