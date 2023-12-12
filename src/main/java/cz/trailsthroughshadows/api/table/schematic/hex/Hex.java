@@ -39,4 +39,17 @@ public class Hex {
         private int id;
 
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Hex)) return false;
+        Hex hex = (Hex) o;
+        return q == hex.q && r == hex.r && s == hex.s && key.equals(hex.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode();
+    }
 }

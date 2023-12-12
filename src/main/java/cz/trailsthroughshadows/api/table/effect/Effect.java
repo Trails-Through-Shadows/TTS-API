@@ -63,6 +63,8 @@ public class Effect {
     public enum EffectTarget implements Serializable {
         SELF,
         ONE,
-        ALL
+        ALL,
+        ALL_ALLIES,
+        ALL_ENEMIES,
     }
 }
