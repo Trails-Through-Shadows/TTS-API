@@ -31,7 +31,7 @@ public class Summon {
     @Column
     private Integer idAction;  //todo foreign key
 
-    @OneToMany(mappedBy = "summon")
+    @OneToMany(mappedBy = "pk.summon")
     private Collection<SummonAction> actions;
 
     @OneToMany(mappedBy = "idSummon", fetch = FetchType.LAZY)

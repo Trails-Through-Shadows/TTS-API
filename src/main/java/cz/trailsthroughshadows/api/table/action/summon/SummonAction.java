@@ -19,22 +19,27 @@ public class SummonAction {
     @EmbeddedId
     private SummonActionId id;
 
-    @ManyToOne
-    @MapsId("summon_id")
-    @JoinColumn(name = "idSummon")
+    @Transient
     private Summon summon;
 
-    @ManyToOne
-    @MapsId("action_id")
-    @JoinColumn(name = "idAction")
+    @Transient
     private Action action;
+
 
     @Column
     private Integer range;
 
-    //todo jebat tohle je zacyklené jak cyp
-    // věci odkud jsem bral https://www.baeldung.com/jpa-many-to-many
-    // třetí kapitola s multiklíčem a jednou věcí navíc
-
+    @Embeddable
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class SummonActionId implements Serializable {
+        //@Column(name = "idSummon")
+        @ManyToOne()
+        private Summon summon;
+        //@Column(name = "idAction")
+        @ManyToOne()
+        private Action action;
+    }
 }
 

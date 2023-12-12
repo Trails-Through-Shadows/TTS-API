@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/Summon")
+@RequestMapping("/api/summon")
 public class SummonController {
 
     @Autowired
