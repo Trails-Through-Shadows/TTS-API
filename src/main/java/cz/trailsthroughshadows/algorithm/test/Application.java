@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.algorithm;
+package cz.trailsthroughshadows.algorithm.test;
 
 import cz.trailsthroughshadows.api.TtsApiApplication;
 import lombok.extern.log4j.Log4j2;

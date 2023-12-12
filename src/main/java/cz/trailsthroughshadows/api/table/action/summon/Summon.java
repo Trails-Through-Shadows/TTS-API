@@ -13,11 +13,10 @@ import java.util.Collection;
 @AllArgsConstructor
 @Entity
 @Table(name = "Summon")
-public class Summon {
+public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity implements Cloneable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)//zrušení jen setteru
     private Integer id;
 
     @Column(nullable = false)
@@ -47,4 +46,21 @@ public class Summon {
         return effects.stream().map(SummonEffect::getEffect).toList();
     }
 
+    public Collection<SummonEffect> getRawEffects() {
+        return effects;
+    }
+
+    @Override
+    public Summon clone() {
+        Summon summon = new Summon();
+
+        summon.setId(this.getId());
+        summon.setName(this.getName());
+        summon.setDuration(this.getDuration());
+        summon.setHealth(this.getHealth());
+        summon.setAction(this.getAction());
+        summon.setEffects(this.getRawEffects());
+
+        return summon;
+    }
 }

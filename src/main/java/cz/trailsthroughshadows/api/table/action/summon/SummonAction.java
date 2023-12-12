@@ -25,10 +25,8 @@ public class SummonAction {
     @JoinColumn(name = "idSummon")
     private Summon summon;
 
-    @ManyToOne
-    @MapsId("action_id")
-    @JoinColumn(name = "idAction")
-    private Action action;
+    @Column(name = "idAction", insertable = false, updatable = false)
+    private int idAction;
 
     @Column
     private Integer range;

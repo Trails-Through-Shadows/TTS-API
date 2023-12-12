@@ -17,11 +17,11 @@ public class Hex {
     @EmbeddedId
     private HexId key;
 
-    @Column(name = "rCord", nullable = false)
-    private int r;
-
     @Column(name = "qCord", nullable = false)
     private int q;
+
+    @Column(name = "rCord", nullable = false)
+    private int r;
 
     @Column(name = "sCord", nullable = false)
     private int s;
@@ -38,5 +38,18 @@ public class Hex {
         @Column(name = "id", nullable = false)
         private int id;
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Hex)) return false;
+        Hex hex = (Hex) o;
+        return q == hex.q && r == hex.r && s == hex.s && key.equals(hex.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode();
     }
 }
