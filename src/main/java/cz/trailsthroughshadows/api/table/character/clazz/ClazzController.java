@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/Class")
+@RequestMapping("/api/class")
 public class ClazzController {
 
     @Autowired

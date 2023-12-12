@@ -3,6 +3,8 @@ package cz.trailsthroughshadows.api.table.effect;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +19,7 @@ public class Effect {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private EffectRange range;
+    private EffectTarget target;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -29,22 +31,38 @@ public class Effect {
     @Column
     private Integer strength;
 
-    public enum EffectType {
+    public enum EffectType implements Serializable {
         PUSH,
         PULL,
-        FORCED_MOVEMENT_IMMUNITY,
-        POISON, POISON_IMMUNITY,
-        FIRE, FIRE_IMMUNITY, BLEED, BLEED_IMMUNITY,
-        DISARM, DISARM_IMMUNITY, STUN, STUN_IMMUNITY,
-        CONFUSION, CONFUSION_IMMUNITY, CHARM, CHARM_IMMUNITY,
-        FEAR, FEAR_IMMUNITY, INVISIBILITY, SHIELD, BONUS_HEALTH,
-        BONUS_DAMAGE, BONUS_MOVEMENT
+        FORCED_MOVEMENT_RESISTANCE,
+        POISON,
+        POISON_RESISTANCE,
+        FIRE,
+        FIRE_RESISTANCE,
+        BLEED,
+        BLEED_RESISTANCE,
+        DISARM,
+        DISARM_RESISTANCE,
+        STUN,
+        STUN_RESISTANCE,
+        CONFUSION,
+        CONFUSION_RESISTANCE,
+        CHARM,
+        CHARM_RESISTANCE,
+        FEAR,
+        FEAR_RESISTANCE,
+        INVISIBILITY,
+        SHIELD,
+        HEAL,
+        REGENERATION,
+        BONUS_HEALTH,
+        BONUS_DAMAGE,
+        BONUS_MOVEMENT,
     }
 
-    public enum EffectRange {
+    public enum EffectTarget implements Serializable {
         SELF,
-        ENEMY,
-        ALLY,
+        ONE,
         ALL
     }
 }
