@@ -26,7 +26,7 @@ public class Skill {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Effect.EffectRange target;
+    private Effect.EffectTarget target;
 
     @OneToMany(mappedBy = "idSkill", fetch = FetchType.LAZY)
     @ToString.Exclude

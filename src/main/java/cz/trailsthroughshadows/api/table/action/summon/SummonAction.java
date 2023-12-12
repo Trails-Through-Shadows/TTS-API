@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.function.IntBinaryOperator;
 
 @Data
 @NoArgsConstructor
@@ -19,22 +20,28 @@ public class SummonAction {
     @EmbeddedId
     private SummonActionId id;
 
-    @ManyToOne
-    @MapsId("summon_id")
+    @ManyToOne()
     @JoinColumn(name = "idSummon")
     private Summon summon;
 
-    @ManyToOne
-    @MapsId("action_id")
+    @ManyToOne()
+    @MapKey(name = "idAction")
     @JoinColumn(name = "idAction")
     private Action action;
+
 
     @Column
     private Integer range;
 
-    //todo jebat tohle je zacyklené jak cyp
-    // věci odkud jsem bral https://www.baeldung.com/jpa-many-to-many
-    // třetí kapitola s multiklíčem a jednou věcí navíc
-
+    @Embeddable
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class SummonActionId implements Serializable {
+        @Column()
+        private Integer idSummon;
+        @Column()
+        private Integer idAction;
+    }
 }
 
