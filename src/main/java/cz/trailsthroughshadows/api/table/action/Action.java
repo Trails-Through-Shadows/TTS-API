@@ -49,7 +49,7 @@ public class Action {
     @JoinColumn(name = "restoreCards")
     private RestoreCards restoreCards;
 
-    @OneToMany(mappedBy = "action")
+    @OneToMany(mappedBy = "idAction")
     private Collection<SummonAction> summonActions;
 
 
