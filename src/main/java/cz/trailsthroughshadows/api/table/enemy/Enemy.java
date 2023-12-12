@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
-import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "Enemy")
 @Data
 @NoArgsConstructor
-public class Enemy {
+public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -22,7 +21,4 @@ public class Enemy {
 
     @Column(nullable = false)
     private int defence;
-
-    @Transient
-    private Hex hex;
 }

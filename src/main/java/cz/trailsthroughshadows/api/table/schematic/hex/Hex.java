@@ -17,11 +17,11 @@ public class Hex {
     @EmbeddedId
     private HexId key;
 
-    @Column(name = "rCord", nullable = false)
-    private int r;
-
     @Column(name = "qCord", nullable = false)
     private int q;
+
+    @Column(name = "rCord", nullable = false)
+    private int r;
 
     @Column(name = "sCord", nullable = false)
     private int s;
