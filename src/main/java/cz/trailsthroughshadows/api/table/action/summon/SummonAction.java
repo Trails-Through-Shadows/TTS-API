@@ -20,28 +20,23 @@ public class SummonAction {
     @EmbeddedId
     private SummonActionId id;
 
-    @ManyToOne()
+    @ManyToOne
+    @MapsId("summon_id")
     @JoinColumn(name = "idSummon")
     private Summon summon;
 
-    @ManyToOne()
-    @MapKey(name = "idAction")
-    @JoinColumn(name = "idAction")
-    private Action action;
-
+    @Column(name = "idAction", insertable = false, updatable = false)
+    private int idAction;
 
     @Column
     private Integer range;
 
     @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Data
     public static class SummonActionId implements Serializable {
-        @Column()
-        private Integer idSummon;
-        @Column()
-        private Integer idAction;
+        @Column(name = "idSummon")
+        private Integer summon_id;
+        @Column(name = "idAction")
+        private Integer action_id;
     }
 }
 
