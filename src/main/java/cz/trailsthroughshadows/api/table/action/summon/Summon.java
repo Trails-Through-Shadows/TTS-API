@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.action.summon;
 
+import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.SummonEffect;
 import jakarta.persistence.*;
@@ -28,13 +29,14 @@ public class Summon {
     @Column
     private Integer health;
 
-    @Column
-    private Integer idAction;  //todo foreign key
+    @ManyToOne()
+    @JoinColumn(name = "idAction")
+    private Action action;
 
-    @OneToMany(mappedBy = "summon")
-    private Collection<SummonAction> actions;
+//    @OneToMany(mappedBy = "summon")
+//    private Collection<SummonAction> actions;
 
-    @OneToMany(mappedBy = "idSummon", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "idSummon")
     @ToString.Exclude
     private Collection<SummonEffect> effects;
 
