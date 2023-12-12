@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.algorithm;
 
-import cz.trailsthroughshadows.algorithm.location.Location;
+import cz.trailsthroughshadows.algorithm.location.LocationImpl;
 import cz.trailsthroughshadows.api.table.action.summon.Summon;
 import cz.trailsthroughshadows.api.table.playerdata.Character;
 import cz.trailsthroughshadows.api.table.enemy.Enemy;
@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -18,7 +17,7 @@ public class Dungeon {
     private final ArrayList<Enemy> enemies = new ArrayList<>();
     private final ArrayList<Character> characters = new ArrayList<>();
     private final ArrayList<Summon> summons = new ArrayList<>();
-    private final Location location;
+    private final LocationImpl locationImpl;
 
     public void moveCharacter(Character character, Hex hex) {
         character.setHex(hex);

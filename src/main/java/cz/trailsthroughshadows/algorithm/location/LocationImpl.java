@@ -2,12 +2,12 @@ package cz.trailsthroughshadows.algorithm.location;
 
 import cz.trailsthroughshadows.algorithm.utils.Vec3;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
+import cz.trailsthroughshadows.api.table.schematic.location.ILocation;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Location extends cz.trailsthroughshadows.api.table.schematic.location.Location {
+public abstract class LocationImpl implements ILocation {
 
     public Part getPart(Hex hex) {
         return getLocationParts().stream()

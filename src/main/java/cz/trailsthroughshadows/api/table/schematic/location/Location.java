@@ -1,52 +1,48 @@
 package cz.trailsthroughshadows.api.table.schematic.location;
 
+import cz.trailsthroughshadows.algorithm.location.LocationImpl;
 import cz.trailsthroughshadows.api.table.schematic.part.LocationPart;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
-@Data
 @Entity
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "Location")
-public class Location {
+@EqualsAndHashCode(callSuper = true)
+public class Location extends LocationImpl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    public int id;
 
     @Column(name = "title", nullable = false)
-    private String title;
+    public String title;
 
     @Column(name = "tag")
-    private String tag;
+    public String tag;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private Location.Type type;
+    public Location.Type type;
 
     @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
+    public String description;
 
     @OneToMany(mappedBy = "idLocation", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<LocationPart> locationParts;
+    public List<LocationPart> locationParts;
 
     // Skipping n-to-n relationship, there is no additional data in that table
+    @Override
     @ToString.Include(name = "locationParts") // Including replacement field in toString
     public List<Part> getLocationParts() {
         if (locationParts == null) return null;
         return locationParts.stream().map(LocationPart::getPart).toList();
-    }
-
-    public enum Type {
-        CITY, DUNGEON, MARKET, QUEST
     }
 
 }
