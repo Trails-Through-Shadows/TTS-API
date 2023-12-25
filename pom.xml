@@ -81,9 +81,9 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <mainClass>cz.trailsthroughshadows.api.TtsApiApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

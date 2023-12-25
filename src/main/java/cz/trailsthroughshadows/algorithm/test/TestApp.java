@@ -2,9 +2,7 @@ package cz.trailsthroughshadows.algorithm.test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import cz.trailsthroughshadows.algorithm.Dungeon;
-import cz.trailsthroughshadows.api.table.action.summon.Summon;
 import cz.trailsthroughshadows.api.table.action.summon.SummonRepo;
 import cz.trailsthroughshadows.api.table.character.Character;
 import cz.trailsthroughshadows.api.table.character.CharacterRepo;

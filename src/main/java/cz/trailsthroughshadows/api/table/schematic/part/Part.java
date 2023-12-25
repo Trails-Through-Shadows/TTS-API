@@ -25,4 +25,7 @@ public class Part {
     @OneToMany(mappedBy = "key.idPart", fetch = FetchType.LAZY)
     private List<Hex> hexes;
 
+    @Transient
+    private int usages = 0;
+
 }
