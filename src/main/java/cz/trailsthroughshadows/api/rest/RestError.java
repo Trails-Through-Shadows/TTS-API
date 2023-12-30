@@ -10,7 +10,6 @@ import java.time.ZonedDateTime;
 public class RestError {
     private Code code = Code.IM_A_TEAPOT;
     private String message = null;
-    private ZonedDateTime timestamp = ZonedDateTime.now();
 
     @AllArgsConstructor
     public enum Code {

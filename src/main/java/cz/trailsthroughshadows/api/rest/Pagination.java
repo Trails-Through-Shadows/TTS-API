@@ -8,7 +8,7 @@ import lombok.Getter;
 public class Pagination {
     private int count;
     private boolean hasMoreEntries;
-    private int totalItems;
-    private int skipCount;
-    private int maxEntries;
+    private int totalEntries;
+    private int offset;
+    private int limit;
 }
