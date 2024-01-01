@@ -3,6 +3,8 @@ package cz.trailsthroughshadows.api.table.schematic;
 import cz.trailsthroughshadows.api.rest.Pagination;
 import cz.trailsthroughshadows.api.rest.RestError;
 import cz.trailsthroughshadows.api.rest.RestResult;
+import cz.trailsthroughshadows.api.table.schematic.location.Location;
+import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.PartRepo;
 import lombok.extern.log4j.Log4j2;
@@ -20,28 +22,29 @@ import java.util.stream.Collectors;
 @RestController(value = "Schematic")
 public class SchematicController {
     private PartRepo partRepo;
+    private LocationRepo locationRepo;
 
     @GetMapping("/parts")
     public RestResult getParts(
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "100") int limit,
-            @RequestParam String filter
+            @RequestParam(defaultValue = "") String filter
     ) {
-        Collection<Part> parts = partRepo.findAll();
-        List<Object> filteredParts = parts.stream()
-                .filter(part -> {
+        Collection<Part> entries = partRepo.findAll();
+        List<Object> filteredEntries = entries.stream()
+                .filter(entry -> {
                     if (filter.isEmpty()) {
                         return true;
                     } else {
-                        return part.getTag().toLowerCase().contains(filter.toLowerCase());
+                        return entry.getTag().toLowerCase().contains(filter.toLowerCase());
                     }
                 })
                 .skip(offset)
                 .limit(limit)
                 .collect(Collectors.toList());
 
-        Pagination pagination = new Pagination(filteredParts.size(), parts.size() > offset + limit, parts.size(), offset, limit);
-        return new RestResult(pagination, filteredParts);
+        Pagination pagination = new Pagination(filteredEntries.size(), entries.size() > offset + limit, entries.size(), offset, limit);
+        return new RestResult(pagination, filteredEntries);
     }
 
     @GetMapping("/part/{id}")
@@ -57,6 +60,31 @@ public class SchematicController {
         return part;
     }
 
+    @GetMapping("/locations")
+    public RestResult getLocations(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "100") int limit,
+            @RequestParam(defaultValue = "") String filter
+    ) {
+        Collection<Location> entries = locationRepo.findAll();
+        List<Object> filteredEntries = entries.stream()
+                .filter(entry -> {
+                    if (filter.isEmpty()) {
+                        return true;
+                    } else {
+                        return entry.getTag().toLowerCase().contains(filter.toLowerCase())
+                                || entry.getTitle().toLowerCase().contains(filter.toLowerCase())
+                                || entry.getDescription().toLowerCase().contains(filter.toLowerCase());
+                    }
+                })
+                .skip(offset)
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        Pagination pagination = new Pagination(filteredEntries.size(), entries.size() > offset + limit, entries.size(), offset, limit);
+        return new RestResult(pagination, filteredEntries);
+    }
+
     /**
      * ===============================================
      */
@@ -64,5 +92,10 @@ public class SchematicController {
     @Autowired
     public void setPartRepo(PartRepo partRepo) {
         this.partRepo = partRepo;
+    }
+
+    @Autowired
+    public void setLocationRepo(LocationRepo locationRepo) {
+        this.locationRepo = locationRepo;
     }
 }
