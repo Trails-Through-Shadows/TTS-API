@@ -10,6 +10,7 @@ import java.util.Collection;
 @RequestMapping("/api/enemy")
 public class EnemyController {
 
+    
     @Autowired
     private EnemyRepo repository;
 

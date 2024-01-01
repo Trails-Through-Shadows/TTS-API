@@ -1,5 +1,6 @@
-package cz.trailsthroughshadows.api.table.effect;
+package cz.trailsthroughshadows.api.table.effect.foraction;
 
+import cz.trailsthroughshadows.api.table.effect.Effect;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "SkillEffect")
-public class SkillEffect {
+@Table(name = "AttackEffect")
+public class AttackEffect {
 
     @Id
     @Column
-    private int idSkill;
+    private int idAttack;
 
     @Id
     @Column

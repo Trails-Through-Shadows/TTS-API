@@ -2,7 +2,7 @@ package cz.trailsthroughshadows.api.table.action.movement;
 
 
 import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.effect.MovementEffect;
+import cz.trailsthroughshadows.api.table.effect.foraction.MovementEffect;
 import jakarta.persistence.*;
 import lombok.*;
 

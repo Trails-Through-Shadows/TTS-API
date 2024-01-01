@@ -4,6 +4,7 @@ import cz.trailsthroughshadows.api.table.action.Action;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Entity
 @Table(name = "EnemyAction")
 @Data
@@ -18,12 +19,14 @@ public class EnemyAction {
     @Column(name = "levelReq", nullable = false)
     private int levelReq;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idEnemy", referencedColumnName = "id", insertable = false, updatable = false)
-    private Enemy enemy;
+    @Column(name = "idEnemy", nullable = false)
+    private int idEnemy;
+
+    @Column(name = "idAction", nullable = false)
+    private int idAction;
 
     // Assuming there's an Action entity
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "idAction", referencedColumnName = "id", insertable = false, updatable = false)
     private Action action;
 }

@@ -2,7 +2,7 @@ package cz.trailsthroughshadows.api.table.action.summon;
 
 import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.effect.SummonEffect;
+import cz.trailsthroughshadows.api.table.effect.foraction.SummonEffect;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +13,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Entity
 @Table(name = "Summon")
-public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity implements Cloneable{
+public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

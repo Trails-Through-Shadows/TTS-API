@@ -1,0 +1,47 @@
+## TODO
+---
+co všechno je namapováno
+
+- [x] Action
+    - Restore Cards
+    - Attack
+        - attackeffect
+    - Skill
+        - skilleffect
+    - Movement
+        - effect
+    - Summon
+        - SummonAction
+            - summonEffect
+                - effect
+
+- [x] Effect
+    - [x] Effect
+        - [x] summonEffect
+        - [x] MovementEffect
+        - [x] AttackEffect
+        - [x] SkillEffect
+        - [x] class effect
+        - [x] race effect
+        - [x] item effect
+        - [x] enemy effect
+        - [x] obstacle effect
+- [ ] Enemy
+    - [x] enemy
+    - [x] enemy effect
+    - [x] enemy action
+    - [ ] hex enemy
+- [ ] Obstacle
+    - [ ] obstacle
+    - [x] obstacle effect
+    - [ ] hex obstacle
+- [ ] Character
+    - [ ] class action
+    - [ ] class
+    - [ ] race
+    - [ ] race action
+- [ ] equipment
+    - [ ] market
+    - [ ] item
+        - [x] item effect
+    - [ ] market item

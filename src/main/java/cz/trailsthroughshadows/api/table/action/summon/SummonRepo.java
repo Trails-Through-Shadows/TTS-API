@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 
-public interface SummonRepo extends JpaRepository<Summon,Integer> {
+public interface SummonRepo extends JpaRepository<Summon, Integer> {
 
     @Query("SELECT c FROM Summon c")
     Collection<Summon> getAll();
