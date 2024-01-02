@@ -1,13 +1,10 @@
 package cz.trailsthroughshadows.algorithm.location;
 
-import cz.trailsthroughshadows.algorithm.entity.Entity;
 import cz.trailsthroughshadows.algorithm.utils.Vec3;
-import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.schematic.location.ILocation;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class LocationImpl implements ILocation {
