@@ -28,8 +28,6 @@ public class Hex {
 
     @Data
     @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class HexId implements Serializable {
 
         @Column(name = "idPart", nullable = false)
@@ -43,13 +41,7 @@ public class Hex {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Hex)) return false;
-        Hex hex = (Hex) o;
+        if (!(o instanceof Hex hex)) return false;
         return q == hex.q && r == hex.r && s == hex.s && key.equals(hex.key);
-    }
-
-    @Override
-    public int hashCode() {
-        return key.hashCode();
     }
 }

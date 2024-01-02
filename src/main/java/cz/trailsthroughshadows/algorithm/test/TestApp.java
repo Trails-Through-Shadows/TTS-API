@@ -2,9 +2,7 @@ package cz.trailsthroughshadows.algorithm.test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import cz.trailsthroughshadows.algorithm.Dungeon;
-import cz.trailsthroughshadows.api.table.action.summon.Summon;
 import cz.trailsthroughshadows.api.table.action.summon.SummonRepo;
 import cz.trailsthroughshadows.api.table.character.Character;
 import cz.trailsthroughshadows.api.table.character.CharacterRepo;
@@ -35,26 +33,27 @@ public class TestApp {
 
     @GetMapping
     public Object test() {
-        Location loc = locationRepo.findById(6).get();
-        Dungeon dungeon = new Dungeon(loc);
-
-        Character character = characterRepo.findById(1).get();
-        character.setHex(loc.getLocationParts().get(0).getHexes().get(32 - 1));
-        dungeon.getCharacters().add(character);
-
-        Enemy enemy = enemyRepo.findById(1).get();
-
-        Enemy e1 = enemy.clone();
-        e1.setHex(loc.getLocationParts().get(0).getHexes().get(21 - 1));
-        dungeon.getEnemies().add(e1);
-
-        Enemy e2 = enemy.clone();
-        e2.setHex(loc.getLocationParts().get(0).getHexes().get(61 - 1));
-        dungeon.getEnemies().add(e2);
-
-        var x = dungeon.calculateTarget(character, 3, Effect.EffectTarget.ONE);
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(x);
+//        Location loc = locationRepo.findById(6).get();
+//        Dungeon dungeon = new Dungeon(loc);
+//
+//        Character character = characterRepo.findById(1).get();
+//        character.setHex(loc.getLocationParts().get(0).getHexes().get(32 - 1));
+//        dungeon.getCharacters().add(character);
+//
+//        Enemy enemy = enemyRepo.findById(1).get();
+//
+//        Enemy e1 = enemy.clone();
+//        e1.setHex(loc.getLocationParts().get(0).getHexes().get(21 - 1));
+//        dungeon.getEnemies().add(e1);
+//
+//        Enemy e2 = enemy.clone();
+//        e2.setHex(loc.getLocationParts().get(0).getHexes().get(61 - 1));
+//        dungeon.getEnemies().add(e2);
+//
+//        var x = dungeon.calculateTarget(character, 3, Effect.EffectTarget.ONE);
+//
+//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//        return gson.toJson(x);
+        return null;
     }
 }
