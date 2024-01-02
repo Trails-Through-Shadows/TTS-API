@@ -52,7 +52,6 @@ public class Action {
     @OneToMany(mappedBy = "idAction")
     private Collection<SummonAction> summonActions;
 
-
     enum Discard implements Serializable {
         PERNAMENT,
         SHORT_REST,

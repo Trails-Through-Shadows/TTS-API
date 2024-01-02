@@ -12,6 +12,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class HexEnemy {
 
+    @Column(nullable = false)
+    private int idEnemy;
+
     @EmbeddedId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)

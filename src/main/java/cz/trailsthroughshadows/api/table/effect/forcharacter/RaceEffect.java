@@ -1,5 +1,6 @@
-package cz.trailsthroughshadows.api.table.effect;
+package cz.trailsthroughshadows.api.table.effect.forcharacter;
 
+import cz.trailsthroughshadows.api.table.effect.Effect;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,19 +10,21 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "MovementEffect")
-public class MovementEffect {
+@Table(name = "RaceEffect")
+public class RaceEffect {
 
     @Id
-    @Column
-    private int idMovement;
+    @Column(nullable = false)
+    private int idRace;
 
     @Id
-    @Column
+    @Column(nullable = false)
     private int idEffect;
+
+    @Column
+    private int levelReq;
 
     @ManyToOne
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private Effect effect;
-
 }
