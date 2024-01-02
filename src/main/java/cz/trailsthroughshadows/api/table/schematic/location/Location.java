@@ -37,13 +37,15 @@ public class Location extends LocationImpl {
     @ToString.Exclude
     public List<LocationPart> locationParts;
 
-    // Skipping n-to-n relationship, there is no additional data in that table
     @Override
-    @ToString.Include(name = "locationParts") // Including replacement field in toString
+    @ToString.Include(name = "locationParts")
     public List<Part> getLocationParts() {
         if (locationParts == null) return null;
         return locationParts.stream().map(LocationPart::getPart).toList();
     }
 
+    public List<LocationPart> getLocationPartsRaw() {
+        return locationParts;
+    }
 }
 

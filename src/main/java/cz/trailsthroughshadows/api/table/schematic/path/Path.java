@@ -5,14 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-/**
- * TODO table without id
- */
-@Table(name = "Path")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "Path")
 public class Path {
 
     private int idStart;
