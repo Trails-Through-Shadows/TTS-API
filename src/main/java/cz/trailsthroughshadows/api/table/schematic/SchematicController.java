@@ -9,16 +9,20 @@ import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.PartRepo;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Log4j2
+@Component
+@Cacheable("schematic")
 @RestController(value = "Schematic")
 public class SchematicController {
     private PartRepo partRepo;
@@ -26,25 +30,25 @@ public class SchematicController {
 
     @GetMapping("/parts")
     public RestResult getParts(
-            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
-            @RequestParam(defaultValue = "") String filter
+            @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
+            @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting
     ) {
-        Collection<Part> entries = partRepo.findAll();
-        List<Object> filteredEntries = entries.stream()
-                .filter(entry -> {
-                    if (filter.isEmpty()) {
-                        return true;
-                    } else {
-                        return entry.getTag().toLowerCase().contains(filter.toLowerCase());
-                    }
-                })
-                .skip(offset)
-                .limit(limit)
-                .collect(Collectors.toList());
+        PageRequest pageRequest = PageRequest.of(Math.max(page, 0), limit);
+        Page<Part> pageData = partRepo.findAll(pageRequest);
+        List<Part> entries = pageData.get()
+//                .filter(entry -> {
+//                    if (filter.isEmpty()) {
+//                        return true;
+//                    } else {
+//                        return entry.getTag().toLowerCase().contains(filter.toLowerCase());
+//                    }
+//                })
+                .toList();
 
-        Pagination pagination = new Pagination(filteredEntries.size(), entries.size() > offset + limit, entries.size(), offset, limit);
-        return new RestResult(pagination, filteredEntries);
+        Pagination pagination = new Pagination(entries.size(), pageData.hasNext(), (int) pageData.getTotalElements(), pageRequest.getPageNumber(), pageRequest.getPageSize());
+        return new RestResult(pagination, entries);
     }
 
     @GetMapping("/part/{id}")
@@ -52,9 +56,8 @@ public class SchematicController {
         Part part = partRepo.findById(id).orElse(null);
 
         if (part == null) {
-            RestError.Code errorCode = RestError.Code.NOT_FOUND;
-            String message = "Part with id " + id + " not found";
-            return new RestError(errorCode, message);
+            String message = "Part with id '" + id + "' not found!";
+            return RestError.Type.NOT_FOUND.getErrorCode(message);
         }
 
         return part;
@@ -62,27 +65,27 @@ public class SchematicController {
 
     @GetMapping("/locations")
     public RestResult getLocations(
-            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
-            @RequestParam(defaultValue = "") String filter
+            @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
+            @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting
     ) {
-        Collection<Location> entries = locationRepo.findAll();
-        List<Object> filteredEntries = entries.stream()
-                .filter(entry -> {
-                    if (filter.isEmpty()) {
-                        return true;
-                    } else {
-                        return entry.getTag().toLowerCase().contains(filter.toLowerCase())
-                                || entry.getTitle().toLowerCase().contains(filter.toLowerCase())
-                                || entry.getDescription().toLowerCase().contains(filter.toLowerCase());
-                    }
-                })
-                .skip(offset)
-                .limit(limit)
-                .collect(Collectors.toList());
+        PageRequest pageRequest = PageRequest.of(Math.max(page, 0), limit);
+        Page<Location> pageData = locationRepo.findAll(pageRequest);
+        List<Location> entries = pageData.get()
+//                .filter(entry -> {
+//                    if (filter.isEmpty()) {
+//                        return true;
+//                    } else {
+//                        return entry.getTag().toLowerCase().contains(filter.toLowerCase())
+//                                || entry.getTitle().toLowerCase().contains(filter.toLowerCase())
+//                                || entry.getDescription().toLowerCase().contains(filter.toLowerCase());
+//                    }
+//                })
+                .toList();
 
-        Pagination pagination = new Pagination(filteredEntries.size(), entries.size() > offset + limit, entries.size(), offset, limit);
-        return new RestResult(pagination, filteredEntries);
+        Pagination pagination = new Pagination(entries.size(), pageData.hasNext(), (int) pageData.getTotalElements(), pageRequest.getPageNumber(), pageRequest.getPageSize());
+        return new RestResult(pagination, entries);
     }
 
     /**

@@ -9,6 +9,6 @@ public class Pagination {
     private int count;
     private boolean hasMoreEntries;
     private int totalEntries;
-    private int offset;
+    private int page;
     private int limit;
 }

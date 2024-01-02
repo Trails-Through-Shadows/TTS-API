@@ -9,5 +9,5 @@ import java.util.List;
 @AllArgsConstructor
 public class RestResult {
     private Pagination pagination;
-    private List<Object> entries;
+    private List<?> entries;
 }
