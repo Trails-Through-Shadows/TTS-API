@@ -1,15 +1,18 @@
 package cz.trailsthroughshadows.api.table.schematic.part;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.Query;
 
-public interface PartRepo extends PagingAndSortingRepository<Part, Integer>, JpaRepository<Part, Integer> {
+import java.util.List;
+
+public interface PartRepo extends JpaRepository<Part, Integer> {
 
     @Override
     @EntityGraph(attributePaths = {"hexes"})
-    Page<Part> findAll(Pageable pageable);
+    List<Part> findAll();
+
+    @Query("SELECT p FROM Part p")
+    List<Part> findWithoutHexes();
 
 }

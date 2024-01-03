@@ -7,6 +7,8 @@ import cz.trailsthroughshadows.api.table.schematic.location.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.PartRepo;
+import cz.trailsthroughshadows.api.util.reflect.Filtering;
+import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,7 +24,7 @@ import java.util.List;
 
 @Log4j2
 @Component
-@Cacheable("schematic")
+@Cacheable(value = "schematic")
 @RestController(value = "Schematic")
 public class SchematicController {
     private PartRepo partRepo;
@@ -32,23 +34,21 @@ public class SchematicController {
     public RestResult getParts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
-            @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
-            @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting
+            @RequestParam(defaultValue = "") String filter, // TODO: Re-Implement filtering
+            @RequestParam(defaultValue = "") String sort // TODO: Re-Implement sorting
     ) {
-        PageRequest pageRequest = PageRequest.of(Math.max(page, 0), limit);
-        Page<Part> pageData = partRepo.findAll(pageRequest);
-        List<Part> entries = pageData.get()
-//                .filter(entry -> {
-//                    if (filter.isEmpty()) {
-//                        return true;
-//                    } else {
-//                        return entry.getTag().toLowerCase().contains(filter.toLowerCase());
-//                    }
-//                })
+        List<Part> entries = partRepo.findAll().stream()
+                .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .toList();
 
-        Pagination pagination = new Pagination(entries.size(), pageData.hasNext(), (int) pageData.getTotalElements(), pageRequest.getPageNumber(), pageRequest.getPageSize());
-        return new RestResult(pagination, entries);
+        List<Part> entriesPage = entries.stream()
+                .skip((long) Math.max(page, 0) * limit)
+                .limit(limit)
+                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
+                .toList();
+
+        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
+        return new RestResult(pagination, entriesPage);
     }
 
     @GetMapping("/part/{id}")
@@ -65,7 +65,7 @@ public class SchematicController {
 
     @GetMapping("/locations")
     public RestResult getLocations(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
             @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting
