@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -32,11 +33,42 @@ public class SchematicController {
     public RestResult getParts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
-            @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
-            @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting
+            @RequestParam(defaultValue = "") String filter, // TODO: Re-Implement filtering
+            @RequestParam(defaultValue = "id:dsc,tag:asc") String sort // TODO: Implement sorting
     ) {
-        List<Part> entries = partRepo.findAll();
-        List<Part> entriesPage = entries.subList(Math.max(page, 0) * limit, Math.min((Math.max(page, 0) + 1) * limit, entries.size()));
+        List<Part> entries = partRepo.findAll().stream().peek(part -> part.setHexes(null)).toList();
+        List<Part> entriesPage = new ArrayList<>(entries);
+
+        // Filter
+        entriesPage = entriesPage.stream()
+                .filter(entry -> {
+                    if (filter.isEmpty()) {
+                        return true;
+                    } else {
+                        return entry.getTag().toLowerCase().contains(filter.toLowerCase());
+                    }
+                })
+                .toList();
+
+        // Limit
+        entriesPage = entriesPage.stream()
+                .skip((long) Math.max(page, 0) * limit)
+                .limit(limit)
+                .toList();
+
+        // Sort
+        List<String> sortList = List.of(sort.split(","));
+        entriesPage = entriesPage.stream()
+                .sorted((a, b) -> {
+                    int out = 0;
+
+                    for (String sortItem : sortList) {
+                        out += a.compareTo(b, sortItem);
+                    }
+
+                    return out;
+                })
+                .toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
         return new RestResult(pagination, entriesPage);
