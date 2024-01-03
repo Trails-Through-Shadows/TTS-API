@@ -22,7 +22,7 @@ import java.util.List;
 
 @Log4j2
 @Component
-@Cacheable("schematic")
+@Cacheable(value = "schematic")
 @RestController(value = "Schematic")
 public class SchematicController {
     private PartRepo partRepo;
@@ -35,20 +35,11 @@ public class SchematicController {
             @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
             @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting
     ) {
-        PageRequest pageRequest = PageRequest.of(Math.max(page, 0), limit);
-        Page<Part> pageData = partRepo.findAll(pageRequest);
-        List<Part> entries = pageData.get()
-//                .filter(entry -> {
-//                    if (filter.isEmpty()) {
-//                        return true;
-//                    } else {
-//                        return entry.getTag().toLowerCase().contains(filter.toLowerCase());
-//                    }
-//                })
-                .toList();
+        List<Part> entries = partRepo.findAll();
+        List<Part> entriesPage = entries.subList(Math.max(page, 0) * limit, Math.min((Math.max(page, 0) + 1) * limit, entries.size()));
 
-        Pagination pagination = new Pagination(entries.size(), pageData.hasNext(), (int) pageData.getTotalElements(), pageRequest.getPageNumber(), pageRequest.getPageSize());
-        return new RestResult(pagination, entries);
+        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
+        return new RestResult(pagination, entriesPage);
     }
 
     @GetMapping("/part/{id}")
@@ -65,7 +56,7 @@ public class SchematicController {
 
     @GetMapping("/locations")
     public RestResult getLocations(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
             @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting
