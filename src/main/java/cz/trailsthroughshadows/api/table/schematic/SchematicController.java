@@ -7,6 +7,8 @@ import cz.trailsthroughshadows.api.table.schematic.location.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.PartRepo;
+import cz.trailsthroughshadows.api.util.reflect.Filtering;
+import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -34,40 +35,16 @@ public class SchematicController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter, // TODO: Re-Implement filtering
-            @RequestParam(defaultValue = "id:dsc,tag:asc") String sort // TODO: Implement sorting
+            @RequestParam(defaultValue = "") String sort // TODO: Re-Implement sorting
     ) {
-        List<Part> entries = partRepo.findAll().stream().peek(part -> part.setHexes(null)).toList();
-        List<Part> entriesPage = new ArrayList<>(entries);
-
-        // Filter
-        entriesPage = entriesPage.stream()
-                .filter(entry -> {
-                    if (filter.isEmpty()) {
-                        return true;
-                    } else {
-                        return entry.getTag().toLowerCase().contains(filter.toLowerCase());
-                    }
-                })
+        List<Part> entries = partRepo.findAll().stream()
+                .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .toList();
 
-        // Limit
-        entriesPage = entriesPage.stream()
+        List<Part> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
-                .toList();
-
-        // Sort
-        List<String> sortList = List.of(sort.split(","));
-        entriesPage = entriesPage.stream()
-                .sorted((a, b) -> {
-                    int out = 0;
-
-                    for (String sortItem : sortList) {
-                        out += a.compareTo(b, sortItem);
-                    }
-
-                    return out;
-                })
+                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
