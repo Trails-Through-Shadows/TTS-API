@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.schematic.location.Location;
