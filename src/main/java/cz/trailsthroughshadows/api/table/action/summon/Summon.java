@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -31,6 +32,10 @@ public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity impl
     @ManyToOne()
     @JoinColumn(name = "idAction")
     private Action action;
+
+    public List<Action> getActions() {
+        return List.of(action);
+    }
 
 //    @OneToMany(mappedBy = "summon")
 //    private Collection<SummonAction> actions;
