@@ -1,8 +1,6 @@
 package cz.trailsthroughshadows.api.table.effect;
 
 
-import cz.trailsthroughshadows.api.table.action.Action;
-import cz.trailsthroughshadows.api.table.action.ActionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

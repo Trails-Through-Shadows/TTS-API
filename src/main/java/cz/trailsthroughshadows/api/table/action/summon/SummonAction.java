@@ -1,14 +1,12 @@
 package cz.trailsthroughshadows.api.table.action.summon;
 
 
-import cz.trailsthroughshadows.api.table.action.Action;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.function.IntBinaryOperator;
 
 @Data
 @NoArgsConstructor

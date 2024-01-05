@@ -1,15 +1,8 @@
 package cz.trailsthroughshadows.algorithm.test;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import cz.trailsthroughshadows.algorithm.Dungeon;
 import cz.trailsthroughshadows.api.table.action.summon.SummonRepo;
-import cz.trailsthroughshadows.api.table.character.Character;
 import cz.trailsthroughshadows.api.table.character.CharacterRepo;
-import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.enemy.Enemy;
 import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
-import cz.trailsthroughshadows.api.table.schematic.location.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

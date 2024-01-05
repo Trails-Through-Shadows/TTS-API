@@ -1,18 +1,11 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
-import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
-import cz.trailsthroughshadows.api.table.schematic.location.Location;
-import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.lang3.NotImplementedException;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 @Entity
