@@ -53,7 +53,7 @@ public class Action {
     private Collection<SummonAction> summonActions;
 
     enum Discard implements Serializable {
-        PERNAMENT,
+        PERMANENT,
         SHORT_REST,
         LONG_REST,
         NEVER

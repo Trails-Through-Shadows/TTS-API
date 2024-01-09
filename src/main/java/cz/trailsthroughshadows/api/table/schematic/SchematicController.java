@@ -5,6 +5,8 @@ import cz.trailsthroughshadows.api.rest.RestError;
 import cz.trailsthroughshadows.api.rest.RestResult;
 import cz.trailsthroughshadows.api.table.schematic.location.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
+import cz.trailsthroughshadows.api.table.schematic.obstacle.Obstacle;
+import cz.trailsthroughshadows.api.table.schematic.obstacle.ObstacleRepo;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.PartRepo;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 
 @Log4j2
@@ -29,6 +32,7 @@ import java.util.List;
 public class SchematicController {
     private PartRepo partRepo;
     private LocationRepo locationRepo;
+    private ObstacleRepo obstacleRepo;
 
     @GetMapping("/parts")
     public RestResult getParts(
@@ -88,6 +92,22 @@ public class SchematicController {
         return new RestResult(pagination, entries);
     }
 
+
+    @GetMapping("/Obstacle/{id}")
+    public Object getObstacleById(@PathVariable int id) {
+        Obstacle obstacle = obstacleRepo.findById(id).orElse(null);
+
+        if (obstacle == null) {
+            String message = "Obstacle with id '" + id + "' not found!";
+            return RestError.Type.NOT_FOUND.getErrorCode(message);
+        }
+        return obstacle;
+    }
+
+    @GetMapping("/Obstacles")
+    public Collection<Obstacle> getObstacles() {
+        return obstacleRepo.findAll();
+    }
     /**
      * ===============================================
      */
@@ -101,4 +121,7 @@ public class SchematicController {
     public void setLocationRepo(LocationRepo locationRepo) {
         this.locationRepo = locationRepo;
     }
+
+    @Autowired
+    public void setObstacleRepo(ObstacleRepo obstacleRepo) {this.obstacleRepo = obstacleRepo;    }
 }

@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.part;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.PartDoor;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Part")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Part {
 
     @Id

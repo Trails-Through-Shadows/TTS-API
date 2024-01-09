@@ -18,7 +18,7 @@ public class PartDoor {
     @Setter(AccessLevel.NONE)
     private PartDoorId key;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "toPart")
     private Part toPart;
 
