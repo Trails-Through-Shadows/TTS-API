@@ -12,6 +12,7 @@ import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -62,6 +63,7 @@ public class SchematicController {
     }
 
     @DeleteMapping("/part/{id}")
+    @CacheEvict(value = "schematic", allEntries = true)
     public ResponseEntity<?> deletePartById(@PathVariable int id) {
         Part part = partRepo.findById(id).orElse(null);
 
@@ -72,7 +74,7 @@ public class SchematicController {
 
         partRepo.delete(part);
         String message = "Part with id '" + id + "' deleted!";
-        return Response.Status.NO_CONTENT.getResult(message);
+        return Response.Status.OK.getResult(message);
     }
 
     @PostMapping("/part")
