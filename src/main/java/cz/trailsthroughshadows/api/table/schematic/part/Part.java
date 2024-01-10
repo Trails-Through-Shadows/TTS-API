@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.PartDoor;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
@@ -23,13 +25,13 @@ public class Part {
     @Column(name = "tag")
     private String tag;
 
-    @OneToMany(mappedBy = "key.idPart")
+    @OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL)
     private Set<Hex> hexes;
 
-    @OneToMany(mappedBy = "key.fromPart")
+    @OneToMany(mappedBy = "key.fromPart", cascade = CascadeType.ALL)
     private Set<PartDoor> doors;
 
-    @Transient
+    @Column(name = "usages", columnDefinition = "INT default 0")
     private int usages = 0;
 
 }

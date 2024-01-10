@@ -19,12 +19,16 @@ public class Obstacle {
 
     @Id
     public Integer id;
+
     @Column(nullable = false, length = 50)
     public String name;
+
     @Column
     public Integer damage;
+
     @Column
     public Integer health;
+
     @Column(nullable = false)
     public boolean crossable;
 
@@ -45,6 +49,5 @@ public class Obstacle {
 //        if ( hexObstacle == null) return null;
 //        return hexObstacle.stream().map(HexObstacle::getHex).toList();
 //    }
-
 
 }
