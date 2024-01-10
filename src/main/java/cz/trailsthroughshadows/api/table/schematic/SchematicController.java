@@ -74,7 +74,7 @@ public class SchematicController {
 
         partRepo.delete(part);
         String message = "Part with id '" + id + "' deleted!";
-        return Response.Status.OK.getResult(message);
+        return Response.Status.NO_CONTENT.getResult(message);
     }
 
     @PostMapping("/part")
