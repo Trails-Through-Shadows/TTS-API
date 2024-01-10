@@ -1,13 +1,20 @@
 package cz.trailsthroughshadows.api.rest;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
-@AllArgsConstructor
-public class RestResult {
-    private Pagination pagination;
-    private List<?> entries;
+public class RestResult extends Response {
+    private final Object entry;
+
+    public RestResult(Object entry) {
+        this.status = Status.OK;
+
+        if (entry instanceof String) {
+            this.message = (String) entry;
+            this.entry = null;
+        } else {
+            this.message = null;
+            this.entry = entry;
+        }
+    }
 }
