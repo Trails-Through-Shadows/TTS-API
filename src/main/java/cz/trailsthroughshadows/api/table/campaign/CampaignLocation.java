@@ -17,11 +17,17 @@ public class CampaignLocation {
     @Setter(AccessLevel.NONE)
     private CampaignLocationId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idCampaign", insertable = false, updatable = false)
-    private Campaign campaign;
+    @Column(nullable = false)
+    private boolean unlocked;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
+    private Integer timesVisited;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "idCampaign", insertable = false, updatable = false)
+//    private Campaign campaign;
+
+    @ManyToOne//(fetch = FetchType.LAZY) // todo bulk get or lazy load or dont map by default and only return ID
     @JoinColumn(name = "idLocation", insertable = false, updatable = false)
     private Location location;
 

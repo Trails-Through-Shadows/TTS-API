@@ -23,7 +23,7 @@ public class AchievementController {
     }
 
     @GetMapping("/")
-    public Collection<Summon> findClass() {
+    public Collection<Achievement> findClass() {
         return repository.getAll();
     }
 }

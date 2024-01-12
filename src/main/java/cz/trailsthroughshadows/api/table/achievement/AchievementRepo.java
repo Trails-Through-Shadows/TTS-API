@@ -10,6 +10,6 @@ public interface AchievementRepo extends JpaRepository<Achievement, Integer> {
 
     //get all
     @Query("SELECT c FROM Achievement c")
-    Collection<Summon> getAll();
+    Collection<Achievement> getAll();
 
 }
