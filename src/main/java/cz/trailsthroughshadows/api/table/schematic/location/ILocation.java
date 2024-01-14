@@ -7,8 +7,7 @@ import lombok.ToString;
 import java.util.List;
 
 public interface ILocation {
-
-    @ToString.Include(name = "locationParts")
+    
     List<Part> getParts();
 
     int getId();
