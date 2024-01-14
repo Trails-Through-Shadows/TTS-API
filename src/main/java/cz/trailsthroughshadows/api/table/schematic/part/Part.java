@@ -34,4 +34,5 @@ public class Part {
     @Column(name = "usages", columnDefinition = "INT default 0")
     private int usages = 0;
 
+
 }
