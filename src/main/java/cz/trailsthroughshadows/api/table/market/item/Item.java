@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.equipment.item;
+package cz.trailsthroughshadows.api.table.market.item;
 
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.ItemEffect;
@@ -21,6 +21,10 @@ public class Item {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ItemType type;
+
+    @Column(nullable = false, length = 50)
+    private String title;
+
 
     @Column
     private String description;

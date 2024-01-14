@@ -22,7 +22,7 @@ public class RaceEffect {
     private int idEffect;
 
     @Column
-    private int levelReq;
+    private Integer levelReq;
 
     @ManyToOne
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)

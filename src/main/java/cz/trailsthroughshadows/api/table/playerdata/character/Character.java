@@ -1,9 +1,11 @@
-package cz.trailsthroughshadows.api.table.character;
+package cz.trailsthroughshadows.api.table.playerdata.character;
 
 import cz.trailsthroughshadows.api.table.character.clazz.Clazz;
 import cz.trailsthroughshadows.api.table.character.race.Race;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collection;
 
 @Data
 @NoArgsConstructor
@@ -32,6 +34,10 @@ public class Character extends cz.trailsthroughshadows.algorithm.entity.Entity i
 
     @Column(nullable = false, length = 50)
     private String playerName;
+
+    @OneToMany
+    @JoinColumn(name = "idCharacter")
+    private Collection<Inventory> inventory;
 
     @Override
     public Character clone() {

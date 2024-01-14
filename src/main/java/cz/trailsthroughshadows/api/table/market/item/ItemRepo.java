@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.equipment.item;
+package cz.trailsthroughshadows.api.table.market.item;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

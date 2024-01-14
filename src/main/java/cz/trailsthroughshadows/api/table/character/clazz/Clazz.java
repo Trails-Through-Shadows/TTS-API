@@ -1,7 +1,10 @@
 package cz.trailsthroughshadows.api.table.character.clazz;
 
+import cz.trailsthroughshadows.api.table.effect.forcharacter.ClassEffect;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collection;
 
 @Data
 @NoArgsConstructor
@@ -12,7 +15,7 @@ public class Clazz {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)//zručení jen setteru
+    @Setter(AccessLevel.NONE)
     private Integer id;
 
     @Column(nullable = false, length = 50)
@@ -20,5 +23,13 @@ public class Clazz {
 
     @Column(nullable = false)
     private int baseHealth;
+
+    @OneToMany
+    @JoinColumn(name = "idClass")
+    private Collection<ClassEffect> effects;
+
+    @OneToMany
+    @JoinColumn(name = "idClass")
+    private Collection<ClassAction> actions;
 
 }

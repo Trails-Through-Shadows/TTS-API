@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.equipment.market;
+package cz.trailsthroughshadows.api.table.market.market;
 
 import jakarta.persistence.*;
 import lombok.Data;

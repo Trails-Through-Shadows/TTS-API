@@ -1,7 +1,10 @@
 package cz.trailsthroughshadows.api.table.character.race;
 
+import cz.trailsthroughshadows.api.table.effect.forcharacter.RaceEffect;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collection;
 
 @Data
 @NoArgsConstructor
@@ -18,4 +21,11 @@ public class Race {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @OneToMany
+    @JoinColumn(name = "idRace")
+    private Collection<RaceEffect> effects;
+
+    @OneToMany
+    @JoinColumn(name = "idRace")
+    private Collection<RaceAction> actions;
 }

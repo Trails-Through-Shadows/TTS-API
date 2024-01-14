@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.algorithm.test;
 
 import cz.trailsthroughshadows.api.table.action.summon.SummonRepo;
-import cz.trailsthroughshadows.api.table.character.CharacterRepo;
+import cz.trailsthroughshadows.api.table.playerdata.character.CharacterRepo;
 import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
 import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
 import lombok.extern.log4j.Log4j2;

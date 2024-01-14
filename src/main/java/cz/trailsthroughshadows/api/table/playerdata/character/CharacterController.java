@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.character;
+package cz.trailsthroughshadows.api.table.playerdata.character;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

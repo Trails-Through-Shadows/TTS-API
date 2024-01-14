@@ -1,5 +1,6 @@
-package cz.trailsthroughshadows.api.table.inventory;
+package cz.trailsthroughshadows.api.table.playerdata.character;
 
+import cz.trailsthroughshadows.api.table.market.item.Item;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,10 @@ public class Inventory {
     @Setter(AccessLevel.NONE)
     private InventoryId id;  // Assuming composite key
 
+    @ManyToOne
+    @JoinColumn(name = "idItem", insertable = false, updatable = false)
+    private Item item;
+
     @Column(nullable = false)
     private int amount;
 
@@ -25,7 +30,7 @@ public class Inventory {
         @Column(nullable = false)
         private int idCharacter;
 
-        @Column( nullable = false)
+        @Column(nullable = false)
         private int idItem;
     }
 }

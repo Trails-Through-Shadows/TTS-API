@@ -3,7 +3,7 @@ package cz.trailsthroughshadows.algorithm;
 import cz.trailsthroughshadows.algorithm.entity.Entity;
 import cz.trailsthroughshadows.algorithm.location.LocationImpl;
 import cz.trailsthroughshadows.api.table.action.summon.Summon;
-import cz.trailsthroughshadows.api.table.character.Character;
+import cz.trailsthroughshadows.api.table.playerdata.character.Character;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.enemy.Enemy;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
@@ -33,7 +33,7 @@ public class Dungeon {
         enemy.setHex(hex);
     }
 
-    public List<Entity> calculateTarget (Entity entity, int range, Effect.EffectTarget target) {
+    public List<Entity> calculateTarget(Entity entity, int range, Effect.EffectTarget target) {
         List<Entity> targets = new ArrayList<>();
         Hex hex = entity.getHex();
 
@@ -51,16 +51,17 @@ public class Dungeon {
                 targets.addAll(enemies);
                 break;
             case ALL:
-                for (Entity ent: Stream.of(characters, summons, enemies).flatMap(List::stream).toList()) {
+                for (Entity ent : Stream.of(characters, summons, enemies).flatMap(List::stream).toList()) {
                     if (location.getDistance(hex, ent.getHex()) <= range) {
                         targets.add(ent);
                     }
                 }
                 break;
             case ONE:
-                here: for (int i = 0; i <= range; i++) {
+                here:
+                for (int i = 0; i <= range; i++) {
                     for (Hex neighbor : location.getNeighbors(hex, i)) {
-                        for (Entity ent: Stream.of(characters, summons, enemies).flatMap(List::stream).toList()) {
+                        for (Entity ent : Stream.of(characters, summons, enemies).flatMap(List::stream).toList()) {
                             if (neighbor == ent.getHex() && ent != entity) {
                                 targets.add(ent);
                             }
