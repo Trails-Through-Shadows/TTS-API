@@ -17,11 +17,6 @@ public class CampaignLocation {
     @Setter(AccessLevel.NONE)
     private CampaignLocationId id;
 
-    @Column(nullable = false)
-    private boolean unlocked;
-
-    @Column(nullable = false)
-    private Integer timesVisited;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "idCampaign", insertable = false, updatable = false)

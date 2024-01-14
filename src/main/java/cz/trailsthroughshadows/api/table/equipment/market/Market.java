@@ -16,10 +16,10 @@ public class Market {
     private MarketId key;
 
     @Column(nullable = false)
-    private Boolean unlocked;
+    private Integer defAmount;
 
-    @Column(nullable = false)
-    private Integer amount;
+    @Column
+    private Integer defPrice;
 
     // TODO getter for items in this market
 
@@ -28,6 +28,6 @@ public class Market {
         @Column
         private Integer idItem;
         @Column
-        private Integer idAdventure;
+        private Integer idLocation;
     }
 }

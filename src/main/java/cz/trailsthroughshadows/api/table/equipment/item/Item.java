@@ -26,9 +26,6 @@ public class Item {
     private String description;
 
     @Column(nullable = false)
-    private Integer price;
-
-    @Column(nullable = false)
     private String requirements;
 
     @OneToMany
