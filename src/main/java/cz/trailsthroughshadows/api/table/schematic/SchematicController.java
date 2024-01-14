@@ -101,7 +101,7 @@ public class SchematicController {
 
     @GetMapping("/locations")
     public ResponseEntity<?> getLocations(
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
             @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting
@@ -164,6 +164,7 @@ public class SchematicController {
 
         return Response.Status.OK.getResult(obstacle);
     }
+
     /**
      * ===============================================
      */
@@ -179,5 +180,7 @@ public class SchematicController {
     }
 
     @Autowired
-    public void setObstacleRepo(ObstacleRepo obstacleRepo) {this.obstacleRepo = obstacleRepo;    }
+    public void setObstacleRepo(ObstacleRepo obstacleRepo) {
+        this.obstacleRepo = obstacleRepo;
+    }
 }

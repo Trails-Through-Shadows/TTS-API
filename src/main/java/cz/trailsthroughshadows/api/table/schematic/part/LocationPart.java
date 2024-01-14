@@ -12,16 +12,24 @@ import lombok.NoArgsConstructor;
 @Table(name = "LocationPart")
 public class LocationPart {
 
-    @Id
-    @Column(name = "idLocation")
-    private int idLocation;
-
-    @Id
-    @Column(name = "idPart")
-    private int idPart;
+    @EmbeddedId
+    private LocationPartId key;
 
     @ManyToOne
     @JoinColumn(name = "idPart", insertable = false, updatable = false)
     private Part part;
+
+    @Column(nullable = false)
+    private int rotation;
+
+    @Embeddable
+    @Data
+    public static class LocationPartId implements java.io.Serializable {
+        @Column(name = "idLocation")
+        private int idLocation;
+
+        @Column(name = "idPart")
+        private int idPart;
+    }
 
 }

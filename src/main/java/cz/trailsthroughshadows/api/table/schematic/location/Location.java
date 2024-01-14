@@ -33,16 +33,19 @@ public class Location extends LocationImpl {
     @Column(name = "description", columnDefinition = "TEXT")
     public String description;
 
-    @OneToMany(mappedBy = "idLocation", fetch = FetchType.LAZY)
-    @ToString.Exclude
+
+    //@OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<LocationPart> locationParts;
 
     @Override
-    @ToString.Include(name = "locationParts")
-    public List<Part> getLocationParts() {
-        if (locationParts == null) return null;
+    public List<Part> getParts() {
+        if (locationParts == null) {
+            return null;
+        }
         return locationParts.stream().map(LocationPart::getPart).toList();
     }
+
 
     public List<LocationPart> getLocationPartsRaw() {
         return locationParts;

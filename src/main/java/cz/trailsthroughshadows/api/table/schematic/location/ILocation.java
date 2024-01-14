@@ -9,7 +9,7 @@ import java.util.List;
 public interface ILocation {
 
     @ToString.Include(name = "locationParts")
-    List<Part> getLocationParts();
+    List<Part> getParts();
 
     int getId();
 

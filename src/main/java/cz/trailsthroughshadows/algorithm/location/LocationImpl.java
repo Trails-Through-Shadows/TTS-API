@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class LocationImpl implements ILocation {
 
     public Part getPart(Hex hex) {
-        return getLocationParts().stream()
+        return getParts().stream()
                 .filter(part -> part.getId() == hex.getKey().getIdPart())
                 .findFirst()
                 .orElse(null);
