@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Component
@@ -78,15 +79,23 @@ public class SchematicController {
     }
 
     @PostMapping("/part")
-    public ResponseEntity<?> createPart(@RequestBody Part part) {
-        if (partRepo.findById(part.getId()).isPresent()) {
-            String message = "Part with id '" + part.getId() + "' already exists!";
-            return Response.Status.IM_A_TEAPOT.getErrorCode(message);
+    public ResponseEntity<?> createParts(@RequestBody List<Part> parts) {
+        List<Integer> conflicts = parts.stream()
+                .filter(part -> part.getId() != null && partRepo.existsById(part.getId()))
+                .map(Part::getId)
+                .toList();
+
+        if (!conflicts.isEmpty()) {
+            String ids = conflicts.stream().map(String::valueOf).collect(Collectors.joining(","));
+            String message = "Parts with ids '%s' already exists!".formatted(ids);
+            return Response.Status.CONFLICT.getErrorCode(message);
         }
 
-        partRepo.save(part);
-        String message = "Part with id '" + part.getId() + "' created!";
+        // TODO: FIX IT, its creating new IDs instead of using ID that was provided
+        partRepo.saveAll(parts);
 
+        String ids = parts.stream().map(part -> String.valueOf(part.getId())).collect(Collectors.joining(","));
+        String message = "Parts with ids '%s' created!".formatted(ids);
         return Response.Status.OK.getResult(message);
     }
 

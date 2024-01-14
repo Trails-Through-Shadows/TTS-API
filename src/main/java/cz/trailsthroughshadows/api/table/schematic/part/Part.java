@@ -20,7 +20,7 @@ public class Part {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "tag")
     private String tag;
