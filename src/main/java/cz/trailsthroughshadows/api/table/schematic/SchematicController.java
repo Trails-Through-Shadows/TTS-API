@@ -1,7 +1,11 @@
 package cz.trailsthroughshadows.api.table.schematic;
 
-import cz.trailsthroughshadows.api.rest.Pagination;
-import cz.trailsthroughshadows.api.rest.Response;
+import cz.trailsthroughshadows.api.rest.exception.RestException;
+import cz.trailsthroughshadows.api.rest.model.Pagination;
+import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.rest.model.error.RestError;
+import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
 import cz.trailsthroughshadows.api.table.schematic.location.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.Obstacle;
@@ -10,18 +14,18 @@ import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.PartRepo;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Log4j2
+@Slf4j
 @Component
 @Cacheable(value = "schematic")
 @RestController(value = "Schematic")
@@ -31,7 +35,7 @@ public class SchematicController {
     private ObstacleRepo obstacleRepo;
 
     @GetMapping("/parts")
-    public ResponseEntity<?> getParts(
+    public ResponseEntity<RestPaginatedResult<Part>> getParts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter, // TODO: Re-Implement filtering
@@ -48,59 +52,62 @@ public class SchematicController {
                 .toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return Response.Status.OK.getResult(pagination, entriesPage);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
     @GetMapping("/part/{id}")
-    public ResponseEntity<?> getPartById(@PathVariable int id) {
-        Part part = partRepo.findById(id).orElse(null);
+    public ResponseEntity<Part> getPartById(@PathVariable int id) {
+        Part part = partRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        if (part == null) {
-            String message = "Part with id '" + id + "' not found!";
-            return Response.Status.NOT_FOUND.getErrorCode(message);
-        }
-
-        return Response.Status.OK.getResult(part);
+        return new ResponseEntity<>(part, HttpStatus.OK);
     }
 
     @DeleteMapping("/part/{id}")
     @CacheEvict(value = "schematic", allEntries = true)
-    public ResponseEntity<?> deletePartById(@PathVariable int id) {
-        Part part = partRepo.findById(id).orElse(null);
-
-        if (part == null) {
-            String message = "Part with id '" + id + "' not found!";
-            return Response.Status.NOT_FOUND.getErrorCode(message);
-        }
+    public ResponseEntity<RestResponse> deletePartById(@PathVariable int id) {
+        Part part = partRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
         partRepo.delete(part);
-        String message = "Part with id '" + id + "' deleted!";
-        return Response.Status.NO_CONTENT.getResult(message);
+        return new ResponseEntity<>(RestResponse.of("Part deleted!"), HttpStatus.OK);
     }
 
     @PostMapping("/part")
-    public ResponseEntity<?> createParts(@RequestBody List<Part> parts) {
+    @CacheEvict(value = "schematic", allEntries = true)
+    public ResponseEntity<RestResponse> createPart(@RequestBody Part part) {
+        if (part.getId() != null && partRepo.existsById(part.getId())) {
+            throw RestException.of(HttpStatus.CONFLICT, "Part with id '%d' already exists!", part.getId());
+        }
+
+        partRepo.save(part);
+        return new ResponseEntity<>(RestResponse.of("Part created!"), HttpStatus.OK);
+    }
+
+    @PostMapping("/parts")
+    public ResponseEntity<RestResponse> createParts(@RequestBody List<Part> parts) {
         List<Integer> conflicts = parts.stream()
                 .filter(part -> part.getId() != null && partRepo.existsById(part.getId()))
                 .map(Part::getId)
                 .toList();
 
         if (!conflicts.isEmpty()) {
-            String ids = conflicts.stream().map(String::valueOf).collect(Collectors.joining(","));
-            String message = "Parts with ids '%s' already exists!".formatted(ids);
-            return Response.Status.CONFLICT.getErrorCode(message);
+            RestError error = new RestError(HttpStatus.CONFLICT, "Parts already exists!");
+
+            for (Integer conflict : conflicts) {
+                error.addSubError(new MessageError("Part with id '%d' already exists!", conflict));
+            }
         }
 
         // TODO: FIX IT, its creating new IDs instead of using ID that was provided
         partRepo.saveAll(parts);
-
-        String ids = parts.stream().map(part -> String.valueOf(part.getId())).collect(Collectors.joining(","));
-        String message = "Parts with ids '%s' created!".formatted(ids);
-        return Response.Status.OK.getResult(message);
+        return new ResponseEntity<>(RestResponse.of("Parts created!"), HttpStatus.OK);
     }
 
     @GetMapping("/locations")
-    public ResponseEntity<?> getLocations(
+    public ResponseEntity<RestPaginatedResult<Location>> getLocations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
@@ -117,19 +124,16 @@ public class SchematicController {
                 .toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return Response.Status.OK.getResult(pagination, entriesPage);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
     @GetMapping("/location/{id}")
     public ResponseEntity<?> getLocationById(@PathVariable int id) {
-        Location location = locationRepo.findById(id).orElse(null);
+        Location location = locationRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found!", id));
 
-        if (location == null) {
-            String message = "Location with id '" + id + "' not found!";
-            return Response.Status.NOT_FOUND.getErrorCode(message);
-        }
-
-        return Response.Status.OK.getResult(location);
+        return new ResponseEntity<>(location, HttpStatus.OK);
     }
 
     @GetMapping("/obstacles")
@@ -150,19 +154,16 @@ public class SchematicController {
                 .toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return Response.Status.OK.getResult(pagination, entriesPage);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
     @GetMapping("/obstacle/{id}")
     public ResponseEntity<?> getObstacleById(@PathVariable int id) {
-        Obstacle obstacle = obstacleRepo.findById(id).orElse(null);
+        Obstacle obstacle = obstacleRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
 
-        if (obstacle == null) {
-            String message = "Obstacle with id '" + id + "' not found!";
-            return Response.Status.NOT_FOUND.getErrorCode(message);
-        }
-
-        return Response.Status.OK.getResult(obstacle);
+        return new ResponseEntity<>(obstacle, HttpStatus.OK);
     }
 
     /**

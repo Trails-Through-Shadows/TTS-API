@@ -1,14 +1,16 @@
-package cz.trailsthroughshadows.api.rest;
+package cz.trailsthroughshadows.api.rest.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 @AllArgsConstructor
 public class Pagination {
+
     private int count;
     private boolean hasMoreEntries;
     private int totalEntries;
     private int page;
     private int limit;
+
 }

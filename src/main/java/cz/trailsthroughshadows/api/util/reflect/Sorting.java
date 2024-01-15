@@ -1,11 +1,11 @@
 package cz.trailsthroughshadows.api.util.reflect;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
-@Log4j2
+@Slf4j
 public class Sorting {
     public Sorting() {
         throw new RuntimeException("This class is not instantiable");

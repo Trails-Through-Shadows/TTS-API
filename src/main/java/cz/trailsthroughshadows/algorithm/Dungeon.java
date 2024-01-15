@@ -9,7 +9,7 @@ import cz.trailsthroughshadows.api.table.enemy.Enemy;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 @Getter
 @AllArgsConstructor
-@Log4j2
+@Slf4j
 public class Dungeon {
 
     private final ArrayList<Enemy> enemies = new ArrayList<>();

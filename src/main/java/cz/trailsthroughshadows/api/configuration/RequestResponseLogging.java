@@ -2,15 +2,16 @@ package cz.trailsthroughshadows.api.configuration;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
-@Log4j2
 public class RequestResponseLogging implements Filter {
     private final String split = "-".repeat(50);
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         long startTime = System.currentTimeMillis();
@@ -30,15 +31,5 @@ public class RequestResponseLogging implements Filter {
         chain.doFilter(request, response);
 
         log.info("Request Duration: {}ms",System.currentTimeMillis() - startTime);
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) {
-        // Initialization logic if needed
-    }
-
-    @Override
-    public void destroy() {
-        // Cleanup logic if needed
     }
 }

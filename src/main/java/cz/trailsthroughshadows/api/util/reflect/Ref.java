@@ -1,12 +1,12 @@
 package cz.trailsthroughshadows.api.util.reflect;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j2
+@Slf4j
 public class Ref {
     private static final Map<Class<?>, Map<String, Field>> fieldCache = new HashMap<>();
 

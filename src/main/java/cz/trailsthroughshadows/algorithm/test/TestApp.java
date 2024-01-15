@@ -4,13 +4,13 @@ import cz.trailsthroughshadows.api.table.action.summon.SummonRepo;
 import cz.trailsthroughshadows.api.table.playerdata.character.CharacterRepo;
 import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
 import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Log4j2
+@Slf4j
 @RestController
 @RequestMapping("/api/test")
 public class TestApp {
