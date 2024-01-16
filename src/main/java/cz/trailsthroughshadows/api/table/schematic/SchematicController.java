@@ -55,7 +55,7 @@ public class SchematicController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
-    @GetMapping("/part/{id}")
+    @GetMapping("/parts/{id}")
     public ResponseEntity<Part> getPartById(@PathVariable int id) {
         Part part = partRepo
                 .findById(id)
@@ -64,7 +64,7 @@ public class SchematicController {
         return new ResponseEntity<>(part, HttpStatus.OK);
     }
 
-    @DeleteMapping("/part/{id}")
+    @DeleteMapping("/parts/{id}")
     @CacheEvict(value = "schematic", allEntries = true)
     public ResponseEntity<RestResponse> deletePartById(@PathVariable int id) {
         Part part = partRepo
@@ -75,7 +75,7 @@ public class SchematicController {
         return new ResponseEntity<>(RestResponse.of("Part deleted!"), HttpStatus.OK);
     }
 
-    @PostMapping("/part")
+    @PostMapping("/parts")
     @CacheEvict(value = "schematic", allEntries = true)
     public ResponseEntity<RestResponse> createPart(@RequestBody Part part) {
         if (part.getId() != null && partRepo.existsById(part.getId())) {
@@ -157,7 +157,7 @@ public class SchematicController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
-    @GetMapping("/obstacle/{id}")
+    @GetMapping("/obstacles/{id}")
     public ResponseEntity<?> getObstacleById(@PathVariable int id) {
         Obstacle obstacle = obstacleRepo
                 .findById(id)
