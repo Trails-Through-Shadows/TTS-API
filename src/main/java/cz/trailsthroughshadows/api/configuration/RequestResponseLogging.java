@@ -30,6 +30,6 @@ public class RequestResponseLogging implements Filter {
 
         chain.doFilter(request, response);
 
-        log.info("Request Duration: {}ms",System.currentTimeMillis() - startTime);
+        log.info("Request Duration: {}ms", System.currentTimeMillis() - startTime);
     }
 }

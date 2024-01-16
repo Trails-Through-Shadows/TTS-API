@@ -16,6 +16,8 @@ public class ClassRaceController {
 
     @Autowired
     private ClazzRepo clazzRepo;
+    @Autowired
+    private RaceRepo raceRepo;
 
     @GetMapping("class/{id}")
     public Clazz findById(@PathVariable int id) {
@@ -28,17 +30,14 @@ public class ClassRaceController {
         return clazzRepo.getAll();
     }
 
+    // RACE SECTION
+
     @PutMapping("class/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Clazz updateClass(
             @PathVariable("id") final String id, @RequestBody final Clazz clazz) {
         return clazz;
     }
-
-    // RACE SECTION
-
-    @Autowired
-    private RaceRepo raceRepo;
 
     @GetMapping("race/{id}")
     public Race findRaceById(@PathVariable int id) {

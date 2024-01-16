@@ -4,7 +4,10 @@ import cz.trailsthroughshadows.algorithm.location.LocationImpl;
 import cz.trailsthroughshadows.api.table.schematic.part.LocationPart;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 

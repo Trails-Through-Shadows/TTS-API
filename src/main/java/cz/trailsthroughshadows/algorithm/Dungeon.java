@@ -3,9 +3,9 @@ package cz.trailsthroughshadows.algorithm;
 import cz.trailsthroughshadows.algorithm.entity.Entity;
 import cz.trailsthroughshadows.algorithm.location.LocationImpl;
 import cz.trailsthroughshadows.api.table.action.summon.Summon;
-import cz.trailsthroughshadows.api.table.playerdata.character.Character;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.enemy.Enemy;
+import cz.trailsthroughshadows.api.table.playerdata.character.Character;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public class Dungeon {
         List<Entity> targets = new ArrayList<>();
         Hex hex = entity.getHex();
 
-        log.info("Calculating target for " + entity.toString() + " at " + hex + " with range " + range + " and target " + target);
+        log.info("Calculating target for " + entity + " at " + hex + " with range " + range + " and target " + target);
 
         switch (target) {
             case SELF:

@@ -3,12 +3,6 @@ package cz.trailsthroughshadows.algorithm.dice;
 import java.util.List;
 
 public class Dice {
-    public final List<Roll> rolls;
-
-    public Dice(List<Roll> pairs) {
-        this.rolls = pairs;
-    }
-
     // TODO move to database
     public static Dice dCharacter = new Dice(List.of(
             new Roll(Roll.Type.NUMBER, -3),
@@ -33,6 +27,11 @@ public class Dice {
             new Roll(Roll.Type.SPECIAL, 1),
             new Roll(Roll.Type.SPECIAL, 2)
     ));
+    public final List<Roll> rolls;
+
+    public Dice(List<Roll> pairs) {
+        this.rolls = pairs;
+    }
 
     public Roll roll() {
         return rolls.get((int) (Math.random() * rolls.size()));

@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.achievement;
 
-import cz.trailsthroughshadows.api.table.action.summon.Summon;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

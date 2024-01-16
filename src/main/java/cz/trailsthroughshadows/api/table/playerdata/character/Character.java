@@ -3,10 +3,14 @@ package cz.trailsthroughshadows.api.table.playerdata.character;
 import cz.trailsthroughshadows.api.table.character.clazz.Clazz;
 import cz.trailsthroughshadows.api.table.character.race.Race;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,7 +1,6 @@
 package cz.trailsthroughshadows.api.table.campaign;
 
 import cz.trailsthroughshadows.api.table.achievement.Achievement;
-import cz.trailsthroughshadows.api.table.effect.Effect;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

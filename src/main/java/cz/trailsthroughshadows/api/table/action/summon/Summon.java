@@ -9,6 +9,7 @@ import lombok.*;
 import java.util.Collection;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,17 +33,16 @@ public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity impl
     @ManyToOne()
     @JoinColumn(name = "idAction")
     private Action action;
-
-    public List<Action> getActions() {
-        return List.of(action);
-    }
+    @OneToMany(mappedBy = "idSummon")
+    @ToString.Exclude
+    private Collection<SummonEffect> effects;
 
 //    @OneToMany(mappedBy = "summon")
 //    private Collection<SummonAction> actions;
 
-    @OneToMany(mappedBy = "idSummon")
-    @ToString.Exclude
-    private Collection<SummonEffect> effects;
+    public List<Action> getActions() {
+        return List.of(action);
+    }
 
     // Skipping n-to-n relationship, there is no additional data in that table
     @ToString.Include(name = "effects") // Including replacement field in toString

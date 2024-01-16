@@ -3,11 +3,13 @@ package cz.trailsthroughshadows.api.table.enemy;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Collection;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "Enemy")
 @Data

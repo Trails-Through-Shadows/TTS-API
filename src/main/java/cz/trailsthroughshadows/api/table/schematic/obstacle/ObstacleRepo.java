@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Collection;
 import java.util.List;
 
-public interface ObstacleRepo extends JpaRepository<Obstacle,Integer> {
+public interface ObstacleRepo extends JpaRepository<Obstacle, Integer> {
 
     @Query("SELECT c FROM Obstacle c")
     Collection<Obstacle> getOnlyObstacles();

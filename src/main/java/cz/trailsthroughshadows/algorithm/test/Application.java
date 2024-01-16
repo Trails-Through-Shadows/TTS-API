@@ -9,14 +9,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 public class Application extends TtsApiApplication {
 
+    public Application() {
+        super();
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
 
         log.info("Docs running on http://localhost:8080/swagger-ui/index.html");
         log.info("API running on http://localhost:8080/");
-    }
-
-    public Application() {
-        super();
     }
 }
