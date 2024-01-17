@@ -21,7 +21,7 @@ public class AchievementController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid achievement Id:" + id));
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public Collection<Achievement> findClass() {
         return repository.getAll();
     }

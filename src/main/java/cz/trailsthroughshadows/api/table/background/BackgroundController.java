@@ -1,9 +1,9 @@
-package cz.trailsthroughshadows.api.table.character;
+package cz.trailsthroughshadows.api.table.background;
 
-import cz.trailsthroughshadows.api.table.character.clazz.Clazz;
-import cz.trailsthroughshadows.api.table.character.clazz.ClazzRepo;
-import cz.trailsthroughshadows.api.table.character.race.Race;
-import cz.trailsthroughshadows.api.table.character.race.RaceRepo;
+import cz.trailsthroughshadows.api.table.background.clazz.Clazz;
+import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
+import cz.trailsthroughshadows.api.table.background.race.Race;
+import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/classrace")
-public class ClassRaceController {
+@RequestMapping("/api/background/")
+public class BackgroundController {
 
     @Autowired
     private ClazzRepo clazzRepo;
@@ -30,14 +30,14 @@ public class ClassRaceController {
         return clazzRepo.getAll();
     }
 
-    // RACE SECTION
-
     @PutMapping("class/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Clazz updateClass(
             @PathVariable("id") final String id, @RequestBody final Clazz clazz) {
         return clazz;
     }
+
+    // RACE SECTION
 
     @GetMapping("race/{id}")
     public Race findRaceById(@PathVariable int id) {

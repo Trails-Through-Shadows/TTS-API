@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.playerdata.character;
 
-import cz.trailsthroughshadows.api.table.character.clazz.Clazz;
-import cz.trailsthroughshadows.api.table.character.race.Race;
+import cz.trailsthroughshadows.api.table.background.clazz.Clazz;
+import cz.trailsthroughshadows.api.table.background.race.Race;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

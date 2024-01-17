@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.character.clazz;
+package cz.trailsthroughshadows.api.table.background.clazz;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

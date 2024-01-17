@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.character.clazz;
+package cz.trailsthroughshadows.api.table.background.clazz;
 
 import cz.trailsthroughshadows.api.table.effect.forcharacter.ClassEffect;
 import jakarta.persistence.*;

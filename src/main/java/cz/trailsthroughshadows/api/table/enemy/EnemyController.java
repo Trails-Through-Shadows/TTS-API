@@ -20,7 +20,7 @@ public class EnemyController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid class Id:" + id));
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public Collection<Enemy> findClass() {
         return repository.getAll();
     }

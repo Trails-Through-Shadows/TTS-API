@@ -48,10 +48,5 @@ public class Location extends LocationImpl {
         }
         return locationParts.stream().map(LocationPart::getPart).toList();
     }
-
-
-    public List<LocationPart> getLocationPartsRaw() {
-        return locationParts;
-    }
 }
 

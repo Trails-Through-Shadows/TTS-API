@@ -22,7 +22,7 @@ public class SummonController {
         );
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public Collection<Summon> findClass() {
         return repository.getAll();
     }

@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.character.race;
+package cz.trailsthroughshadows.api.table.background.race;
 
 import cz.trailsthroughshadows.api.table.effect.forcharacter.RaceEffect;
 import jakarta.persistence.*;

@@ -1,30 +1,24 @@
-package cz.trailsthroughshadows.api.table.character.clazz;
-
+package cz.trailsthroughshadows.api.table.background.race;
 
 import cz.trailsthroughshadows.api.table.action.Action;
-import cz.trailsthroughshadows.api.table.market.item.Item;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "ClassAction")
 @Data
 @NoArgsConstructor
-public class ClassAction {
+@AllArgsConstructor
+@Entity
+@Table(name = "RaceAction")
+public class RaceAction {
     @Id
     private Integer id;
     @Column(nullable = false)
-    private int idClass;
+    private int idRace;
     @Column
     private Integer levelReq;
-
     @ManyToOne
     @JoinColumn(name = "idAction")
     private Action action;
-
-    @ManyToOne
-    @JoinColumn(name = "itemReq")
-    private Item item;
-
 }
