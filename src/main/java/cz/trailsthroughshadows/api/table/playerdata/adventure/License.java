@@ -1,30 +1,27 @@
-package cz.trailsthroughshadows.api.table.license;
+package cz.trailsthroughshadows.api.table.playerdata.adventure;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-@Entity
-@Table(name = "License")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "License")
+@Entity
 public class License {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @Column(name = "key", nullable = false, length = 20)
+    private Integer id;
+    @Column(nullable = false, length = 20)
     private String key;
-
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
     private String password;
-
-    @Column(name = "activated")
+    @Column(nullable = false)
     private LocalDateTime activated;
 
 }
