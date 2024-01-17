@@ -76,17 +76,6 @@ public class SchematicController {
     }
 
     @PostMapping("/parts")
-    @CacheEvict(value = "schematic", allEntries = true)
-    public ResponseEntity<RestResponse> createPart(@RequestBody Part part) {
-        if (part.getId() != null && partRepo.existsById(part.getId())) {
-            throw RestException.of(HttpStatus.CONFLICT, "Part with id '%d' already exists!", part.getId());
-        }
-
-        partRepo.save(part);
-        return new ResponseEntity<>(RestResponse.of("Part created!"), HttpStatus.OK);
-    }
-
-    @PostMapping("/parts")
     public ResponseEntity<RestResponse> createParts(@RequestBody List<Part> parts) {
         List<Integer> conflicts = parts.stream()
                 .filter(part -> part.getId() != null && partRepo.existsById(part.getId()))
