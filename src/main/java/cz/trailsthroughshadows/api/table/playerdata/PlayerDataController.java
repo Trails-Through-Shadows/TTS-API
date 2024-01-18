@@ -16,8 +16,12 @@ public class PlayerDataController {
     private CharacterRepo repository;
 
     @GetMapping("/characters")
-    public Collection<Character> getAll() {
-        return repository.getAll();
+    public Collection<Character> getCharacters(@RequestParam(required = false) Integer idAdventure) {
+        if (idAdventure != null) {
+            return repository.getByAdventure(idAdventure);
+        } else {
+            return repository.getAll();
+        }
     }
 
     @GetMapping("/characters/{id}")
@@ -25,13 +29,7 @@ public class PlayerDataController {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid character Id:" + id));
     }
-
-    @GetMapping("/characters")
-    public Collection<Character> findByAdventure(@RequestParam int idAdventure) {
-        return repository.getByAdventure(idAdventure);
-    }
-
-
+    
     // ADVENTURE SECTION
 
     @Autowired
