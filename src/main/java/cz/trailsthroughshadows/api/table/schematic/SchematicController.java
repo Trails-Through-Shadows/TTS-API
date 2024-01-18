@@ -88,6 +88,7 @@ public class SchematicController {
             for (Integer conflict : conflicts) {
                 error.addSubError(new MessageError("Part with id '%d' already exists!", conflict));
             }
+            throw new RestException(error);
         }
 
         // TODO: FIX IT, its creating new IDs instead of using ID that was provided
