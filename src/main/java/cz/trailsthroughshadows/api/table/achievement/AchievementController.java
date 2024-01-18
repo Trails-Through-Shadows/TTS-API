@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.achievement;
 
-import cz.trailsthroughshadows.api.table.action.summon.Summon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +21,8 @@ public class AchievementController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid achievement Id:" + id));
     }
 
-    @GetMapping("/")
-    public Collection<Summon> findClass() {
+    @GetMapping("/all")
+    public Collection<Achievement> findClass() {
         return repository.getAll();
     }
 }

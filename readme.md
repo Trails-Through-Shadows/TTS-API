@@ -26,11 +26,11 @@ co všechno je namapováno
         - [x] item effect
         - [x] enemy effect
         - [x] obstacle effect
-- [ ] Enemy
+- [x] Enemy
     - [x] enemy
     - [x] enemy effect
     - [x] enemy action
-    - [ ] hex enemy
+    - [x] hex enemy
 - [ ] Obstacle
     - [ ] obstacle
     - [x] obstacle effect

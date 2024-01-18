@@ -8,6 +8,6 @@ import java.util.Collection;
 
 public interface ActionRepo extends JpaRepository<Action, Integer> {
 
-    @Query("SELECT a FROM Action a")
+    @Query("SELECT c FROM Action c")
     Collection<Action> getAll();
 }

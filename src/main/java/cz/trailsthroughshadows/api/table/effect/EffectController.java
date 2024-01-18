@@ -20,7 +20,7 @@ public class EffectController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid effect Id:" + id));
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public Iterable<Effect> findAll() {
         return repository.getAll();
     }

@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.action.attack;
 
 
-import cz.trailsthroughshadows.api.table.effect.foraction.AttackEffect;
 import cz.trailsthroughshadows.api.table.effect.Effect;
+import cz.trailsthroughshadows.api.table.effect.foraction.AttackEffect;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -10,13 +10,13 @@ import cz.trailsthroughshadows.api.table.action.restorecards.RestoreCards;
 import cz.trailsthroughshadows.api.table.action.skill.Skill;
 import cz.trailsthroughshadows.api.table.action.summon.Summon;
 import cz.trailsthroughshadows.api.table.action.summon.SummonAction;
-import cz.trailsthroughshadows.api.table.character.Character;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.enemy.Enemy;
+import cz.trailsthroughshadows.api.table.playerdata.character.Character;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +24,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-@Log4j2
+@Slf4j
 public class Dungeon {
 
     private final ArrayList<Enemy> enemies = new ArrayList<>();
@@ -104,7 +104,7 @@ public class Dungeon {
         List<Entity> targets = new ArrayList<>();
         Hex hex = entity.getHex();
 
-//        log.info("\t\tCalculating target for {} with range {} and target {}", entityToString(entity), range, target);
+        log.info("Calculating target for " + entity + " at " + hex + " with range " + range + " and target " + target);
 
         switch (target) {
             case SELF:

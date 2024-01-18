@@ -10,10 +10,10 @@ import java.util.List;
 public abstract class LocationImpl implements ILocation {
 
     public Part getPart(Hex hex) {
-        return getLocationParts().stream()
-            .filter(part -> part.getId() == hex.getKey().getIdPart())
-            .findFirst()
-            .orElse(null);
+        return getParts().stream()
+                .filter(part -> part.getId() == hex.getKey().getIdPart())
+                .findFirst()
+                .orElse(null);
     }
 
     public int getDistance(Hex hex1, Hex hex2) {
@@ -24,10 +24,11 @@ public abstract class LocationImpl implements ILocation {
     public List<Hex> getNeighbors(Hex hex) {
         return getNeighbors(hex, 1);
     }
+
     public List<Hex> getNeighbors(Hex hex, int range) {
         List<Hex> neighbors = getPart(hex).getHexes().stream()
-            .filter(neighbor -> hex != neighbor && getDistance(hex, neighbor) <= range)
-            .toList();
+                .filter(neighbor -> hex != neighbor && getDistance(hex, neighbor) <= range)
+                .toList();
 
         return neighbors;
     }

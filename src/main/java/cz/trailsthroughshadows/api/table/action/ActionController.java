@@ -32,9 +32,9 @@ public class ActionController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid action Id:" + id));
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public Collection<Action> findAll() {
-        return repository.getAll();
+        return repository.findAll();
     }
 
 }

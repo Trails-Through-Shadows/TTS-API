@@ -26,6 +26,13 @@ public class Hex {
     @Column(name = "sCord", nullable = false)
     private int s;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Hex hex)) return false;
+        return q == hex.q && r == hex.r && s == hex.s && key.equals(hex.key);
+    }
+
     @Data
     @Embeddable
     public static class HexId implements Serializable {
@@ -36,12 +43,5 @@ public class Hex {
         @Column(name = "id", nullable = false)
         private int id;
 
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Hex hex)) return false;
-        return q == hex.q && r == hex.r && s == hex.s && key.equals(hex.key);
     }
 }

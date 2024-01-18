@@ -4,7 +4,10 @@ import cz.trailsthroughshadows.algorithm.location.LocationImpl;
 import cz.trailsthroughshadows.api.table.schematic.part.LocationPart;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -33,19 +36,17 @@ public class Location extends LocationImpl {
     @Column(name = "description", columnDefinition = "TEXT")
     public String description;
 
-    @OneToMany(mappedBy = "idLocation", fetch = FetchType.LAZY)
-    @ToString.Exclude
+
+    //@OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<LocationPart> locationParts;
 
     @Override
-    @ToString.Include(name = "locationParts")
-    public List<Part> getLocationParts() {
-        if (locationParts == null) return null;
+    public List<Part> getParts() {
+        if (locationParts == null) {
+            return null;
+        }
         return locationParts.stream().map(LocationPart::getPart).toList();
-    }
-
-    public List<LocationPart> getLocationPartsRaw() {
-        return locationParts;
     }
 }
 

@@ -2,32 +2,30 @@ package cz.trailsthroughshadows.api.table.schematic.location;
 
 import cz.trailsthroughshadows.api.table.schematic.part.LocationPart;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
-import lombok.ToString;
 
 import java.util.List;
 
 public interface ILocation {
 
-    @ToString.Include(name = "locationParts")
-    List<Part> getLocationParts();
+    List<Part> getParts();
 
     int getId();
 
-    String getTitle();
-
-    String getTag();
-
-    Type getType();
-
-    String getDescription();
-
     void setId(int id);
+
+    String getTitle();
 
     void setTitle(String title);
 
+    String getTag();
+
     void setTag(String tag);
 
+    Type getType();
+
     void setType(Type type);
+
+    String getDescription();
 
     void setDescription(String description);
 

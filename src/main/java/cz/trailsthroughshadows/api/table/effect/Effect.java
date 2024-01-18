@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.effect;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "Effect")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Effect {
 
     @Id

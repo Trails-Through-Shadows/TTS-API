@@ -10,7 +10,7 @@ import java.util.Collection;
 @RequestMapping("/api/enemy")
 public class EnemyController {
 
-    
+
     @Autowired
     private EnemyRepo repository;
 
@@ -20,7 +20,7 @@ public class EnemyController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid class Id:" + id));
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public Collection<Enemy> findClass() {
         return repository.getAll();
     }
