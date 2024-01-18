@@ -5,10 +5,7 @@ import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
 import cz.trailsthroughshadows.api.table.playerdata.character.Character;
 import cz.trailsthroughshadows.api.table.playerdata.character.CharacterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
@@ -27,6 +24,11 @@ public class PlayerDataController {
     public Character findById(@PathVariable int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid character Id:" + id));
+    }
+
+    @GetMapping("/characters")
+    public Collection<Character> findByAdventure(@RequestParam int idAdventure) {
+        return repository.getByAdventure(idAdventure);
     }
 
 
