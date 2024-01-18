@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
+import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -36,6 +38,14 @@ public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity imple
     @ToString.Exclude
     private Collection<EnemyAction> actions;
 
+    public List<Action> getActions() {
+        if (actions == null) return null;
+        return actions.stream().map(EnemyAction::getAction).toList();
+    }
+
+    public List<EnemyAction> getActionsRaw() {
+        return (List<EnemyAction>) actions;
+    }
 
     @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
     @ToString.Exclude

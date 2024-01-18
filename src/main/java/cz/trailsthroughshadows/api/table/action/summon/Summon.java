@@ -40,10 +40,6 @@ public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity impl
 //    @OneToMany(mappedBy = "summon")
 //    private Collection<SummonAction> actions;
 
-    public List<Action> getActions() {
-        return List.of(action);
-    }
-
     // Skipping n-to-n relationship, there is no additional data in that table
     @ToString.Include(name = "effects") // Including replacement field in toString
     public Collection<Effect> getEffects() {
@@ -67,5 +63,10 @@ public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity impl
         summon.setEffects(this.getRawEffects());
 
         return summon;
+    }
+
+    @Override
+    public List<Action> getActions() {
+        return List.of(action);
     }
 }

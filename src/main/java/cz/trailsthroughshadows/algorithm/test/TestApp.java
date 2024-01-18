@@ -1,5 +1,8 @@
 package cz.trailsthroughshadows.algorithm.test;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import cz.trailsthroughshadows.algorithm.Dungeon;
 import cz.trailsthroughshadows.api.table.action.summon.SummonRepo;
 import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
 import cz.trailsthroughshadows.api.table.playerdata.character.CharacterRepo;

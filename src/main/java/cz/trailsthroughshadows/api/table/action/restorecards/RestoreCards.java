@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.action.restorecards;
 
 
+import cz.trailsthroughshadows.api.table.effect.Effect;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,17 +22,9 @@ public class RestoreCards {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Target target;
+    private Effect.EffectTarget target;
 
     @Column
     private Boolean random;
-
-    enum Target {
-        SELF,
-        ONE,
-        ALL
-
-    }
-
 
 }
