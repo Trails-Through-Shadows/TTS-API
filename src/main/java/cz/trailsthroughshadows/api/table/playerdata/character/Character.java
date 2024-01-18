@@ -33,6 +33,9 @@ public class Character extends cz.trailsthroughshadows.algorithm.entity.Entity i
     @Column(nullable = false)
     private int level;
 
+    @Column(nullable = false)
+    private int idAdventure;
+
     @Column(nullable = false, length = 50)
     private String name;
 

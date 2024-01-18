@@ -9,4 +9,7 @@ public interface CharacterRepo extends JpaRepository<Character, Integer> {
 
     @Query("SELECT c FROM Character c")
     Collection<Character> getAll();
+
+    @Query("SELECT c FROM Character c WHERE c.idAdventure = ?1")
+    Collection<Character> getByAdventure(int idAdventure);
 }

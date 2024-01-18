@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 import java.util.Collection;
 
 @Data
@@ -28,6 +29,11 @@ public class Adventure {
     @ManyToOne
     @JoinColumn(name = "idCampaign")
     private Campaign campaign;
+
+    // Not healthy
+//    @OneToMany
+//    @JoinColumn(name = "idAdventure")
+//    private Collection<Character> characters;
 
 
     @OneToMany(mappedBy = "key.idAdventure")
