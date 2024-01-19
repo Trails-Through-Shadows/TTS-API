@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/background/")
+@RequestMapping("/background/")
 public class BackgroundController {
 
     @Autowired
@@ -19,18 +19,18 @@ public class BackgroundController {
     @Autowired
     private RaceRepo raceRepo;
 
-    @GetMapping("class/{id}")
+    @GetMapping("classes/{id}")
     public Clazz findById(@PathVariable int id) {
         return clazzRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid class Id:" + id));
     }
 
-    @GetMapping("class/")
+    @GetMapping("classes/")
     public Collection<Clazz> findClass() {
         return clazzRepo.getAll();
     }
 
-    @PutMapping("class/{id}")
+    @PutMapping("classes/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Clazz updateClass(
             @PathVariable("id") final String id, @RequestBody final Clazz clazz) {
@@ -39,13 +39,13 @@ public class BackgroundController {
 
     // RACE SECTION
 
-    @GetMapping("race/{id}")
+    @GetMapping("races/{id}")
     public Race findRaceById(@PathVariable int id) {
         return raceRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Race Id: " + id));
     }
 
-    @GetMapping("race/")
+    @GetMapping("races/")
     public Collection<Race> findRaces() {
         return raceRepo.getAll();
     }

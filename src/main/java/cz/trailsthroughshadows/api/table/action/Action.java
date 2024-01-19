@@ -32,6 +32,8 @@ public class Action {
     @Enumerated(EnumType.STRING)
     private Discard discard;
 
+    @Column
+    private Integer levelReq;
 
     @ManyToOne()
     @JoinColumn(name = "movement")

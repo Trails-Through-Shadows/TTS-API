@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/playerdata/")
+@RequestMapping("/playerdatas/")
 public class PlayerDataController {
     @Autowired
     private CharacterRepo repository;
@@ -29,19 +29,19 @@ public class PlayerDataController {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid character Id:" + id));
     }
-    
+
     // ADVENTURE SECTION
 
     @Autowired
     private AdventureRepo adventureRepo;
 
-    @GetMapping("/adventure/{id}")
+    @GetMapping("/adventures/{id}")
     public Adventure findAdventureById(@PathVariable int id) {
         return adventureRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Adventure Id: " + id));
     }
 
-    @GetMapping("/adventure")
+    @GetMapping("/adventures")
     public Collection<Adventure> findAdventures() {
         return adventureRepo.findAll();
     }

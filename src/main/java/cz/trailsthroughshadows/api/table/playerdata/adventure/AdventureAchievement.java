@@ -10,19 +10,19 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "`AdventureAchievements`")
+@Table(name = "`AdventureAchievement`")
 @Entity
-public class AdventureAchievements {
+public class AdventureAchievement {
 
     @EmbeddedId
-    private AdventureAchievementsId key;
+    private AdventureAchievementId key;
     @Column(nullable = false)
     private int progress;
 
     @Embeddable
     @Data
     @NoArgsConstructor
-    public static class AdventureAchievementsId implements Serializable {
+    public static class AdventureAchievementId implements Serializable {
         @Column(nullable = false)
         private Integer idAdventure;
         @Column(nullable = false)

@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.market.item;
 
+import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.ItemEffect;
 import jakarta.persistence.*;
@@ -25,7 +26,6 @@ public class Item {
     @Column(nullable = false, length = 50)
     private String title;
 
-
     @Column
     private String description;
 
@@ -35,16 +35,20 @@ public class Item {
     @OneToMany
     @JoinColumn(name = "idItem")
     private Collection<ItemEffect> effects;
-
-    @ToString.Include(name = "effects") // Including replacement field in toString
+    
+    @ToString.Include(name = "effects")
     public Collection<Effect> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(ItemEffect::getEffect).toList();
     }
 
+    @ManyToOne
+    @JoinColumn(name = "idAction")
+    private Action action;
 
-    enum ItemType {
-        WEAPON, POTION, HELMET, CHESTPLATE, LEGGINGS, BOOTS, ACCESSORY, SHIELD, SCROLL, WAND, STAFF, BOOK, CONSUMABLE, TOOL, MISC
+
+    public enum ItemType {
+        WEAPON, HELMET, CHESTPLATE, LEGGINGS, BOOTS, ACCESSORY, CONSUMABLE,
     }
 
 }

@@ -18,8 +18,9 @@ public class AdventureLocation {
     private AdventureLocationId key;
     @Column(nullable = false)
     private boolean unlocked;
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private int timesVisited;
+    private LocationState state;
 
     @Embeddable
     @Data
@@ -30,4 +31,9 @@ public class AdventureLocation {
         @Column(nullable = false)
         private Integer idLocation;
     }
+
+    public enum LocationState {
+        NOT_VISITED, VISITED, FAILED, COMPLETED,
+    }
+
 }

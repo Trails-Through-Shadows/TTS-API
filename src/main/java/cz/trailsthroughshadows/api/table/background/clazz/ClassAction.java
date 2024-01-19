@@ -2,7 +2,6 @@ package cz.trailsthroughshadows.api.table.background.clazz;
 
 
 import cz.trailsthroughshadows.api.table.action.Action;
-import cz.trailsthroughshadows.api.table.market.item.Item;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,19 +11,18 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ClassAction {
+
     @Id
-    private Integer id;
     @Column(nullable = false)
     private int idClass;
-    @Column
-    private Integer levelReq;
+
+    @Id
+    @Column(nullable = false)
+    private int idAction;
 
     @ManyToOne
-    @JoinColumn(name = "idAction")
+    @JoinColumn(name = "idAction", insertable = false, updatable = false)
     private Action action;
 
-    @ManyToOne
-    @JoinColumn(name = "itemReq")
-    private Item item;
 
 }

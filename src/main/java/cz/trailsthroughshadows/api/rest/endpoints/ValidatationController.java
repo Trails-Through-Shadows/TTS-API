@@ -5,7 +5,6 @@ import cz.trailsthroughshadows.api.rest.model.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;

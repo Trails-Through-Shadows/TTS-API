@@ -1,10 +1,12 @@
 package cz.trailsthroughshadows.api.table.background.race;
 
+import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.forcharacter.RaceEffect;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -16,16 +18,25 @@ public class Race {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private Integer id;
+    public Integer id;
 
     @Column(nullable = false, length = 50)
-    private String name;
+    public String name;
+
+    @Column(nullable = false)
+    public int baseInitiative;
 
     @OneToMany
     @JoinColumn(name = "idRace")
-    private Collection<RaceEffect> effects;
+    public Collection<RaceEffect> effects;
 
     @OneToMany
     @JoinColumn(name = "idRace")
-    private Collection<RaceAction> actions;
+    public Collection<RaceAction> actions;
+
+    @ToString.Include(name = "actions")
+    public Collection<Action> getActions() {
+        if (actions == null) return null;
+        return actions.stream().map(RaceAction::getAction).collect(Collectors.toList());
+    }
 }

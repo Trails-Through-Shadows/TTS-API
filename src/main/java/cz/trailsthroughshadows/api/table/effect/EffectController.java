@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/effect")
+@RequestMapping("/effects")
 public class EffectController {
 
     @Autowired
@@ -20,7 +20,7 @@ public class EffectController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid effect Id:" + id));
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public Iterable<Effect> findAll() {
         return repository.getAll();
     }
