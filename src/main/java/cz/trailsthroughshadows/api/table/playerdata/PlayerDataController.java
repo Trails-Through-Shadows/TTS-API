@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/playerdatas/")
+@RequestMapping("/playerdata/")
 public class PlayerDataController {
     @Autowired
     private CharacterRepo repository;
