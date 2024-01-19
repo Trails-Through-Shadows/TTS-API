@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/summon")
+@RequestMapping("/summons")
 @Slf4j
 public class SummonController {
 
@@ -22,15 +22,15 @@ public class SummonController {
         );
     }
 
-    @GetMapping("/all")
-    public Collection<Summon> findClass() {
-        return repository.getAll();
-    }
-
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Summon updateClass(
             @PathVariable("id") final String id, @RequestBody final Summon summon) {
         return summon;
+    }
+    
+    @GetMapping("")
+    public Collection<Summon> findClass() {
+        return repository.getAll();
     }
 }

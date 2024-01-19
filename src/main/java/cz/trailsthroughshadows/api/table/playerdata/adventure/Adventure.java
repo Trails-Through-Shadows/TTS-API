@@ -20,7 +20,14 @@ public class Adventure {
     @Column(nullable = false)
     private int reputation;
     @Column(nullable = false)
-    private int partyXp;
+    private int experience;
+    @Column(nullable = false)
+    private int gold;
+
+    @Column(insertable = false, updatable = false, nullable = false)
+    private int idLicense;
+    @Column(insertable = false, updatable = false, nullable = false)
+    private int idCampaign;
 
     @ManyToOne
     @JoinColumn(name = "idLicense")
@@ -43,6 +50,6 @@ public class Adventure {
     private Collection<AdventureLocation> adventureLocations;
 
     @OneToMany(mappedBy = "key.idAdventure")
-    private Collection<AdventureAchievements> adventureAchievements;
+    private Collection<AdventureAchievement> adventureAchievements;
 
 }

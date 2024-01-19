@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/achievement")
+@RequestMapping("/achievements")
 public class AchievementController {
 
     @Autowired
@@ -21,7 +21,7 @@ public class AchievementController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid achievement Id:" + id));
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public Collection<Achievement> findClass() {
         return repository.getAll();
     }

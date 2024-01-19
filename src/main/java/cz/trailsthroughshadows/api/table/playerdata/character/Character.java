@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.playerdata.character;
 
+import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.background.clazz.Clazz;
 import cz.trailsthroughshadows.api.table.background.race.Race;
 import jakarta.persistence.*;
@@ -9,6 +10,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -58,5 +62,11 @@ public class Character extends cz.trailsthroughshadows.algorithm.entity.Entity i
         character.setPlayerName(this.getPlayerName());
 
         return character;
+    }
+
+    @Override
+    public List<Action> getActions() {
+        // todo zozeeeeeee
+        return new ArrayList<>();
     }
 }

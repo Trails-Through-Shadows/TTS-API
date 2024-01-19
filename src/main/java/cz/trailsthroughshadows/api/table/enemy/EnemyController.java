@@ -1,5 +1,4 @@
 package cz.trailsthroughshadows.api.table.enemy;
-
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;

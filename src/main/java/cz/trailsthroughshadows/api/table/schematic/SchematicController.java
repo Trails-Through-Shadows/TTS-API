@@ -117,7 +117,7 @@ public class SchematicController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
-    @GetMapping("/location/{id}")
+    @GetMapping("/locations/{id}")
     public ResponseEntity<?> getLocationById(@PathVariable int id) {
         Location location = locationRepo
                 .findById(id)

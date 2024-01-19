@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.action;
 
-import cz.trailsthroughshadows.api.table.action.movement.Movement;
 import cz.trailsthroughshadows.api.table.action.movement.MovementRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,29 +11,23 @@ import java.util.Collection;
 
 
 @RestController
-@RequestMapping("/api/action")
+@RequestMapping("/actions")
 public class ActionController {
 
     @Autowired
-    private ActionRepo repository;
+    private ActionRepo actionRepo;
     @Autowired
     private MovementRepo movementRepo;
 
     @GetMapping("/{id}")
     public Action findById(@PathVariable int id) {
-        return repository.findById(id)
+        return actionRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid action Id:" + id));
     }
 
-    @GetMapping("movement/{id}")
-    public Movement findMovementById(@PathVariable int id) {
-        return movementRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid action Id:" + id));
-    }
-
-    @GetMapping("/all")
-    public Collection<Action> findAll() {
-        return repository.findAll();
+    @GetMapping("")
+    public Collection<Action> findAllActions() {
+        return actionRepo.findAll();
     }
 
 }

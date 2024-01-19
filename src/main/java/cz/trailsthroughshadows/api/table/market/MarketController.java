@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/market")
+@RequestMapping("/markets")
 public class MarketController {
     @Autowired
     private ItemRepo itemRepo;
@@ -24,7 +24,7 @@ public class MarketController {
         return itemRepo.findAll();
     }
 
-    @GetMapping("/markets")
+    @GetMapping("")
     public Collection<Market> getAllMarkets() {
         return marketRepo.findAll();
     }

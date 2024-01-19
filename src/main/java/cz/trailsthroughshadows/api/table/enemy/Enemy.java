@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
+import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity

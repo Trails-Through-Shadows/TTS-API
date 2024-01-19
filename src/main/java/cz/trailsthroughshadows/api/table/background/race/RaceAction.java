@@ -13,12 +13,15 @@ import lombok.NoArgsConstructor;
 @Table(name = "RaceAction")
 public class RaceAction {
     @Id
-    private Integer id;
     @Column(nullable = false)
     private int idRace;
-    @Column
-    private Integer levelReq;
+
+    @Id
+    @Column(nullable = false)
+    private int idAction;
+
     @ManyToOne
-    @JoinColumn(name = "idAction")
+    @JoinColumn(name = "idAction", insertable = false, updatable = false)
     private Action action;
+
 }

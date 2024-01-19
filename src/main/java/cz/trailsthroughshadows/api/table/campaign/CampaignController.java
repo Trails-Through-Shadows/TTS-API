@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/campaign")
+@RequestMapping("/campaigns")
 public class CampaignController {
     @Autowired
     private CampaignRepo repo;
 
-    @GetMapping("/campaigns")
+    @GetMapping("")
     public Collection<Campaign> getAll() {
         return repo.findAll();
     }
 
-    @GetMapping("/campaigns/{id}")
+    @GetMapping("/{id}")
     public Campaign findById(@PathVariable int id) {
         return repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid campaign Id:" + id));

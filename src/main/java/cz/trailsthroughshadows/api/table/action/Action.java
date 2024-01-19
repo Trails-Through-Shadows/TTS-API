@@ -32,6 +32,8 @@ public class Action {
     @Enumerated(EnumType.STRING)
     private Discard discard;
 
+    @Column
+    private Integer levelReq;
 
     @ManyToOne()
     @JoinColumn(name = "movement")
@@ -52,10 +54,13 @@ public class Action {
     @OneToMany(mappedBy = "idAction")
     private Collection<SummonAction> summonActions;
 
-    enum Discard implements Serializable {
+    public enum Discard implements Serializable {
         PERMANENT,
         SHORT_REST,
         LONG_REST,
         NEVER
     }
+
+    @Transient
+    Boolean discarded = false;
 }
