@@ -9,12 +9,13 @@ import lombok.ToString;
 
 import java.util.Collection;
 
-@EqualsAndHashCode(callSuper = true)
-@Entity
-@Table(name = "Enemy")
 @Data
+@Entity
 @NoArgsConstructor
+@Table(name = "Enemy")
+@EqualsAndHashCode(callSuper = true)
 public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity implements Cloneable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -28,6 +29,12 @@ public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity imple
     @Column(nullable = false)
     private int defence;
 
+    @Transient // TODO: Map to DB column
+    private String combatStyle;
+
+    @Transient // TODO: Map to DB column
+    private int usages = 0;
+
     @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Collection<EnemyEffect> effects;
@@ -36,10 +43,9 @@ public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity imple
     @ToString.Exclude
     private Collection<EnemyAction> actions;
 
-
-    @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Collection<HexEnemy> position;
+//    @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
+//    @ToString.Exclude
+//    private Collection<HexEnemy> position;
 
     //TODO HexEnemy
     // oh nononononono to bude booolet namapovat ten HexEnemy na ten konkrétní hexagon
