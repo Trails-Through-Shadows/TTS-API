@@ -14,6 +14,8 @@ import java.util.Collection;
 public class PlayerDataController {
     @Autowired
     private CharacterRepo repository;
+    @Autowired
+    private AdventureRepo adventureRepo;
 
     @GetMapping("/characters")
     public Collection<Character> getCharacters(@RequestParam(required = false) Integer idAdventure) {
@@ -24,16 +26,13 @@ public class PlayerDataController {
         }
     }
 
+    // ADVENTURE SECTION
+
     @GetMapping("/characters/{id}")
     public Character findById(@PathVariable int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid character Id:" + id));
     }
-
-    // ADVENTURE SECTION
-
-    @Autowired
-    private AdventureRepo adventureRepo;
 
     @GetMapping("/adventures/{id}")
     public Adventure findAdventureById(@PathVariable int id) {

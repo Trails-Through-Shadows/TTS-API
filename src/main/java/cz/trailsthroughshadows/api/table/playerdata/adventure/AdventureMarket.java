@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CollectionTypeRegistration;
 
 import java.io.Serializable;
 
@@ -32,11 +31,11 @@ public class AdventureMarket {
     @Data
     @NoArgsConstructor
     public static class AdventureMarketId implements Serializable {
-        @Column(insertable=false, updatable=false, nullable = false)
+        @Column(insertable = false, updatable = false, nullable = false)
         private Integer idLocation;
-        @Column(insertable=false, updatable=false, nullable = false)
+        @Column(insertable = false, updatable = false, nullable = false)
         private Integer idItem;
-        @Column(insertable=false, updatable=false, nullable = false)
+        @Column(insertable = false, updatable = false, nullable = false)
         private Integer idAdventure;
     }
 }

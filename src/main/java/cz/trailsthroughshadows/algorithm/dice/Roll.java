@@ -9,6 +9,7 @@ import lombok.Getter;
 public class Roll {
     private final Type type;
     private final int value;
+
     public Roll(Type type) {
         this.type = type;
         this.value = 0;

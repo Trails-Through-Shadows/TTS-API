@@ -1,21 +1,17 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
-import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Collection;
-import java.util.List;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "Enemy")
-@EqualsAndHashCode(callSuper = true)
 public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity implements Cloneable {
 
     @Id
@@ -30,9 +26,6 @@ public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity imple
 
     @Column(nullable = false)
     private int defence;
-
-    @Transient // TODO: Map to DB column
-    private String combatStyle;
 
     @Transient // TODO: Map to DB column
     private int usages = 0;

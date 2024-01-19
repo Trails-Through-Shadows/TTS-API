@@ -17,40 +17,33 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Action {
+    @Transient
+    Boolean discarded = false;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private int id;
-
     @Column(nullable = false, length = 50)
     private String title;
-
     @Column
     private String description;
-
     @Column
     @Enumerated(EnumType.STRING)
     private Discard discard;
-
     @Column
     private Integer levelReq;
-
     @ManyToOne()
     @JoinColumn(name = "movement")
     private Movement movement;
-
     @ManyToOne()
     @JoinColumn(name = "skill")
     private Skill skill;
-
     @ManyToOne()
     @JoinColumn(name = "attack")
     private Attack attack;
-
     @ManyToOne()
     @JoinColumn(name = "restoreCards")
     private RestoreCards restoreCards;
-
     @OneToMany(mappedBy = "idAction")
     private Collection<SummonAction> summonActions;
 
@@ -60,7 +53,4 @@ public class Action {
         LONG_REST,
         NEVER
     }
-
-    @Transient
-    Boolean discarded = false;
 }

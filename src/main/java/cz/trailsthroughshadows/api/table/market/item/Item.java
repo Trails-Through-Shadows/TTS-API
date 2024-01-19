@@ -35,16 +35,15 @@ public class Item {
     @OneToMany
     @JoinColumn(name = "idItem")
     private Collection<ItemEffect> effects;
-    
+    @ManyToOne
+    @JoinColumn(name = "idAction")
+    private Action action;
+
     @ToString.Include(name = "effects")
     public Collection<Effect> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(ItemEffect::getEffect).toList();
     }
-
-    @ManyToOne
-    @JoinColumn(name = "idAction")
-    private Action action;
 
 
     public enum ItemType {

@@ -9,9 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -64,7 +63,6 @@ public class Character extends cz.trailsthroughshadows.algorithm.entity.Entity i
         return character;
     }
 
-    @Override
     public List<Action> getActions() {
         // todo zozeeeeeee
         return new ArrayList<>();

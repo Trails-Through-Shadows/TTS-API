@@ -51,10 +51,7 @@ public class Dungeon {
         if ((e1 instanceof Character || e1 instanceof Summon) && (e2 instanceof Character || e2 instanceof Summon)) {
             return true;
         }
-        if (e1 instanceof Enemy && e2 instanceof Enemy) {
-            return true;
-        }
-        return false;
+        return e1 instanceof Enemy && e2 instanceof Enemy;
     }
 
     public void applyEffect(Entity entity, Effect effect) {
@@ -96,11 +93,11 @@ public class Dungeon {
         enemy.setHex(hex);
     }
 
-    public List<Entity> calculateTarget (Entity entity, Effect.EffectTarget target) {
+    public List<Entity> calculateTarget(Entity entity, Effect.EffectTarget target) {
         return calculateTarget(entity, target, 0);
     }
 
-    public List<Entity> calculateTarget (Entity entity, Effect.EffectTarget target, int range) {
+    public List<Entity> calculateTarget(Entity entity, Effect.EffectTarget target, int range) {
         List<Entity> targets = new ArrayList<>();
         Hex hex = entity.getHex();
 
@@ -119,14 +116,14 @@ public class Dungeon {
                 break;
             case ALL:
                 targets.addAll(ListUtil.union(characters, enemies, summons).stream()
-                    .filter(ent -> location.getDistance(hex, ent.getHex()) <= range)
-                    .toList());
+                        .filter(ent -> location.getDistance(hex, ent.getHex()) <= range)
+                        .toList());
                 break;
             case ONE:
                 ListUtil.union(characters, enemies, summons).stream()
-                    .filter(ent -> location.getDistance(hex, ent.getHex()) <= range)
-                    .min((ent1, ent2) -> location.getDistance(hex, ent1.getHex()) - location.getDistance(hex, ent2.getHex()))
-                    .ifPresent(targets::add);
+                        .filter(ent -> location.getDistance(hex, ent.getHex()) <= range)
+                        .min((ent1, ent2) -> location.getDistance(hex, ent1.getHex()) - location.getDistance(hex, ent2.getHex()))
+                        .ifPresent(targets::add);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + target);
@@ -174,7 +171,7 @@ public class Dungeon {
             List<Entity> targets = calculateTarget(entity, attack.getTarget(), attack.getRange());
             log.info("\tAttack {}: {} targets with range {}", i + 1, targets.size(), attack.getRange());
             for (Entity target : targets) {
-                if (isAlly(entity, target)){
+                if (isAlly(entity, target)) {
                     log.info("\t\t{} and {} are friends", entityToString(entity), entityToString(target));
                     continue;
                 }
@@ -195,23 +192,23 @@ public class Dungeon {
             if (!isAlly(entity, target)) continue;
 
             log.info("\tRestoring cards for {}", entityToString(target));
-            for (Action action : target.getActions()) {
-                if (remaining == 0) {
-                    return;
-                }
-
-                if (action.getDiscarded() && action.getDiscard() != Action.Discard.PERMANENT) {
-                    action.setDiscarded(false);
-                    log.info("\t\tRestored {} for {}", action.getTitle(), entityToString(target));
-                    remaining -= 1;
-                }
-            }
+//            for (Action action : target.getActions()) {
+//                if (remaining == 0) {
+//                    return;
+//                }
+//
+//                if (action.getDiscarded() && action.getDiscard() != Action.Discard.PERMANENT) {
+//                    action.setDiscarded(false);
+//                    log.info("\t\tRestored {} for {}", action.getTitle(), entityToString(target));
+//                    remaining -= 1;
+//                }
+//            }
         }
     }
 
     public void evaluateAction(Entity entity, Action action) {
         log.info("Evaluating action {} for {}", action.getTitle(), entityToString(entity));
-        log.info("\tAction: {}", action.toString());
+        log.info("\tAction: {}", action);
         if (action.getMovement() != null) {
             evaluateMovement(entity, action.getMovement());
         }

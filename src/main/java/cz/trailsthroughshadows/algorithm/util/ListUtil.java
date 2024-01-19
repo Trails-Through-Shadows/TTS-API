@@ -9,7 +9,7 @@ public class ListUtil {
     }
 
     @SafeVarargs
-    public static <T> List<T> union(List<? extends T> ... lists) {
+    public static <T> List<T> union(List<? extends T>... lists) {
         ArrayList<T> union = new ArrayList<>();
         for (List<? extends T> list : lists) {
             union.addAll(list);

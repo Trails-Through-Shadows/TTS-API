@@ -22,6 +22,10 @@ public class AdventureLocation {
     @Column(nullable = false)
     private LocationState state;
 
+    public enum LocationState {
+        NOT_VISITED, VISITED, FAILED, COMPLETED,
+    }
+
     @Embeddable
     @Data
     @NoArgsConstructor
@@ -30,10 +34,6 @@ public class AdventureLocation {
         private Integer idAdventure;
         @Column(nullable = false)
         private Integer idLocation;
-    }
-
-    public enum LocationState {
-        NOT_VISITED, VISITED, FAILED, COMPLETED,
     }
 
 }

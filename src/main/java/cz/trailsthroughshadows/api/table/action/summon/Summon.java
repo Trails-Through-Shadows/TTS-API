@@ -65,7 +65,6 @@ public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity impl
         return summon;
     }
 
-    @Override
     public List<Action> getActions() {
         return List.of(action);
     }

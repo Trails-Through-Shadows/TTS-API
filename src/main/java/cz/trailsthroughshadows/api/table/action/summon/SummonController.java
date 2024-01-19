@@ -28,7 +28,7 @@ public class SummonController {
             @PathVariable("id") final String id, @RequestBody final Summon summon) {
         return summon;
     }
-    
+
     @GetMapping("")
     public Collection<Summon> findClass() {
         return repository.getAll();
