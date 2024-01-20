@@ -66,13 +66,13 @@ public class Dungeon {
 
         switch (entity) {
             case Character character -> log.info("\t\t\tCharacter can't be damaged yet"); // TODO
-            case Enemy enemy -> enemy.setHealth(enemy.getHealth() - damage);
+            case Enemy enemy -> enemy.setBaseHealth(enemy.getBaseHealth() - damage);
             case Summon summon -> summon.setHealth(summon.getHealth() - damage);
             case null, default -> throw new IllegalStateException("Unexpected value: " + entity);
         }
 
         if (entity instanceof Enemy enemy) {
-            if (enemy.getHealth() <= 0) {
+            if (enemy.getBaseHealth() <= 0) {
                 log.info("\t\t{} died", entityToString(entity));
                 enemies.remove(enemy);
             }

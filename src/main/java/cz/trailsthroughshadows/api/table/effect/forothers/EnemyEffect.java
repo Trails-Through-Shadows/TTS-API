@@ -23,9 +23,6 @@ public class EnemyEffect {
     @JsonIgnore
     private int idEffect;
 
-    @Column
-    private int levelReq;
-
     @ManyToOne
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private Effect effect;

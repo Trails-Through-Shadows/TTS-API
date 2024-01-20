@@ -4,6 +4,8 @@ import cz.trailsthroughshadows.api.table.action.Action;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 
 @Entity
 @Table(name = "EnemyAction")
@@ -11,22 +13,20 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EnemyAction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
-    private int id;
+    @EmbeddedId
+    private EnemyActionId key;
 
-    @Column(name = "levelReq", nullable = false)
-    private int levelReq;
-
-    @Column(name = "idEnemy", nullable = false)
-    private int idEnemy;
-
-    @Column(name = "idAction", nullable = false)
-    private int idAction;
-
-    // Assuming there's an Action entity
     @ManyToOne
     @JoinColumn(name = "idAction", referencedColumnName = "id", insertable = false, updatable = false)
     private Action action;
+
+    @Embeddable
+    @Data
+    public static class EnemyActionId implements Serializable {
+        @Column(nullable = false)
+        private int idEnemy;
+
+        @Column(nullable = false)
+        private int idAction;
+    }
 }

@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.schematic.obstacle;
 
-import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,18 +17,15 @@ public class HexObstacle {
     @Setter(AccessLevel.NONE)
     private HexObstacleId key;
 
-    @Column(nullable = false)
-    private int idObstacle;
-
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "idHex", insertable = false, updatable = false),
-            @JoinColumn(name = "idPart", insertable = false, updatable = false)
-    })
-    private Hex hex;
+    @JoinColumn(name = "idObstacle", insertable = false, updatable = false)
+    private Obstacle obstacle;
 
     @Embeddable
     public static class HexObstacleId implements Serializable {
+
+        @Column(nullable = false)
+        private int idObstacle;
         @Column(nullable = false)
         private Integer idHex;
         @Column(nullable = false)

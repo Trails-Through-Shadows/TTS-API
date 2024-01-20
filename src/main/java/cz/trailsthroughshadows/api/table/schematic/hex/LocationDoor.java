@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.schematic.hex;
 
-import cz.trailsthroughshadows.api.table.schematic.part.Part;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,17 +9,14 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "PartDoor")
-public class PartDoor {
+@Table(name = "LocationDoor")
+public class LocationDoor {
 
     @EmbeddedId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private PartDoorId key;
 
-    @ManyToOne()
-    @JoinColumn(name = "toPart")
-    private Part toPart;
 
     @Data
     @Embeddable
@@ -30,6 +26,9 @@ public class PartDoor {
 
         @Column(nullable = false)
         private int fromPart;
+
+        @Column(nullable = false)
+        private int toPart;
 
         @Column(nullable = false)
         private int hex;

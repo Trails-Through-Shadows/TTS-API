@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
+import cz.trailsthroughshadows.api.table.action.Action;
+import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,42 +24,34 @@ public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity imple
     private String name;
 
     @Column(nullable = false)
-    private int health;
+    private int baseHealth;
 
     @Column(nullable = false)
-    private int defence;
+    private int baseDefence;
 
-    @Transient // TODO: Map to DB column
-    private int usages = 0;
+    @Column
+    private Integer usages;
 
     @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Collection<EnemyEffect> effects;
 
-    @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
+    @ToString.Include(name = "effects")
+    public Collection<Effect> getEffects() {
+        if (effects == null) return null;
+        return effects.stream().map(EnemyEffect::getEffect).toList();
+    }
+
+    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Collection<EnemyAction> actions;
 
-//    @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
-//    @ToString.Exclude
-//    private Collection<HexEnemy> position;
+    @ToString.Include(name = "actions")
+    public Collection<Action> getActions() {
+        if (actions == null) return null;
+        return actions.stream().map(EnemyAction::getAction).toList();
+    }
 
-    //TODO HexEnemy
-    // oh nononononono to bude booolet namapovat ten HexEnemy na ten konkrétní hexagon
-
-    //    EnemyLocation GetHex() {
-    //        throw new NotImplementedException("UNDER CONSTRUCTION\n Returns hexagon with part and location");
-    //    }
-    //
-    //
-    //    @Data
-    //    @NoArgsConstructor
-    //    @AllArgsConstructor
-    //    public class EnemyLocation implements Serializable {
-    //        Hex hex;
-    //        Part part;
-    //        Location location;
-    //    }
 
     @Override
     public Enemy clone() {
@@ -65,8 +59,8 @@ public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity imple
 
         enemy.setId(this.getId());
         enemy.setName(this.getName());
-        enemy.setHealth(this.getHealth());
-        enemy.setDefence(this.getDefence());
+        enemy.setBaseDefence(this.getBaseDefence());
+        enemy.setBaseHealth(this.getBaseHealth());
 
         return enemy;
     }

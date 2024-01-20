@@ -2,7 +2,7 @@ package cz.trailsthroughshadows.api.table.schematic.part;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
-import cz.trailsthroughshadows.api.table.schematic.hex.PartDoor;
+import cz.trailsthroughshadows.api.table.schematic.hex.LocationDoor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +29,7 @@ public class Part {
     private Set<Hex> hexes;
 
     @OneToMany(mappedBy = "key.fromPart", cascade = CascadeType.ALL)
-    private Set<PartDoor> doors;
+    private Set<LocationDoor> doors;
 
     @Column(name = "usages", columnDefinition = "INT default 0")
     private int usages = 0;
