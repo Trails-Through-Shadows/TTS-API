@@ -2,6 +2,7 @@ package cz.trailsthroughshadows.api.table.action;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.action.movement.MovementRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,10 +10,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 
 @RestController
 @RequestMapping("/actions")
+@Slf4j
 public class ActionController {
 
     @Autowired
@@ -23,25 +27,31 @@ public class ActionController {
     @GetMapping("/{id}")
     public Action findById(
             @PathVariable int id,
-            @RequestParam(required = false, defaultValue = "true") boolean lazy
+            @RequestParam(required = false, defaultValue = "") List<String> lazy
     ) {
         Action action = actionRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
 
-        if (!lazy) {
-            for (Field F : action.getClass().getFields()) {
+        for (String s : lazy) {
+            log.debug("Lazy loading {}", s);
+            for (Field f : action.getClass().getDeclaredFields()) {
+                f.setAccessible(true);
+                log.debug("Comparing {} with {}", f.getName(), s);
                 try {
-                    Hibernate.initialize(F.get(action));
+                    if (Objects.equals(f.getName(), s))
+                        Hibernate.initialize(f.get(action));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
             }
         }
 
+
         return action;
 
     }
+
 
     @GetMapping("")
     public Collection<Action> findAllActions(
@@ -50,11 +60,14 @@ public class ActionController {
         Collection<Action> actions = actionRepo.findAll();
         if (!lazy) {
             actions.forEach(action -> {
-                Hibernate.initialize(action.getMovement());
-                Hibernate.initialize(action.getSkill());
-                Hibernate.initialize(action.getAttack());
-                Hibernate.initialize(action.getRestoreCards());
-                Hibernate.initialize(action.getSummonActions());
+                for (Field f : action.getClass().getDeclaredFields()) {
+                    f.setAccessible(true);
+                    try {
+                        Hibernate.initialize(f.get(action));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
             });
         }
         return actions;
