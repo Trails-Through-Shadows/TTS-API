@@ -1,6 +1,9 @@
 package cz.trailsthroughshadows.api.table.action.attack;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.foraction.AttackEffect;
 import jakarta.persistence.*;
@@ -13,6 +16,8 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Attack {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +45,6 @@ public class Attack {
     private Collection<AttackEffect> effects;
 
 
-    // Skipping n-to-n relationship, there is no additional data in that table
     @ToString.Include(name = "effects") // Including replacement field in toString
     public Collection<Effect> getEffects() {
         if (effects == null) return null;

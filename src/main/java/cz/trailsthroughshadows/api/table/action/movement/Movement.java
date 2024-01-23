@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.action.movement;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.foraction.MovementEffect;
 import jakarta.persistence.*;
@@ -13,6 +14,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Movement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

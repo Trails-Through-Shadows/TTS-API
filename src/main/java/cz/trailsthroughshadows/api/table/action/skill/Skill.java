@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.action.skill;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.foraction.SkillEffect;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

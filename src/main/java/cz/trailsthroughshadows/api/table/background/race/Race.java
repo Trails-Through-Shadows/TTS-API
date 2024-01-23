@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.background.race;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.forcharacter.RaceEffect;
 import jakarta.persistence.*;
@@ -26,12 +28,13 @@ public class Race {
     @Column(nullable = false)
     public int baseInitiative;
 
-    @OneToMany
-    @JoinColumn(name = "idRace")
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "idRace")
     public Collection<RaceEffect> effects;
 
-    @OneToMany
-    @JoinColumn(name = "idRace")
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "idRace")
+    @ToString.Exclude
     public Collection<RaceAction> actions;
 
     @ToString.Include(name = "actions")

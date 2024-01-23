@@ -4,6 +4,7 @@ import cz.trailsthroughshadows.api.table.background.clazz.Clazz;
 import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
 import cz.trailsthroughshadows.api.table.background.race.Race;
 import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class BackgroundController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid class Id:" + id));
     }
 
-    @GetMapping("classes/")
+    @GetMapping("classes")
     public Collection<Clazz> findClass() {
         return clazzRepo.getAll();
     }
@@ -40,12 +41,18 @@ public class BackgroundController {
     // RACE SECTION
 
     @GetMapping("races/{id}")
-    public Race findRaceById(@PathVariable int id) {
-        return raceRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Race Id: " + id));
+    public Race findRaceById(
+            @PathVariable int id,
+            @RequestParam(defaultValue = "true") boolean lazyLoad
+    ) {
+        Race r = raceRepo.findById(id).orElseThrow();
+
+        Hibernate.initialize(r);
+
+        return r;
     }
 
-    @GetMapping("races/")
+    @GetMapping("races")
     public Collection<Race> findRaces() {
         return raceRepo.getAll();
     }

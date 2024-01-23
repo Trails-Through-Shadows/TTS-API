@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.action.summon;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "SummonAction")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SummonAction {
 
     @EmbeddedId

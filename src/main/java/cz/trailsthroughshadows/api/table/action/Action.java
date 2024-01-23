@@ -1,5 +1,8 @@
 package cz.trailsthroughshadows.api.table.action;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.action.attack.Attack;
 import cz.trailsthroughshadows.api.table.action.movement.Movement;
 import cz.trailsthroughshadows.api.table.action.restorecards.RestoreCards;
@@ -16,6 +19,8 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Action {
     @Transient
     Boolean discarded = false;
@@ -32,19 +37,24 @@ public class Action {
     private Discard discard;
     @Column
     private Integer levelReq;
-    @ManyToOne()
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movement")
     private Movement movement;
-    @ManyToOne()
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "skill")
     private Skill skill;
-    @ManyToOne()
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attack")
     private Attack attack;
-    @ManyToOne()
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restoreCards")
     private RestoreCards restoreCards;
-    @OneToMany(mappedBy = "idAction")
+
+    @OneToMany(mappedBy = "idAction", fetch = FetchType.LAZY)
     private Collection<SummonAction> summonActions;
 
     public enum Discard implements Serializable {
