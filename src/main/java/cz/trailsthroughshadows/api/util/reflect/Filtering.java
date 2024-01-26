@@ -3,6 +3,8 @@ package cz.trailsthroughshadows.api.util.reflect;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 
 @Slf4j
@@ -33,11 +35,24 @@ public class Filtering {
         try {
             Field field = Ref.getField(object.getClass(), filterKey);
             Object fieldValue = field.get(object);
-            Object parsedValue = Ref.parseValue(field, filterValue);
+
+            // When filter list, filter by list size
+            if (fieldValue instanceof Enumeration<?> || fieldValue instanceof Collection<?>) {
+                fieldValue = (Integer) ((Collection<?>) fieldValue).size();
+            }
+
+            if (filterOperator.equalsIgnoreCase("bwn")) {
+                String[] filterValueSplit = filterValue.split("_");
+
+                Object filterValueMin = Integer.parseInt(filterValueSplit[0]);
+                Object filterValueMax = Integer.parseInt(filterValueSplit[1]);
+
+                return Ref.compare(fieldValue, filterValueMin, "gte") && Ref.compare(fieldValue, filterValueMax, "lte");
+            }
 
             return switch (filterOperator) {
-                case "eq" -> fieldValue.equals(parsedValue);
-                case "gt", "gte", "lt", "lte" -> Ref.compare(fieldValue, parsedValue, filterOperator);
+                case "eq" -> fieldValue.equals(Ref.parseValue(field, filterValue));
+                case "gt", "gte", "lt", "lte" -> Ref.compare(fieldValue, Ref.parseValue(field, filterValue), filterOperator);
                 case "has" -> fieldValue.toString().contains(filterValue);
                 default -> false;
             };
