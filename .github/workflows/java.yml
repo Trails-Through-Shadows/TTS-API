@@ -46,4 +46,5 @@ jobs:
             cd /srv/tts-game/TTS-API 
             eval $(keychain --eval ../.ssh/api-key)
             git pull origin master
+            mvn -B clean package --file pom.xml
             service tts-api restart
