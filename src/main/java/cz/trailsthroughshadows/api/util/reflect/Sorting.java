@@ -3,6 +3,8 @@ package cz.trailsthroughshadows.api.util.reflect;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 
 @Slf4j
@@ -43,6 +45,17 @@ public class Sorting {
             Field secondField = Ref.getField(second.getClass(), sortKey);
             secondField.setAccessible(true);
             Object secondValue = secondField.get(second);
+
+            // Sorting types must match
+            if (!firstValue.getClass().equals(secondValue.getClass())) {
+                throw new IllegalArgumentException("Field values are not of same type");
+            }
+
+            // When sorting list, sort by list size
+            if (firstValue instanceof Enumeration<?> || firstValue instanceof Collection<?>) {
+                firstValue = (Integer) ((Collection<?>) firstValue).size();
+                secondValue = (Integer) ((Collection<?>) secondValue).size();
+            }
 
             if (!(firstValue instanceof Comparable<?>) || !(secondValue instanceof Comparable<?>)) {
                 throw new IllegalArgumentException("Field values are not comparable");

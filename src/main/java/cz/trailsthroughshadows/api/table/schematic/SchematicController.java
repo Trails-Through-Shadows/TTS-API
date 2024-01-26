@@ -43,12 +43,12 @@ public class SchematicController {
     ) {
         List<Part> entries = partRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
+                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
         List<Part> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
-                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
@@ -105,12 +105,12 @@ public class SchematicController {
     ) {
         List<Location> entries = locationRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
+                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
         List<Location> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
-                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
@@ -135,12 +135,12 @@ public class SchematicController {
     ) {
         List<Obstacle> entries = obstacleRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
+                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
         List<Obstacle> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
-                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
