@@ -30,9 +30,12 @@ public class PartController {
     public ResponseEntity<RestPaginatedResult<Part>> getParts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
-            @RequestParam(defaultValue = "") String filter, // TODO: Re-Implement filtering
-            @RequestParam(defaultValue = "") String sort // TODO: Re-Implement sorting
+            @RequestParam(defaultValue = "") String filter,
+            @RequestParam(defaultValue = "") String sort
     ) {
+        // TODO: Re-Implement filtering, sorting and pagination
+        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
+
         List<Part> entries = partRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
@@ -74,8 +77,13 @@ public class PartController {
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        // Every save is adding some new hexes..
-        partRepo.save(part);
+        partToUpdate.setTag(part.getTag());
+        partToUpdate.setHexes(part.getHexes());
+
+        // TODO: It's not removing part hexes, but it's adding new ones or updating existing ones
+        // TODO: Validation for new or updates parts
+        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/28
+        partRepo.save(partToUpdate);
         return RestResponse.of(HttpStatus.OK,"Part updated!");
     }
 
@@ -89,14 +97,15 @@ public class PartController {
 
         if (!conflicts.isEmpty()) {
             RestError error = new RestError(HttpStatus.CONFLICT, "Parts already exists!");
-
             for (Integer conflict : conflicts) {
                 error.addSubError(new MessageError("Part with id '%d' already exists!", conflict));
             }
+
             throw new RestException(error);
         }
 
-        // TODO: FIX IT, its creating new IDs instead of using ID that was provided
+        // TODO: When saving parts with its id, it is ignoring the id and creating new one using auto increment
+        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/33
         partRepo.saveAll(parts);
         return RestResponse.of(HttpStatus.OK,"Parts created!");
     }
@@ -106,7 +115,7 @@ public class PartController {
      */
 
     @Autowired
-    public void setPartRepo(PartRepo partRepo) {
+    private void setPartRepo(PartRepo partRepo) {
         this.partRepo = partRepo;
     }
 }
