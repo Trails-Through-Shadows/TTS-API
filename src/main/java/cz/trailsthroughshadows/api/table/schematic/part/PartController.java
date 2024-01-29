@@ -78,12 +78,16 @@ public class PartController {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
         partToUpdate.setTag(part.getTag());
-        partToUpdate.setHexes(part.getHexes());
+
+//        partToUpdate.setHexes(part.getHexes());
+        partToUpdate.getHexes().retainAll(part.getHexes());
+        partToUpdate.getHexes().addAll(part.getHexes());
 
         // TODO: It's not removing part hexes, but it's adding new ones or updating existing ones
         // TODO: Validation for new or updates parts
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/28
         partRepo.save(partToUpdate);
+
         return RestResponse.of(HttpStatus.OK,"Part updated!");
     }
 
