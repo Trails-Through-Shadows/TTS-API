@@ -21,8 +21,6 @@ public class ValidationService {
     // 3. Part is maximum 8 hexes wide and 8 hexes tall
     // 4. All hexes must be connected
     public List<String> validatePart(Part part) {
-        log.info("2 Validating part " + part.getTag());
-        System.out.println("2 Validating part " + part.getTag());
         List<String> errors = new ArrayList<>();
 
         int minHexes = 5;
@@ -48,17 +46,20 @@ public class ValidationService {
         }
 
         // no hexes can be on the same position
+        int duplicates = 0;
         for (Hex hex1 : part.getHexes()) {
             for (Hex hex2 : part.getHexes()) {
                 if (hex1 == hex2)
                     continue;
 
                 if (hex1.getQ() == hex2.getQ() && hex1.getR() == hex2.getR() && hex1.getS() == hex2.getS()) {
-                    errors.add("No hexes can be on the same position!");
+                    duplicates++;
                     break;
                 }
             }
         }
+        if (duplicates > 0)
+            errors.add("Part must not have duplicate hexes!");
 
         // every hex has to have correct coordinates
         for (Hex hex : part.getHexes()) {

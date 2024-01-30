@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -23,7 +23,7 @@ public class Part {
     private String tag;
 
     @OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Hex> hexes;
+    private List<Hex> hexes;
 
 //    @OneToMany(mappedBy = "key.fromPart", cascade = CascadeType.ALL)
 //    private Set<LocationDoor> doors;

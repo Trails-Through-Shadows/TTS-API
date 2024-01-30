@@ -25,15 +25,15 @@ public class ValidationController {
 
     @PostMapping("/validate/part")
     public ResponseEntity<RestResponse> validatePart(@RequestBody Part part) {
-        log.info("Validating part " + part.getTag());
+        log.debug("Validating part " + part.getTag());
         List<String> errors = validationService.validatePart(part);
 
         if (errors.isEmpty()) {
-            log.warn("Part is valid!");
+            log.debug("Part is valid!");
             return new ResponseEntity<>(new RestResponse(HttpStatus.OK, "Part is valid!"), HttpStatus.OK);
         }
 
-        log.warn("Part is not valid!");
+        log.debug("Part is not valid!");
         RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "Part is not valid!");
         for (var e : errors) {
             log.debug(" > " + e);
