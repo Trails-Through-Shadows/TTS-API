@@ -11,11 +11,11 @@ import java.util.Optional;
 public interface PartRepo extends JpaRepository<Part, Integer> {
 
     @Override
-    @EntityGraph(attributePaths = {"hexes", "doors"})
+    @EntityGraph(attributePaths = {"hexes"})
     List<Part> findAll();
 
     @Override
-    @EntityGraph(attributePaths = {"hexes", "doors"})
+    @EntityGraph(attributePaths = {"hexes"})
     Optional<Part> findById(Integer id);
 
 

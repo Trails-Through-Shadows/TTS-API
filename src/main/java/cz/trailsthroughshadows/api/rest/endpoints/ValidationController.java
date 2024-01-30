@@ -5,7 +5,8 @@ import cz.trailsthroughshadows.api.rest.model.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
 import cz.trailsthroughshadows.api.table.schematic.part.Part;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -13,42 +14,37 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
+@Log4j2
 @Component
 @RestController(value = "validation")
 public class ValidationController {
 
+    private ValidationService validationService;
+
     @PostMapping("/validate/part")
     public ResponseEntity<RestResponse> validatePart(@RequestBody Part part) {
-        List<String> errors = new ArrayList<>();
-
-        // TODO: Implement Part validation @Bačkorče
-        // Validations?:
-        // 1. Part must have at least 5 hexes
-        // 2. Part must have at most 50 hexes
-        // 3. Part is maximum 8 hexes wide and 8 hexes tall
-        // 4. All hexes must be connected
-
-        if (part.getHexes().size() < 5) {
-            errors.add("Part must have at least 5 hexes!");
-        }
-
-        if (part.getHexes().size() > 50) {
-            errors.add("Part must have at most 50 hexes!");
-        }
+        log.debug("Validating part " + part.getTag());
+        List<String> errors = validationService.validatePart(part);
 
         if (errors.isEmpty()) {
-            return RestResponse.of(HttpStatus.OK,"Part is valid.");
+            log.debug("Part is valid!");
+            return new ResponseEntity<>(new RestResponse(HttpStatus.OK, "Part is valid!"), HttpStatus.OK);
         }
 
+        log.debug("Part is not valid!");
         RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "Part is not valid!");
         for (var e : errors) {
+            log.debug(" > " + e);
             error.addSubError(new MessageError(e));
         }
 
         throw new RestException(error);
+    }
+
+    @Autowired
+    public void setValidationService(ValidationService validationService) {
+        this.validationService = validationService;
     }
 }
