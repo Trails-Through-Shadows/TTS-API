@@ -17,15 +17,8 @@ public abstract class Entity {
     public Hex hex;
     @Transient
     public List<Effect> activeEffects = new ArrayList<>();
-    @Column(nullable = false)
-    public CombatStyle combatStyle = CombatStyle.MELEE;
 
     public abstract String getName();
 
 //    public abstract List<Action> getActions();
-
-    enum CombatStyle {
-        MELEE,
-        RANGED,
-    }
 }
