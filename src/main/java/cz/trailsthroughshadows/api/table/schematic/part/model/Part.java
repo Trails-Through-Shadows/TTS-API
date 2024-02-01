@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,7 +24,7 @@ public class Part {
     private String tag;
 
     @OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Hex> hexes;
+    private List<Hex> hexes = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "key.fromPart", cascade = CascadeType.ALL)
 //    private Set<LocationDoor> doors;

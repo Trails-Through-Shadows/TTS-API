@@ -1,17 +1,20 @@
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
 @TestPropertySource(locations="classpath:application.properties")
+@Slf4j
 public class ValidationTest {
 
-    private List<Part> parts;
+    private List<Part> parts = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -24,6 +27,8 @@ public class ValidationTest {
 
     @Test
     public void test() {
-
+        for (Part part : parts) {
+            log.info("Validating part {}...", part.getTag());
+        }
     }
 }
