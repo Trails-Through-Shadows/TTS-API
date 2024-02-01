@@ -10,4 +10,7 @@ public interface EnemyRepo extends JpaRepository<Enemy, Integer> {
 
     @Query("SELECT c FROM Enemy c")
     Collection<Enemy> getAll();
+
+    @Query("SELECT c FROM Enemy c WHERE c.name = ?1")
+    Enemy getByName(String name);
 }

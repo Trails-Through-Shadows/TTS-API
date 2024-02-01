@@ -28,6 +28,8 @@ public class Hex {
 
     @Data
     @Embeddable
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class HexId implements Serializable {
 
         @Column(name = "idPart", nullable = false)

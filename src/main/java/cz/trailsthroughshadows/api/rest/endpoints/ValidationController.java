@@ -1,12 +1,12 @@
 package cz.trailsthroughshadows.api.rest.endpoints;
 
+import cz.trailsthroughshadows.algorithm.validation.PartValidation;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
-import cz.trailsthroughshadows.api.table.schematic.part.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -21,12 +21,11 @@ import java.util.List;
 @RestController(value = "validation")
 public class ValidationController {
 
-    private ValidationService validationService;
-
     @PostMapping("/validate/part")
     public ResponseEntity<RestResponse> validatePart(@RequestBody Part part) {
         log.debug("Validating part " + part.getTag());
-        List<String> errors = validationService.validatePart(part);
+
+        List<String> errors = PartValidation.validate(part);
 
         if (errors.isEmpty()) {
             log.debug("Part is valid!");
@@ -41,10 +40,5 @@ public class ValidationController {
         }
 
         throw new RestException(error);
-    }
-
-    @Autowired
-    public void setValidationService(ValidationService validationService) {
-        this.validationService = validationService;
     }
 }
