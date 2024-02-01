@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.schematic.part;
+package cz.trailsthroughshadows.api.table.schematic.part.model;
 
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import jakarta.persistence.*;

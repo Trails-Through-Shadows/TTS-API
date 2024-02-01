@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.schematic.location;
 
 import cz.trailsthroughshadows.algorithm.location.LocationImpl;
-import cz.trailsthroughshadows.api.table.schematic.part.LocationPart;
-import cz.trailsthroughshadows.api.table.schematic.part.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.LocationPart;
+import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

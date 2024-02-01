@@ -2,7 +2,7 @@ package cz.trailsthroughshadows.algorithm.location;
 
 import cz.trailsthroughshadows.algorithm.util.Vec3;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
-import cz.trailsthroughshadows.api.table.schematic.part.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

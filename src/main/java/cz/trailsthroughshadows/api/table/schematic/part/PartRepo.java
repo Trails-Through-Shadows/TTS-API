@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.part;
 
 
+import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

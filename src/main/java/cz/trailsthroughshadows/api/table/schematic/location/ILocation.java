@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.location;
 
-import cz.trailsthroughshadows.api.table.schematic.part.LocationPart;
-import cz.trailsthroughshadows.api.table.schematic.part.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.LocationPart;
+import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 
 import java.util.List;
 

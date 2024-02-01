@@ -2,7 +2,7 @@ package cz.trailsthroughshadows.algorithm.location;
 
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.schematic.location.ILocation;
-import cz.trailsthroughshadows.api.table.schematic.part.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 
 public abstract class LocationImpl implements ILocation {
 
