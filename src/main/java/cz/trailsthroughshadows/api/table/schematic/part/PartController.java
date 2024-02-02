@@ -68,7 +68,7 @@ public class PartController {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
         partRepo.delete(part);
-        return RestResponse.of( HttpStatus.OK, "Part deleted!");
+        return RestResponse.of(HttpStatus.OK, "Part deleted!");
     }
 
     @PutMapping("/parts/{id}")
@@ -78,18 +78,14 @@ public class PartController {
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        partToUpdate.setTag(part.getTag());
-
-//        partToUpdate.setHexes(part.getHexes());
-        partToUpdate.getHexes().retainAll(part.getHexes());
-        partToUpdate.getHexes().addAll(part.getHexes());
-
-        // TODO: It's not removing part hexes, but it's adding new ones or updating existing ones
         // TODO: Validation for new or updates parts
-        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/28
+
+        partToUpdate.setTag(part.getTag());
+        partToUpdate.setHexes(part.getHexes());
+
         partRepo.save(partToUpdate);
 
-        return RestResponse.of(HttpStatus.OK,"Part updated!");
+        return RestResponse.of(HttpStatus.OK, "Part updated!");
     }
 
     @PostMapping("/parts")
@@ -112,7 +108,7 @@ public class PartController {
         // TODO: When saving parts with its id, it is ignoring the id and creating new one using auto increment
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/33
         partRepo.saveAll(parts);
-        return RestResponse.of(HttpStatus.OK,"Parts created!");
+        return RestResponse.of(HttpStatus.OK, "Parts created!");
     }
 
     /**
