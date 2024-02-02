@@ -26,6 +26,16 @@ public class CampaignLocation {
     @JoinColumn(name = "idLocation", insertable = false, updatable = false)
     private Location location;
 
+    @Column(nullable = false)
+    private boolean start;
+
+    @Column(nullable = false)
+    private boolean finish;
+
+    @Column(nullable = false)
+    private String winCondition;
+
+
     @Embeddable
     @Data
     public static class CampaignLocationId implements Serializable {
