@@ -1,9 +1,7 @@
 package cz.trailsthroughshadows.algorithm.entity;
 
-import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
-import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 import lombok.Data;
 

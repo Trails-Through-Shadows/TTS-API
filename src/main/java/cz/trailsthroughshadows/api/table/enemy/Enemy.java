@@ -35,16 +35,15 @@ public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity imple
     @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Collection<EnemyEffect> effects;
+    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Collection<EnemyAction> actions;
 
     @ToString.Include(name = "effects")
     public Collection<Effect> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(EnemyEffect::getEffect).toList();
     }
-
-    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Collection<EnemyAction> actions;
 
     @ToString.Include(name = "actions")
     public Collection<Action> getActions() {

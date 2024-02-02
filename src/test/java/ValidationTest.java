@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
-@TestPropertySource(locations="classpath:application.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @Slf4j
 public class ValidationTest {
 
-    private List<Part> parts = new ArrayList<>();
+    private final List<Part> parts = new ArrayList<>();
 
     @Before
     public void setUp() {
         Part p = new Part();
         p.setId(1);
-        p.getHexes().add(new Hex(new Hex.HexId(1, 1),0, 0, 0));
+        p.getHexes().add(new Hex(new Hex.HexId(1, 1), 0, 0, 0));
         p.setTag("Test part");
         parts.add(p);
     }

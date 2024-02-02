@@ -16,6 +16,7 @@ public class Path {
 
     @EmbeddedId
     private PathId key;
+
     @Embeddable
     @Data
     public static class PathId {

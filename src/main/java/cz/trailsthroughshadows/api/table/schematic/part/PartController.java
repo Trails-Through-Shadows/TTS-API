@@ -5,10 +5,11 @@ import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
-import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
+import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -90,24 +92,34 @@ public class PartController {
 
     @PostMapping("/parts")
     @CacheEvict(value = "part", allEntries = true)
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<RestResponse> createParts(@RequestBody List<Part> parts) {
-        List<Integer> conflicts = parts.stream()
-                .filter(part -> part.getId() != null && partRepo.existsById(part.getId()))
-                .map(Part::getId)
-                .toList();
 
-        if (!conflicts.isEmpty()) {
-            RestError error = new RestError(HttpStatus.CONFLICT, "Parts already exists!");
-            for (Integer conflict : conflicts) {
-                error.addSubError(new MessageError("Part with id '%d' already exists!", conflict));
+        log.debug("Creating parts: " + parts);
+
+        // Ble
+        // this needs rework
+        try {
+            for (Part part : parts) {
+                List<Hex> hexes = new ArrayList<>(part.getHexes());
+                part.getHexes().clear();
+                part = partRepo.saveAndFlush(part);
+
+                int partId = part.getId();
+                log.trace("Part created: " + partId);
+                hexes.forEach(hex -> {
+                    hex.getKey().setIdPart(partId);
+                    hex.getKey().setId(hexes.indexOf(hex) + 1);
+                });
+
+                part.setHexes(hexes);
+                partRepo.save(part);
             }
-
-            throw new RestException(error);
+        } catch (Exception e) {
+            throw new RestException(RestError.of(HttpStatus.INTERNAL_SERVER_ERROR, String.format(e.getMessage())));
         }
 
-        // TODO: When saving parts with its id, it is ignoring the id and creating new one using auto increment
-        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/33
-        partRepo.saveAll(parts);
+
         return RestResponse.of(HttpStatus.OK, "Parts created!");
     }
 

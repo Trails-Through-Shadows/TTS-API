@@ -53,8 +53,8 @@ public class Sorting {
 
             // When sorting list, sort by list size
             if (firstValue instanceof Enumeration<?> || firstValue instanceof Collection<?>) {
-                firstValue = (Integer) ((Collection<?>) firstValue).size();
-                secondValue = (Integer) ((Collection<?>) secondValue).size();
+                firstValue = ((Collection<?>) firstValue).size();
+                secondValue = ((Collection<?>) secondValue).size();
             }
 
             if (!(firstValue instanceof Comparable<?>) || !(secondValue instanceof Comparable<?>)) {

@@ -25,17 +25,19 @@ public class Part {
 
     @OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Hex> hexes = new ArrayList<>();
+    @Column(name = "usages", columnDefinition = "INT default 0")
+    private int usages = 0;
 
     public void setHexes(List<Hex> hexes) {
         if (this.hexes == null)
             this.hexes = hexes;
 
+        if (hexes == null)
+            this.hexes = null;
+
         this.hexes.clear();
         this.hexes.addAll(hexes);
 
     }
-
-    @Column(name = "usages", columnDefinition = "INT default 0")
-    private int usages = 0;
 
 }

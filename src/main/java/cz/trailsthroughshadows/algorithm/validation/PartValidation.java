@@ -45,7 +45,7 @@ public class PartValidation {
         int diffR = rStats.getMax() - rStats.getMin();
         int diffS = sStats.getMax() - sStats.getMin();
 
-        if (diffQ >  maxHexesWide || diffR > maxHexesWide || diffS > maxHexesWide) {
+        if (diffQ > maxHexesWide || diffR > maxHexesWide || diffS > maxHexesWide) {
             errors.add("Part must not be wider than %d hexes!".formatted(maxHexesWide));
         }
 

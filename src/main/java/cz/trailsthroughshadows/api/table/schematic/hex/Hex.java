@@ -26,17 +26,23 @@ public class Hex {
     @Column(name = "sCoord", nullable = false)
     private int s;
 
+
+    public HexId getKey() {
+        if (key == null)
+            key = new HexId();
+        return key;
+    }
+
     @Data
     @Embeddable
     @AllArgsConstructor
     @NoArgsConstructor
     public static class HexId implements Serializable {
-
         @Column(name = "idPart", nullable = false)
-        private int idPart;
+        private Integer idPart;
 
         @Column(name = "id", nullable = false)
-        private int id;
+        private Integer id;
 
     }
 }
