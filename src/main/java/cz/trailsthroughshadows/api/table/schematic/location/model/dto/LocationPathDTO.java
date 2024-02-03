@@ -24,5 +24,6 @@ public class LocationPathDTO implements Serializable {
 
     @Id
     private Integer idEnd;
+
 }
 

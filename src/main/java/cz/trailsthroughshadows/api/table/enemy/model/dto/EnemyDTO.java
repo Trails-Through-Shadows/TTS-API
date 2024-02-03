@@ -6,7 +6,6 @@ import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
 import cz.trailsthroughshadows.api.table.enemy.model.EnemyAction;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Enemy")
-public class EnemyDTO  implements Cloneable {
+public class EnemyDTO implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

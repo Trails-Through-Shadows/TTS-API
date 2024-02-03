@@ -43,11 +43,6 @@ public class Part extends PartDTO implements Validable {
         return part;
     }
 
-    public static PartDTO toDTO(Part part) {
-        ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(part, PartDTO.class);
-    }
-
     public Optional<Hex> getHex(int id) {
         return getHexes().stream().filter(h -> h.getKey().getId() == id).findFirst().map(Hex::fromDTO);
     }

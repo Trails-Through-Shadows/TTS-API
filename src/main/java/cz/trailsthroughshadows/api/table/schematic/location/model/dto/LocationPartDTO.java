@@ -28,10 +28,12 @@ public class LocationPartDTO {
     @Embeddable
     @Data
     public static class LocationPartId implements Serializable {
+
         @Column(name = "idLocation")
         private int idLocation;
 
         @Column(name = "idPart")
         private int idPart;
+
     }
 }

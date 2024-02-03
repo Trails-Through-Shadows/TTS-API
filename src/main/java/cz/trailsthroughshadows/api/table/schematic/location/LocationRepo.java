@@ -9,10 +9,4 @@ import java.util.Optional;
 
 public interface LocationRepo extends JpaRepository<LocationDTO, Integer> {
 
-    @Override
-    List<LocationDTO> findAll();
-
-    @Override
-    Optional<LocationDTO> findById(Integer id);
-
 }

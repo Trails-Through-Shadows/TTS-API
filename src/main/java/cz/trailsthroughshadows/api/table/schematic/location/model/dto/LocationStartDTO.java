@@ -24,5 +24,6 @@ public class LocationStartDTO implements Serializable {
 
     @Id
     private Integer idHex;
+
 }
 

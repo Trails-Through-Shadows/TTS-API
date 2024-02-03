@@ -27,4 +27,5 @@ public class LocationDoorDTO implements Serializable {
 
     @Id
     private int idHex;
+
 }

@@ -36,7 +36,7 @@ public class LocationDTO {
     @Column(name = "description", columnDefinition = "TEXT")
     public String description;
 
-    @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     public List<LocationPartDTO> parts;
 
     @OneToMany(mappedBy = "idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
