@@ -40,5 +40,4 @@ public class ObstacleDTO {
         if (effects == null) return null;
         return effects.stream().map(ObstacleEffect::getEffect).toList();
     }
-
 }

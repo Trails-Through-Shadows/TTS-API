@@ -7,8 +7,8 @@ import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.HexDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
-import cz.trailsthroughshadows.api.table.schematic.obstacle.HexObstacle;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,7 +34,7 @@ public class Part extends PartDTO implements Validable {
         return modelMapper.map(dto, Part.class);
     }
 
-    public static Part fromDTO(PartDTO dto, LocationDTO location, int rotation, List<HexEnemyDTO> enemies, List<HexObstacle> obstacles) {
+    public static Part fromDTO(PartDTO dto, LocationDTO location, int rotation, List<HexEnemyDTO> enemies, List<HexObstacleDTO> obstacles) {
         Part part = fromDTO(dto);
         part.setRotation(rotation);
         part.setEnemies(enemies.stream().map(e -> Enemy.fromDTO(e.getEnemy(), part.getHex(e.getKey().getIdHex()).orElse(null))).toList());
@@ -43,18 +43,22 @@ public class Part extends PartDTO implements Validable {
         return part;
     }
 
-    private Optional<Hex> getHex(int id) {
+    public static PartDTO toDTO(Part part) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(part, PartDTO.class);
+    }
+
+    public Optional<Hex> getHex(int id) {
         return getHexes().stream().filter(h -> h.getKey().getId() == id).findFirst().map(Hex::fromDTO);
     }
 
-    private Optional<Enemy> getEnemy(Hex hex) {
+    public Optional<Enemy> getEnemy(Hex hex) {
         return enemies.stream().filter(e -> e.getHex().equals(hex)).findFirst();
     }
 
     public Optional<Obstacle> getObstacle(Hex hex) {
         return obstacles.stream().filter(o -> o.getHex().equals(hex)).findFirst();
     }
-
 
     @Override
     public List<String> validate() {

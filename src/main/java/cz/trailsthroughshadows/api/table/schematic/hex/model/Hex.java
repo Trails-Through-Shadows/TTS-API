@@ -19,6 +19,10 @@ public class Hex extends HexDTO implements Validable {
         return modelMapper.map(dto, Hex.class);
     }
 
+    public static HexDTO toDTO(Hex hex) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(hex, HexDTO.class);
+    }
 
     @Override
     public List<String> validate() {
