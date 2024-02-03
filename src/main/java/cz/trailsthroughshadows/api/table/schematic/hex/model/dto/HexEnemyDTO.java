@@ -1,5 +1,6 @@
-package cz.trailsthroughshadows.api.table.enemy.model.dto;
+package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
+import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;

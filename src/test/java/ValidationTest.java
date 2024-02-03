@@ -1,4 +1,4 @@
-import cz.trailsthroughshadows.api.table.schematic.hex.model.HexDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;

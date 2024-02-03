@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.schematic.hex.model;
+package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
 import jakarta.persistence.*;

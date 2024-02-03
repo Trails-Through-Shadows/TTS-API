@@ -24,6 +24,7 @@ import java.util.List;
 //@Cacheable(value = "location")
 @RestController(value = "Location")
 public class LocationController {
+
     private LocationRepo locationRepo;
 
     @GetMapping("/locations")

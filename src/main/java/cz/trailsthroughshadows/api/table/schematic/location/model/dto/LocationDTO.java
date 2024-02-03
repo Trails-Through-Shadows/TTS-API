@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.schematic.location.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import cz.trailsthroughshadows.api.table.enemy.model.dto.HexEnemyDTO;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.HexObstacleDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import jakarta.persistence.*;
@@ -65,7 +65,6 @@ public class LocationDTO {
         return parts.stream()
                 .map(locationPart -> Part.fromDTO(
                         locationPart.getPart(),
-                        this,
                         locationPart.getRotation(),
                         enemies.stream()
                                 .filter(hexEnemy -> hexEnemy.getKey().getIdPart() == locationPart.getPart().getId())

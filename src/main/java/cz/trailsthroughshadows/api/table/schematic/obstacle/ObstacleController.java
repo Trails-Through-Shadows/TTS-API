@@ -24,6 +24,7 @@ import java.util.List;
 //@Cacheable(value = "obstacle")
 @RestController(value = "Obstacle")
 public class ObstacleController {
+
     private ObstacleRepo obstacleRepo;
 
     @GetMapping("/obstacles")

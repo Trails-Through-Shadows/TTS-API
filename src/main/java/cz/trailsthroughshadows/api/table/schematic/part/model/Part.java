@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.algorithm.location.Navigation;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
-import cz.trailsthroughshadows.api.table.enemy.model.dto.HexEnemyDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.HexDTO;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.HexObstacleDTO;
-import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,7 +33,7 @@ public class Part extends PartDTO implements Validable {
         return modelMapper.map(dto, Part.class);
     }
 
-    public static Part fromDTO(PartDTO dto, LocationDTO location, int rotation, List<HexEnemyDTO> enemies, List<HexObstacleDTO> obstacles) {
+    public static Part fromDTO(PartDTO dto, int rotation, List<HexEnemyDTO> enemies, List<HexObstacleDTO> obstacles) {
         Part part = fromDTO(dto);
         part.setRotation(rotation);
         part.setEnemies(enemies.stream().map(e -> Enemy.fromDTO(e.getEnemy(), part.getHex(e.getKey().getIdHex()).orElse(null))).toList());

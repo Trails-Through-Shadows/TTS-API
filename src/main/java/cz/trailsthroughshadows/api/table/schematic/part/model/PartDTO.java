@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.part.model;
 
-import cz.trailsthroughshadows.api.table.schematic.hex.model.HexDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -3,7 +3,6 @@ package cz.trailsthroughshadows.api.table.enemy.model.dto;
 import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
-import cz.trailsthroughshadows.api.table.enemy.model.EnemyAction;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,7 +36,7 @@ public class EnemyDTO implements Cloneable {
     private List<EnemyEffect> effects;
 
     @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
-    private List<EnemyAction> actions;
+    private List<EnemyActionDTO> actions;
 
     public List<Effect> getEffects() {
         if (effects == null) return new ArrayList<>();
@@ -46,7 +45,7 @@ public class EnemyDTO implements Cloneable {
 
     public List<Action> getActions() {
         if (actions == null) return new ArrayList<>();
-        return actions.stream().map(EnemyAction::getAction).toList();
+        return actions.stream().map(EnemyActionDTO::getAction).toList();
     }
 
     @Override

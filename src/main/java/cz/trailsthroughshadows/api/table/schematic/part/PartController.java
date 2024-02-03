@@ -4,7 +4,7 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.HexDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @Cacheable(value = "part")
 @RestController(value = "Part")
 public class PartController {
+
     private PartRepo partRepo;
 
     @GetMapping("/parts")

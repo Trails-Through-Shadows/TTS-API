@@ -23,15 +23,19 @@ import java.util.List;
 @Cacheable(value = "enemy")
 @RestController(value = "Enemy")
 public class EnemyController {
+
     private EnemyRepo enemyRepo;
 
     @GetMapping("/enemies")
     public ResponseEntity<RestPaginatedResult<Enemy>> getEnemies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
-            @RequestParam(defaultValue = "") String filter, // TODO: Re-Implement filtering
-            @RequestParam(defaultValue = "") String sort // TODO: Re-Implement sorting
+            @RequestParam(defaultValue = "") String filter,
+            @RequestParam(defaultValue = "") String sort
     ) {
+        // TODO: Re-Implement filtering, sorting and pagination
+        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
+
         List<Enemy> entries = enemyRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
