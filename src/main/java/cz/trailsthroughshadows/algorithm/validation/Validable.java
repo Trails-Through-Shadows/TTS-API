@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface Validable {
     public abstract List<String> validate();
-    public abstract String toString();
+    public abstract String getIdentifier();
 }

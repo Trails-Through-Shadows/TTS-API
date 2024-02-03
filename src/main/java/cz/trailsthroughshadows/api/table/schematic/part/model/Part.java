@@ -92,9 +92,9 @@ public class Part extends PartDTO implements Validable {
         IntSummaryStatistics rStats = getHexes().stream().mapToInt(HexDTO::getR).summaryStatistics();
         IntSummaryStatistics sStats = getHexes().stream().mapToInt(HexDTO::getS).summaryStatistics();
 
-        int diffQ = qStats.getMax() - qStats.getMin();
-        int diffR = rStats.getMax() - rStats.getMin();
-        int diffS = sStats.getMax() - sStats.getMin();
+        int diffQ = qStats.getMax() - qStats.getMin() - 1;
+        int diffR = rStats.getMax() - rStats.getMin() - 1;
+        int diffS = sStats.getMax() - sStats.getMin() - 1;
 
         if (diffQ > maxHexesWide || diffR > maxHexesWide || diffS > maxHexesWide) {
             errors.add("Part must not be wider than %d hexes!".formatted(maxHexesWide));
@@ -140,7 +140,7 @@ public class Part extends PartDTO implements Validable {
     }
 
     @Override
-    public String toString() {
+    public String getIdentifier() {
         return getTag();
     }
 }
