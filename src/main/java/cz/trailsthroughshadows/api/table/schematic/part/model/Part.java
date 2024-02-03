@@ -1,43 +1,57 @@
 package cz.trailsthroughshadows.api.table.schematic.part.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
+import cz.trailsthroughshadows.api.table.enemy.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import cz.trailsthroughshadows.api.table.schematic.obstacle.HexObstacle;
+import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import org.modelmapper.ModelMapper;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Data
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "Part")
-public class Part {
+@EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Part extends PartDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer rotation = null;
+    private List<Enemy> enemies = null;
+    private List<Obstacle> obstacles = null;
+    // TODO: Part doors
 
-    @Column(name = "tag")
-    private String tag;
-
-    @OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Hex> hexes = new ArrayList<>();
-    @Column(name = "usages", columnDefinition = "INT default 0")
-    private int usages = 0;
-
-    public void setHexes(List<Hex> hexes) {
-        if (this.hexes == null)
-            this.hexes = hexes;
-
-        if (hexes == null)
-            this.hexes = null;
-
-        this.hexes.clear();
-        this.hexes.addAll(hexes);
-
+    public static Part fromDTO(PartDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Part.class);
     }
 
+    public static Part fromDTO(PartDTO dto, int rotation, List<HexEnemyDTO> enemies, List<HexObstacle> obstacles) {
+        Part part = fromDTO(dto);
+        part.setRotation(rotation);
+
+        part.setEnemies(enemies.stream().map(e -> {
+            Enemy enemy = Enemy.fromDTO(e.getEnemy());
+            enemy.setHex(part.getHexes().get(e.getKey().getIdHex()));
+            return enemy;
+        }).toList());
+
+        part.setObstacles(obstacles.stream().map(e -> {
+            Obstacle obstacle = Obstacle.fromDTO(e.getObstacle());
+            obstacle.setHex(part.getHexes().get(e.getKey().getIdHex()));
+            return obstacle;
+        }).toList());
+
+        return part;
+    }
+
+    private Optional<Enemy> getEnemy(Hex hex) {
+        return enemies.stream().filter(e -> e.getHex().equals(hex)).findFirst();
+    }
+
+    public Optional<Obstacle> getObstacle(Hex hex) {
+        return obstacles.stream().filter(o -> o.getHex().equals(hex)).findFirst();
+    }
 }

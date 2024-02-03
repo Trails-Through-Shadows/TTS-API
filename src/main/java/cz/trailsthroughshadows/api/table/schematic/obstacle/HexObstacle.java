@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.obstacle;
 
+import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,17 +20,21 @@ public class HexObstacle {
 
     @ManyToOne
     @JoinColumn(name = "idObstacle", insertable = false, updatable = false)
-    private Obstacle obstacle;
+    private ObstacleDTO obstacle;
 
+    @Getter
     @Embeddable
     public static class HexObstacleId implements Serializable {
 
         @Column(nullable = false)
         private int idObstacle;
+
         @Column(nullable = false)
         private Integer idHex;
+
         @Column(nullable = false)
         private Integer idPart;
+
         @Column(nullable = false)
         private Integer idLocation;
     }

@@ -3,6 +3,8 @@ package cz.trailsthroughshadows.api.table.enemy;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
+import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
+import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +34,13 @@ public class EnemyController {
     ) {
         List<Enemy> entries = enemyRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
+                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
+                .map(Enemy::fromDTO)
                 .toList();
 
         List<Enemy> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
-                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
@@ -46,11 +49,11 @@ public class EnemyController {
 
     @GetMapping("/enemies/{id}")
     public ResponseEntity<Enemy> getEnemyById(@PathVariable int id) {
-        Enemy enemy = enemyRepo
+        EnemyDTO enemyDTO = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
 
-        return new ResponseEntity<>(enemy, HttpStatus.OK);
+        return new ResponseEntity<>(Enemy.fromDTO(enemyDTO), HttpStatus.OK);
     }
 
     @Autowired

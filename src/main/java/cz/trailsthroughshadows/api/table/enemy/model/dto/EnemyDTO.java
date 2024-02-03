@@ -1,20 +1,23 @@
-package cz.trailsthroughshadows.api.table.enemy;
+package cz.trailsthroughshadows.api.table.enemy.model.dto;
 
 import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
+import cz.trailsthroughshadows.api.table.enemy.model.EnemyAction;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "Enemy")
-public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity implements Cloneable {
+@EqualsAndHashCode(callSuper = true)
+public class EnemyDTO extends cz.trailsthroughshadows.algorithm.entity.Entity implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,28 +36,24 @@ public class Enemy extends cz.trailsthroughshadows.algorithm.entity.Entity imple
     private Integer usages;
 
     @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Collection<EnemyEffect> effects;
-    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Collection<EnemyAction> actions;
+    private List<EnemyEffect> effects;
 
-    @ToString.Include(name = "effects")
-    public Collection<Effect> getEffects() {
-        if (effects == null) return null;
+    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
+    private List<EnemyAction> actions;
+
+    public List<Effect> getEffects() {
+        if (effects == null) return new ArrayList<>();
         return effects.stream().map(EnemyEffect::getEffect).toList();
     }
 
-    @ToString.Include(name = "actions")
-    public Collection<Action> getActions() {
-        if (actions == null) return null;
+    public List<Action> getActions() {
+        if (actions == null) return new ArrayList<>();
         return actions.stream().map(EnemyAction::getAction).toList();
     }
 
-
     @Override
-    public Enemy clone() {
-        Enemy enemy = new Enemy();
+    public EnemyDTO clone() {
+        EnemyDTO enemy = new EnemyDTO();
 
         enemy.setId(this.getId());
         enemy.setName(this.getName());

@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.part;
 
 
-import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,18 +9,18 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface PartRepo extends JpaRepository<Part, Integer> {
+public interface PartRepo extends JpaRepository<PartDTO, Integer> {
 
     @Override
     @EntityGraph(attributePaths = {"hexes"})
-    List<Part> findAll();
+    List<PartDTO> findAll();
 
     @Override
     @EntityGraph(attributePaths = {"hexes"})
-    Optional<Part> findById(Integer id);
+    Optional<PartDTO> findById(Integer id);
 
 
-    @Query("SELECT p FROM Part p")
-    List<Part> findWithoutHexes();
+    @Query("SELECT p FROM PartDTO p")
+    List<PartDTO> findWithoutHexes();
 
 }

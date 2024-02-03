@@ -4,9 +4,9 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
-import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import jakarta.transaction.Transactional;
@@ -20,7 +20,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -42,6 +45,7 @@ public class PartController {
         List<Part> entries = partRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
+                .map(Part::fromDTO)
                 .toList();
 
         List<Part> entriesPage = entries.stream()
@@ -55,28 +59,28 @@ public class PartController {
 
     @GetMapping("/parts/{id}")
     public ResponseEntity<Part> getPartById(@PathVariable int id) {
-        Part part = partRepo
+        PartDTO partDTO = partRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        return new ResponseEntity<>(part, HttpStatus.OK);
+        return new ResponseEntity<>(Part.fromDTO(partDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("/parts/{id}")
     @CacheEvict(value = "part", allEntries = true)
     public ResponseEntity<RestResponse> deletePartById(@PathVariable int id) {
-        Part part = partRepo
+        PartDTO partDTO = partRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        partRepo.delete(part);
+        partRepo.delete(partDTO);
         return RestResponse.of(HttpStatus.OK, "Part deleted!");
     }
 
     @PutMapping("/parts/{id}")
     @CacheEvict(value = "part", allEntries = true)
-    public ResponseEntity<RestResponse> updatePartById(@PathVariable int id, @RequestBody Part part) {
-        Part partToUpdate = partRepo
+    public ResponseEntity<RestResponse> updatePartById(@PathVariable int id, @RequestBody PartDTO part) {
+        PartDTO partToUpdate = partRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
@@ -93,34 +97,33 @@ public class PartController {
     @PostMapping("/parts")
     @CacheEvict(value = "part", allEntries = true)
     @Transactional(rollbackOn = Exception.class)
-    public ResponseEntity<RestResponse> createParts(@RequestBody List<Part> parts) {
-
+    public ResponseEntity<RestResponse> createParts(@RequestBody List<PartDTO> parts) {
         log.debug("Creating parts: " + parts);
 
-        // Ble
-        // this needs rework
-        try {
-            for (Part part : parts) {
-                List<Hex> hexes = new ArrayList<>(part.getHexes());
-                part.getHexes().clear();
-                part = partRepo.saveAndFlush(part);
+        Map<String, List<Hex>> partHexes = new HashMap<>();
+        parts.forEach(part -> {
+            partHexes.put(part.getTag(), new ArrayList<>(part.getHexes()));
+            part.setId(null); // Removing id to always create new part
+            part.setHexes(null);
+        });
 
-                int partId = part.getId();
-                log.trace("Part created: " + partId);
-                hexes.forEach(hex -> {
-                    hex.getKey().setIdPart(partId);
-                    hex.getKey().setId(hexes.indexOf(hex) + 1);
-                });
+        // Update Parts
+        parts = partRepo.saveAll(parts);
 
-                part.setHexes(hexes);
-                partRepo.save(part);
+        parts.forEach(part -> {
+            List<Hex> hexes = partHexes.get(part.getTag());
+
+            for (int i = 0; i < hexes.size(); i++) {
+                hexes.get(i).setKey(new Hex.HexId(part.getId(), i));
             }
-        } catch (Exception e) {
-            throw new RestException(RestError.of(HttpStatus.INTERNAL_SERVER_ERROR, String.format(e.getMessage())));
-        }
 
+            part.setHexes(hexes);
+        });
 
-        return RestResponse.of(HttpStatus.OK, "Parts created!");
+        parts = partRepo.saveAll(parts);
+
+        String ids = parts.stream().map((part) -> String.valueOf(part.getId())).collect(Collectors.joining(", "));
+        return RestResponse.of(HttpStatus.OK, "Parts with ids '%s' created!", ids);
     }
 
     /**

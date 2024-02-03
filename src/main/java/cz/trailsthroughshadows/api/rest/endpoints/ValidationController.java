@@ -5,7 +5,7 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
-import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ValidationController {
 
     @PostMapping("/validate/part")
-    public ResponseEntity<RestResponse> validatePart(@RequestBody Part part) {
+    public ResponseEntity<RestResponse> validatePart(@RequestBody PartDTO part) {
         log.debug("Validating part " + part.getTag());
 
         List<String> errors = PartValidation.validate(part);

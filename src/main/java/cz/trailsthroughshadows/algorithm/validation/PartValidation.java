@@ -2,7 +2,7 @@ package cz.trailsthroughshadows.algorithm.validation;
 
 import cz.trailsthroughshadows.algorithm.location.Navigation;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
-import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 
 import java.util.ArrayList;
 import java.util.IntSummaryStatistics;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class PartValidation {
-    public static List<String> validate(Part part) {
+    public static List<String> validate(PartDTO part) {
         List<String> errors = new ArrayList<>();
 
         int minHexes = 5;

@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.campaign;
 
-import cz.trailsthroughshadows.api.table.schematic.location.Location;
+import cz.trailsthroughshadows.api.table.schematic.location.model.LocationDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +24,7 @@ public class CampaignLocation {
 
     @ManyToOne//(fetch = FetchType.LAZY) // todo bulk get or lazy load or dont map by default and only return ID
     @JoinColumn(name = "idLocation", insertable = false, updatable = false)
-    private Location location;
+    private LocationDTO location;
 
     @Column(nullable = false)
     private boolean start;

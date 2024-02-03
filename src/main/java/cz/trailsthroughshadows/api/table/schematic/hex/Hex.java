@@ -10,7 +10,6 @@ import java.io.Serializable;
 @Data
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "Hex")
 public class Hex {
 
@@ -26,18 +25,12 @@ public class Hex {
     @Column(name = "sCoord", nullable = false)
     private int s;
 
-
-    public HexId getKey() {
-        if (key == null)
-            key = new HexId();
-        return key;
-    }
-
     @Data
     @Embeddable
     @AllArgsConstructor
     @NoArgsConstructor
     public static class HexId implements Serializable {
+
         @Column(name = "idPart", nullable = false)
         private Integer idPart;
 

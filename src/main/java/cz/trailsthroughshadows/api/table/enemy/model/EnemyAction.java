@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.enemy;
+package cz.trailsthroughshadows.api.table.enemy.model;
 
 import cz.trailsthroughshadows.api.table.action.Action;
 import jakarta.persistence.*;

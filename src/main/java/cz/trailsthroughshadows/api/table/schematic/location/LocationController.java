@@ -1,15 +1,14 @@
-package cz.trailsthroughshadows.api.table.schematic;
+package cz.trailsthroughshadows.api.table.schematic.location;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
-import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
-import cz.trailsthroughshadows.api.table.schematic.obstacle.ObstacleRepo;
+import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
+import cz.trailsthroughshadows.api.table.schematic.location.model.LocationDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -22,24 +21,28 @@ import java.util.List;
 
 @Slf4j
 @Component
-@Cacheable(value = "schematic")
-@RestController(value = "Schematic")
-public class SchematicController {
-    private ObstacleRepo obstacleRepo;
+//@Cacheable(value = "location")
+@RestController(value = "Location")
+public class LocationController {
+    private LocationRepo locationRepo;
 
-    @GetMapping("/obstacles")
-    public ResponseEntity<?> getObstacles(
-            @RequestParam(defaultValue = "1") int page,
+    @GetMapping("/locations")
+    public ResponseEntity<RestPaginatedResult<Location>> getLocations(
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
-            @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
-            @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting)
+            @RequestParam(defaultValue = "") String filter,
+            @RequestParam(defaultValue = "") String sort
     ) {
-        List<ObstacleDTO> entries = obstacleRepo.findAll().stream()
+        // TODO: Re-Implement filtering, sorting and pagination
+        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
+
+        List<Location> entries = locationRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
+                .map(Location::fromDTO)
                 .toList();
 
-        List<ObstacleDTO> entriesPage = entries.stream()
+        List<Location> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
                 .toList();
@@ -48,13 +51,13 @@ public class SchematicController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
-    @GetMapping("/obstacles/{id}")
-    public ResponseEntity<?> getObstacleById(@PathVariable int id) {
-        ObstacleDTO obstacle = obstacleRepo
+    @GetMapping("/locations/{id}")
+    public ResponseEntity<Location> getPartById(@PathVariable int id) {
+        LocationDTO locationDTO = locationRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found!", id));
 
-        return new ResponseEntity<>(obstacle, HttpStatus.OK);
+        return new ResponseEntity<>(Location.fromDTO(locationDTO), HttpStatus.OK);
     }
 
     /**
@@ -62,7 +65,7 @@ public class SchematicController {
      */
 
     @Autowired
-    public void setObstacleRepo(ObstacleRepo obstacleRepo) {
-        this.obstacleRepo = obstacleRepo;
+    private void setLocationRepo(LocationRepo locationRepo) {
+        this.locationRepo = locationRepo;
     }
 }

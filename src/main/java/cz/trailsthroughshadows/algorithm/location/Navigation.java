@@ -2,7 +2,7 @@ package cz.trailsthroughshadows.algorithm.location;
 
 import cz.trailsthroughshadows.algorithm.util.Vec3;
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
-import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,13 +12,13 @@ import java.util.*;
 @Slf4j
 public class Navigation {
 
-    private final List<Part> parts;
+    private final List<PartDTO> parts;
 
-    public Navigation(Part... parts) {
+    public Navigation(PartDTO... parts) {
         this.parts = Arrays.asList(parts);
     }
 
-    public Part getPart(Hex hex) {
+    public PartDTO getPart(Hex hex) {
         return parts.stream()
                 .filter(part -> part.getId() == hex.getKey().getIdPart())
                 .findFirst()

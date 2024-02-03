@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.schematic.location;
+package cz.trailsthroughshadows.api.table.schematic.nton;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,15 +17,15 @@ public class LocationStart {
     @EmbeddedId
     private LocationStartId key;
 
-    @Embeddable
     @Data
+    @Embeddable
     @NoArgsConstructor
     public static class LocationStartId implements Serializable {
         @Column(nullable = false)
         private Integer location;
+
         @Column(nullable = false)
         private Integer hex;
     }
-
 }
 

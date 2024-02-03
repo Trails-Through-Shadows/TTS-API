@@ -1,5 +1,5 @@
 import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
-import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,11 +14,11 @@ import java.util.List;
 @Slf4j
 public class ValidationTest {
 
-    private final List<Part> parts = new ArrayList<>();
+    private final List<PartDTO> parts = new ArrayList<>();
 
     @Before
     public void setUp() {
-        Part p = new Part();
+        PartDTO p = new PartDTO();
         p.setId(1);
         p.getHexes().add(new Hex(new Hex.HexId(1, 1), 0, 0, 0));
         p.setTag("Test part");
@@ -27,7 +27,7 @@ public class ValidationTest {
 
     @Test
     public void test() {
-        for (Part part : parts) {
+        for (PartDTO part : parts) {
             log.info("Validating part {}...", part.getTag());
         }
     }

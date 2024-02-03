@@ -1,41 +1,41 @@
-package cz.trailsthroughshadows.api.table.enemy;
+package cz.trailsthroughshadows.api.table.enemy.model.dto;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-@Entity
-@Table(name = "HexEnemy")
 @Data
+@Entity
 @NoArgsConstructor
-@AllArgsConstructor
-public class HexEnemy {
+@Table(name = "HexEnemy")
+public class HexEnemyDTO {
 
     @EmbeddedId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private HexEnemyId key;
 
     @ManyToOne
     @JoinColumn(name = "idEnemy", insertable = false, updatable = false)
-    private Enemy enemy;
+    private EnemyDTO enemy;
 
-
+    @Getter
     @Embeddable
-    @Data
     public static class HexEnemyId implements Serializable {
-        @Column(nullable = false)
+
+        @Column(name = "idEnemy", nullable = false)
         private int idEnemy;
 
-        @Column(nullable = false)
+        @Column(name = "idHex", nullable = false)
         private int idHex;
 
-        @Column(nullable = false)
+        @Column(name = "idLocation", nullable = false)
         private int idLocation;
 
-        @Column(nullable = false)
+        @Column(name = "idPart", nullable = false)
         private int idPart;
+
     }
 }
-
