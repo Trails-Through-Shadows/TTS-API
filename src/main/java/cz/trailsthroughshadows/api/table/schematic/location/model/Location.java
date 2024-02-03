@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.location.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

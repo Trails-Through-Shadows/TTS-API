@@ -10,6 +10,7 @@ import java.io.Serializable;
 @Data
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Hex")
 public class HexDTO {
 
