@@ -4,7 +4,7 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
-import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -100,7 +100,7 @@ public class PartController {
     public ResponseEntity<RestResponse> createParts(@RequestBody List<PartDTO> parts) {
         log.debug("Creating parts: " + parts);
 
-        Map<String, List<Hex>> partHexes = new HashMap<>();
+        Map<String, List<HexDTO>> partHexes = new HashMap<>();
         parts.forEach(part -> {
             partHexes.put(part.getTag(), new ArrayList<>(part.getHexes()));
             part.setId(null); // Removing id to always create new part
@@ -111,10 +111,10 @@ public class PartController {
         parts = partRepo.saveAll(parts);
 
         parts.forEach(part -> {
-            List<Hex> hexes = partHexes.get(part.getTag());
+            List<HexDTO> hexes = partHexes.get(part.getTag());
 
             for (int i = 0; i < hexes.size(); i++) {
-                hexes.get(i).setKey(new Hex.HexId(part.getId(), i));
+                hexes.get(i).setKey(new HexDTO.HexId(part.getId(), i));
             }
 
             part.setHexes(hexes);

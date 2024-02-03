@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.algorithm.location;
 
 import cz.trailsthroughshadows.algorithm.util.Vec3;
-import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,43 +18,43 @@ public class Navigation {
         this.parts = Arrays.asList(parts);
     }
 
-    public PartDTO getPart(Hex hex) {
+    public PartDTO getPart(HexDTO hex) {
         return parts.stream()
                 .filter(part -> part.getId() == hex.getKey().getIdPart())
                 .findFirst()
                 .orElse(null);
     }
 
-    public int getDistance(Hex hex1, Hex hex2) {
+    public int getDistance(HexDTO hex1, HexDTO hex2) {
         Vec3<Integer> vec = new Vec3<>(hex1.getQ() - hex2.getQ(), hex1.getR() - hex2.getR(), hex1.getS() - hex2.getS());
         return (Math.abs(vec.x()) + Math.abs(vec.y()) + Math.abs(vec.z())) / 2;
     }
 
-    public List<Hex> getNeighbors(Hex hex) {
+    public List<HexDTO> getNeighbors(HexDTO hex) {
         return getNeighbors(hex, 1);
     }
 
-    public List<Hex> getNeighbors(Hex hex, int range) {
+    public List<HexDTO> getNeighbors(HexDTO hex, int range) {
         return getPart(hex).getHexes().stream()
                 .filter(neighbor -> hex != neighbor && getDistance(hex, neighbor) <= range)
                 .toList();
     }
 
-    public List<Hex> getPath(Hex hex1, Hex hex2) {
-        Map<Hex, Integer> distances = new HashMap<>();
-        Queue<Hex> queue = new LinkedList<>();
-        List<Hex> path = new ArrayList<>();
+    public List<HexDTO> getPath(HexDTO hex1, HexDTO hex2) {
+        Map<HexDTO, Integer> distances = new HashMap<>();
+        Queue<HexDTO> queue = new LinkedList<>();
+        List<HexDTO> path = new ArrayList<>();
 
         distances.put(hex1, 0);
         queue.add(hex1);
 
         // calculate distance from hex1
         while (!queue.isEmpty()) {
-            Hex current = queue.poll();
+            HexDTO current = queue.poll();
             int distance = distances.get(current);
 
-            List<Hex> neighbors = getNeighbors(current);
-            for (Hex neighbor : neighbors) {
+            List<HexDTO> neighbors = getNeighbors(current);
+            for (HexDTO neighbor : neighbors) {
                 if (distances.containsKey(neighbor))
                     continue;
 
@@ -68,14 +68,14 @@ public class Navigation {
             return null;
 
         // create path to hex2
-        Hex currentHex = hex2;
+        HexDTO currentHex = hex2;
         int currentDistance = distances.get(hex2);
 
         while (!currentHex.equals(hex1)) {
             path.add(currentHex);
 
-            List<Hex> neighbors = getNeighbors(currentHex);
-            for (Hex neighbor : neighbors) {
+            List<HexDTO> neighbors = getNeighbors(currentHex);
+            for (HexDTO neighbor : neighbors) {
                 int neighborDistance = distances.get(neighbor);
 
                 if (neighborDistance < currentDistance) {

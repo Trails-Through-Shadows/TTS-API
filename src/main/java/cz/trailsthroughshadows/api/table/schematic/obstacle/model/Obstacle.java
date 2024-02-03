@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.obstacle.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.HexDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
@@ -11,14 +11,14 @@ import org.modelmapper.ModelMapper;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Obstacle extends ObstacleDTO {
 
-    private Hex hex;
-
+    private HexDTO hex;
+    
     public static Obstacle fromDTO(ObstacleDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Obstacle.class);
     }
 
-    public static Obstacle fromDTO(ObstacleDTO dto, Hex hex) {
+    public static Obstacle fromDTO(ObstacleDTO dto, HexDTO hex) {
         Obstacle obstacle = fromDTO(dto);
         obstacle.setHex(hex);
 

@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.schematic.hex;
+package cz.trailsthroughshadows.api.table.schematic.hex.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Entity
 @NoArgsConstructor
 @Table(name = "Hex")
-public class Hex {
+public class HexDTO {
 
     @EmbeddedId
     private HexId key;

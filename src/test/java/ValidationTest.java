@@ -1,4 +1,4 @@
-import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -20,7 +20,7 @@ public class ValidationTest {
     public void setUp() {
         PartDTO p = new PartDTO();
         p.setId(1);
-        p.getHexes().add(new Hex(new Hex.HexId(1, 1), 0, 0, 0));
+        p.getHexes().add(new HexDTO(new HexDTO.HexId(1, 1), 0, 0, 0));
         p.setTag("Test part");
         parts.add(p);
     }

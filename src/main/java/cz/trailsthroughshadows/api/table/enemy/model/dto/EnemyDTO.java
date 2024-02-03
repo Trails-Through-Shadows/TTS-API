@@ -16,8 +16,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Enemy")
-@EqualsAndHashCode(callSuper = true)
-public class EnemyDTO extends cz.trailsthroughshadows.algorithm.entity.Entity implements Cloneable {
+public class EnemyDTO  implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
