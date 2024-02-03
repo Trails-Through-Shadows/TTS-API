@@ -8,7 +8,7 @@ import java.util.List;
 public class Validation {
     public static ValidationResponse validate(Validable validable) {
         String name = validable.getClass().getSimpleName();
-        String str = validable.toString();
+        String str = validable.getIdentifier();
 
         log.info("Validating {} '{}'", name, str);
         List<String> errors = validable.validate();

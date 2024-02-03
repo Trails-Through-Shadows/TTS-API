@@ -26,14 +26,14 @@ public class Hex extends HexDTO implements Validable {
 
         // hex has to have correct coordinates
         if (getQ() + getR() + getS() != 0) {
-            errors.add("Hex (%d, %d, %d) has to have correct coordinates!".formatted(getQ(), getR(), getS()));
+            errors.add("%s has to have correct coordinates!".formatted(getIdentifier()));
         }
 
         return errors;
     }
 
     @Override
-    public String toString() {
+    public String getIdentifier() {
         return "Hex (%d, %d, %d)".formatted(getQ(), getR(), getS());
     }
 }
