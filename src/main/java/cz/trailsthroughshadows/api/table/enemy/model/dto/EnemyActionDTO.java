@@ -1,18 +1,21 @@
-package cz.trailsthroughshadows.api.table.enemy;
+package cz.trailsthroughshadows.api.table.enemy.model.dto;
 
 import cz.trailsthroughshadows.api.table.action.Action;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 
+@Data
 @Entity
 @Table(name = "EnemyAction")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EnemyAction {
+public class EnemyActionDTO {
+
     @EmbeddedId
     private EnemyActionId key;
 
@@ -23,10 +26,12 @@ public class EnemyAction {
     @Embeddable
     @Data
     public static class EnemyActionId implements Serializable {
+
         @Column(nullable = false)
         private int idEnemy;
 
         @Column(nullable = false)
         private int idAction;
+
     }
 }

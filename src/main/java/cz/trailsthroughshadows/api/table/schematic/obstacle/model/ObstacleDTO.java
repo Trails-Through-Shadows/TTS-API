@@ -1,24 +1,19 @@
-package cz.trailsthroughshadows.api.table.schematic.obstacle;
+package cz.trailsthroughshadows.api.table.schematic.obstacle.model;
 
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.ObstacleEffect;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.Collection;
 import java.util.Set;
 
-@Entity
 @Data
-@AllArgsConstructor
+@Entity
 @NoArgsConstructor
 @Table(name = "Obstacle")
-// Someday we will foresee obstacles
-// Through the blizzard, through the blizzard
-public class Obstacle {
+public class ObstacleDTO {
 
     @Id
     public Integer id;
@@ -39,13 +34,10 @@ public class Obstacle {
     public Integer usages = 0;
 
     @OneToMany(mappedBy = "idObstacle", fetch = FetchType.LAZY)
-    @ToString.Exclude
     public Set<ObstacleEffect> effects;
 
-    @ToString.Include(name = "effects")
     public Collection<Effect> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(ObstacleEffect::getEffect).toList();
     }
-
 }

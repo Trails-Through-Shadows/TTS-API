@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <conversionRule conversionWord="coloredHighlight" converterClass="cz.trailsthroughshadows.logging.ColoredHighlighting" />
+    <conversionRule conversionWord="coloredHighlight"
+                    converterClass="cz.trailsthroughshadows.logging.ColoredHighlighting"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%white%d{yyyy-MM-dd HH:mm:ss} | %coloredHighlight(%-5(%level)) | %cyan(%logger{10}) : %msg%n</pattern>
+            <pattern>%white%d{yyyy-MM-dd HH:mm:ss} | %coloredHighlight(%-5(%level)) | %cyan(%logger{10}) : %msg%n
+            </pattern>
             <charset>utf-8</charset>
         </encoder>
     </appender>

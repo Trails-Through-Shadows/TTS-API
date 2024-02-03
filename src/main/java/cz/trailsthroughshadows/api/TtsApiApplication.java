@@ -16,8 +16,6 @@ public class TtsApiApplication {
 
     public static void main(String[] args) {
 
-//        ObjectMapper mapper = new ObjectMapper();
-//        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
 //        .env file load
         Dotenv dotenv = Dotenv.configure().directory(".config").load();
@@ -33,8 +31,7 @@ public class TtsApiApplication {
         app.setDefaultProperties(env);
         app.run(args);
         log.debug("Running with login: " + dotenv.get("DB_USER") + " -> " + dotenv.get("DB_PASSWORD"));
-
-//        SpringApplication.run(TtsApiApplication.class, args);
+        
         log.info("Docs running on http://localhost:8080/swagger-ui/index.html");
         log.info("API running on http://localhost:8080/");
     }

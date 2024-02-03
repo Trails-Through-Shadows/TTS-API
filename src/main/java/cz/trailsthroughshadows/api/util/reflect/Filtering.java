@@ -38,7 +38,7 @@ public class Filtering {
 
             // When filter list, filter by list size
             if (fieldValue instanceof Enumeration<?> || fieldValue instanceof Collection<?>) {
-                fieldValue = (Integer) ((Collection<?>) fieldValue).size();
+                fieldValue = ((Collection<?>) fieldValue).size();
             }
 
             if (filterOperator.equalsIgnoreCase("bwn")) {
@@ -52,7 +52,8 @@ public class Filtering {
 
             return switch (filterOperator) {
                 case "eq" -> fieldValue.equals(Ref.parseValue(field, filterValue));
-                case "gt", "gte", "lt", "lte" -> Ref.compare(fieldValue, Ref.parseValue(field, filterValue), filterOperator);
+                case "gt", "gte", "lt", "lte" ->
+                        Ref.compare(fieldValue, Ref.parseValue(field, filterValue), filterOperator);
                 case "has" -> fieldValue.toString().contains(filterValue);
                 default -> false;
             };

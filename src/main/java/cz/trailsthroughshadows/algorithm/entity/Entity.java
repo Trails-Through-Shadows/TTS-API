@@ -1,24 +1,18 @@
 package cz.trailsthroughshadows.algorithm.entity;
 
-import cz.trailsthroughshadows.api.table.action.Action;
-import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.schematic.hex.Hex;
-import jakarta.persistence.Column;
-import jakarta.persistence.Transient;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class Entity {
 
-    @Transient
-    public Hex hex;
-    @Transient
-    public List<Effect> activeEffects = new ArrayList<>();
+//    @Transient
+//    public Hex hex;
+//
+//    @Transient
+//    public List<Effect> activeEffects = new ArrayList<>();
 
     public abstract String getName();
 
-//    public abstract List<Action> getActions();
 }

@@ -4,11 +4,12 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
-import cz.trailsthroughshadows.api.rest.model.error.RestError;
-import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,13 +19,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @Cacheable(value = "part")
 @RestController(value = "Part")
 public class PartController {
+
     private PartRepo partRepo;
 
     @GetMapping("/parts")
@@ -40,6 +46,7 @@ public class PartController {
         List<Part> entries = partRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
+                .map(Part::fromDTO)
                 .toList();
 
         List<Part> entriesPage = entries.stream()
@@ -53,66 +60,71 @@ public class PartController {
 
     @GetMapping("/parts/{id}")
     public ResponseEntity<Part> getPartById(@PathVariable int id) {
-        Part part = partRepo
+        PartDTO partDTO = partRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        return new ResponseEntity<>(part, HttpStatus.OK);
+        return new ResponseEntity<>(Part.fromDTO(partDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("/parts/{id}")
     @CacheEvict(value = "part", allEntries = true)
     public ResponseEntity<RestResponse> deletePartById(@PathVariable int id) {
-        Part part = partRepo
+        PartDTO partDTO = partRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        partRepo.delete(part);
-        return RestResponse.of( HttpStatus.OK, "Part deleted!");
+        partRepo.delete(partDTO);
+        return RestResponse.of(HttpStatus.OK, "Part deleted!");
     }
 
     @PutMapping("/parts/{id}")
     @CacheEvict(value = "part", allEntries = true)
-    public ResponseEntity<RestResponse> updatePartById(@PathVariable int id, @RequestBody Part part) {
-        Part partToUpdate = partRepo
+    public ResponseEntity<RestResponse> updatePartById(@PathVariable int id, @RequestBody PartDTO part) {
+        PartDTO partToUpdate = partRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        partToUpdate.setTag(part.getTag());
-
-//        partToUpdate.setHexes(part.getHexes());
-        partToUpdate.getHexes().retainAll(part.getHexes());
-        partToUpdate.getHexes().addAll(part.getHexes());
-
-        // TODO: It's not removing part hexes, but it's adding new ones or updating existing ones
         // TODO: Validation for new or updates parts
-        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/28
+
+        partToUpdate.setTag(part.getTag());
+        partToUpdate.setHexes(part.getHexes());
+
         partRepo.save(partToUpdate);
 
-        return RestResponse.of(HttpStatus.OK,"Part updated!");
+        return RestResponse.of(HttpStatus.OK, "Part updated!");
     }
 
     @PostMapping("/parts")
     @CacheEvict(value = "part", allEntries = true)
-    public ResponseEntity<RestResponse> createParts(@RequestBody List<Part> parts) {
-        List<Integer> conflicts = parts.stream()
-                .filter(part -> part.getId() != null && partRepo.existsById(part.getId()))
-                .map(Part::getId)
-                .toList();
+    @Transactional(rollbackOn = Exception.class)
+    public ResponseEntity<RestResponse> createParts(@RequestBody List<PartDTO> parts) {
+        log.debug("Creating parts: " + parts);
 
-        if (!conflicts.isEmpty()) {
-            RestError error = new RestError(HttpStatus.CONFLICT, "Parts already exists!");
-            for (Integer conflict : conflicts) {
-                error.addSubError(new MessageError("Part with id '%d' already exists!", conflict));
+        Map<String, List<HexDTO>> partHexes = new HashMap<>();
+        parts.forEach(part -> {
+            partHexes.put(part.getTag(), new ArrayList<>(part.getHexes()));
+            part.setId(null); // Removing id to always create new part
+            part.setHexes(null);
+        });
+
+        // Update Parts
+        parts = partRepo.saveAll(parts);
+
+        parts.forEach(part -> {
+            List<HexDTO> hexes = partHexes.get(part.getTag());
+
+            for (int i = 0; i < hexes.size(); i++) {
+                hexes.get(i).setKey(new HexDTO.HexId(part.getId(), i));
             }
 
-            throw new RestException(error);
-        }
+            part.setHexes(hexes);
+        });
 
-        // TODO: When saving parts with its id, it is ignoring the id and creating new one using auto increment
-        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/33
-        partRepo.saveAll(parts);
-        return RestResponse.of(HttpStatus.OK,"Parts created!");
+        parts = partRepo.saveAll(parts);
+
+        String ids = parts.stream().map((part) -> String.valueOf(part.getId())).collect(Collectors.joining(", "));
+        return RestResponse.of(HttpStatus.OK, "Parts with ids '%s' created!", ids);
     }
 
     /**

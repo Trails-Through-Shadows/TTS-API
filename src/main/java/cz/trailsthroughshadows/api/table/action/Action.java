@@ -9,32 +9,37 @@ import cz.trailsthroughshadows.api.table.action.restorecards.RestoreCards;
 import cz.trailsthroughshadows.api.table.action.skill.Skill;
 import cz.trailsthroughshadows.api.table.action.summon.SummonAction;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 
-@Entity
-@Table(name = "Action")
 @Data
+@Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+@Table(name = "Action")
+@JsonInclude(value = JsonInclude.Include.NON_NULL, valueFilter = LazyFieldsFilter.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Action {
-    @Transient
-    Boolean discarded = false;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private int id;
+
     @Column(nullable = false, length = 50)
     private String title;
+
     @Column
     private String description;
+
     @Column
     @Enumerated(EnumType.STRING)
     private Discard discard;
+
     @Column
     private Integer levelReq;
 
@@ -54,8 +59,9 @@ public class Action {
     @JoinColumn(name = "restoreCards")
     private RestoreCards restoreCards;
 
+    @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
     @OneToMany(mappedBy = "idAction", fetch = FetchType.LAZY)
-    private Collection<SummonAction> summonActions;
+    private List<SummonAction> summonActions;
 
     public enum Discard implements Serializable {
         PERMANENT,

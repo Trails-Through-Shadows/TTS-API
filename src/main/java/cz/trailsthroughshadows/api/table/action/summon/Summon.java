@@ -9,13 +9,12 @@ import lombok.*;
 import java.util.Collection;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "Summon")
-public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity implements Cloneable {
+public class Summon implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,9 +62,5 @@ public class Summon extends cz.trailsthroughshadows.algorithm.entity.Entity impl
         summon.setEffects(this.getRawEffects());
 
         return summon;
-    }
-
-    public List<Action> getActions() {
-        return List.of(action);
     }
 }
