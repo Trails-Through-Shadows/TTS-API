@@ -1,18 +1,16 @@
-package cz.trailsthroughshadows.api.table.schematic.nton;
+package cz.trailsthroughshadows.api.table.schematic.location.model.dto;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-@Entity
 @Data
-@AllArgsConstructor
+@Entity
 @NoArgsConstructor
 @Table(name = "LocationStart")
-public class LocationStart {
+public class LocationStartDTO {
 
     @EmbeddedId
     private LocationStartId key;
@@ -22,10 +20,10 @@ public class LocationStart {
     @NoArgsConstructor
     public static class LocationStartId implements Serializable {
         @Column(nullable = false)
-        private Integer location;
+        private Integer idLocation;
 
         @Column(nullable = false)
-        private Integer hex;
+        private Integer idHex;
     }
 }
 

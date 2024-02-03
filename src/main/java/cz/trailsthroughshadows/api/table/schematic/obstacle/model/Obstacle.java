@@ -12,10 +12,17 @@ import org.modelmapper.ModelMapper;
 public class Obstacle extends ObstacleDTO {
 
     private Hex hex;
-    
+
     public static Obstacle fromDTO(ObstacleDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Obstacle.class);
+    }
+
+    public static Obstacle fromDTO(ObstacleDTO dto, Hex hex) {
+        Obstacle obstacle = fromDTO(dto);
+        obstacle.setHex(hex);
+
+        return obstacle;
     }
 
     public static ObstacleDTO toDTO(Obstacle obstacle) {

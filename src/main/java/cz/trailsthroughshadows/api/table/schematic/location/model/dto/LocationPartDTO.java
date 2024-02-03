@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.schematic.location.model;
+package cz.trailsthroughshadows.api.table.schematic.location.model.dto;
 
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import jakarta.persistence.*;

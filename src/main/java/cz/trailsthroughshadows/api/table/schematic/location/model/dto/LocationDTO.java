@@ -1,7 +1,8 @@
-package cz.trailsthroughshadows.api.table.schematic.location.model;
+package cz.trailsthroughshadows.api.table.schematic.location.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.HexEnemyDTO;
+import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.HexObstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import jakarta.persistence.*;
@@ -37,6 +38,9 @@ public class LocationDTO {
     @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<LocationPartDTO> parts;
 
+    @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<LocationDoorDTO> doors;
+
     @JsonIgnore
     @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<HexEnemyDTO> enemies;
@@ -53,6 +57,7 @@ public class LocationDTO {
         return parts.stream()
                 .map(locationPart -> Part.fromDTO(
                         locationPart.getPart(),
+                        this,
                         locationPart.getRotation(),
                         enemies.stream()
                                 .filter(hexEnemy -> hexEnemy.getKey().getIdPart() == locationPart.getPart().getId())
@@ -60,8 +65,7 @@ public class LocationDTO {
                         obstacles.stream()
                                 .filter(hexObstacle -> hexObstacle.getKey().getIdPart() == locationPart.getPart().getId())
                                 .toList()
-                        )
-                ).toList();
+                )).toList();
     }
 }
 
