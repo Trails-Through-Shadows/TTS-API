@@ -13,6 +13,6 @@ public abstract class Entity {
 //    @Transient
 //    public List<Effect> activeEffects = new ArrayList<>();
 
-    public abstract String getName();
+    public abstract String getTitle();
 
 }

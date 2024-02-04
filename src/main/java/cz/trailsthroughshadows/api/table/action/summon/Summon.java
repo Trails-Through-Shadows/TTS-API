@@ -20,14 +20,17 @@ public class Summon implements Cloneable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, length = 128)
+    private String title;
 
     @Column
     private Integer duration;
 
     @Column
     private Integer health;
+
+    @Column(length = 32)
+    private String tag;
 
     @ManyToOne()
     @JoinColumn(name = "idAction")
@@ -55,7 +58,7 @@ public class Summon implements Cloneable {
         Summon summon = new Summon();
 
         summon.setId(this.getId());
-        summon.setName(this.getName());
+        summon.setTitle(this.getTitle());
         summon.setDuration(this.getDuration());
         summon.setHealth(this.getHealth());
         summon.setAction(this.getAction());

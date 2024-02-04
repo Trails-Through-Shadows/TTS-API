@@ -15,7 +15,7 @@ public class Achievement {
     @Setter(AccessLevel.NONE) //zrušení jen setteru
     private Integer id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 128)
     private String title;
     @Column(nullable = false)
     private String description;

@@ -25,7 +25,7 @@ public class LocationDTO {
     @Column(name = "title", nullable = false)
     public String title;
 
-    @Column(name = "tag")
+    @Column(name = "tag", length = 32)
     public String tag;
 
     @Enumerated(EnumType.STRING)
