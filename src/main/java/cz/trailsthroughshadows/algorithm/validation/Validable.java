@@ -1,7 +1,6 @@
 package cz.trailsthroughshadows.algorithm.validation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import cz.trailsthroughshadows.ValidationConfig;
 import jakarta.annotation.Nullable;
 
 import java.util.ArrayList;

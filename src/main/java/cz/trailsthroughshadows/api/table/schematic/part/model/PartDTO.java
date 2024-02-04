@@ -1,8 +1,9 @@
 package cz.trailsthroughshadows.api.table.schematic.part.model;
 
-import cz.trailsthroughshadows.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.location.Navigation;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
+import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import jakarta.persistence.*;
@@ -116,6 +117,10 @@ public class PartDTO extends Validable {
                 break;
             }
         }
+
+        // part has to have a correct tag and title
+        Title title = new Title(tag);
+        title.validate(validationConfig);
     }
 
     @Override

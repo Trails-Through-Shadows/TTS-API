@@ -1,8 +1,12 @@
 package cz.trailsthroughshadows.api.table.enemy.model.dto;
 
+import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.text.Title;
+import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +18,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Enemy")
-public class EnemyDTO implements Cloneable {
+public class EnemyDTO extends Validable implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,4 +63,17 @@ public class EnemyDTO implements Cloneable {
 
         return enemy;
     }
+
+    //region Validation
+    @Override
+    protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        Title title = new Title(name);
+        title.validate(validationConfig);
+    }
+
+    @Override
+    public String getIdentifier() {
+        return getName();
+    }
+    //endregion
 }

@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
-import cz.trailsthroughshadows.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

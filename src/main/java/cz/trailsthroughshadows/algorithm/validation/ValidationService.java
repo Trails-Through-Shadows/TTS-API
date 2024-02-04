@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.algorithm.validation;
 
-import cz.trailsthroughshadows.ValidationConfig;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
