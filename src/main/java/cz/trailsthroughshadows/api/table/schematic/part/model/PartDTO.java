@@ -69,12 +69,12 @@ public class PartDTO extends Validable {
 
         // min 5 hexes
         if (getHexes().size() < hexGrid.getMinHexes()) {
-            errors.add(new MessageError("Part must have at least %d hexes!", hexGrid.getMinHexes()));
+            errors.add(new ValidationError(getValidableValue(), "hexes", getHexes().size(), "Part must have at least %d hexes!".formatted(hexGrid.getMinHexes())));
         }
 
         // max 50 hexes
         if (getHexes().size() > hexGrid.getMaxHexes()) {
-            errors.add(new MessageError("Part must have at most %d hexes!", hexGrid.getMaxHexes()));
+            errors.add(new ValidationError(getValidableValue(), "hexes", getHexes().size(), "Part must have at most %d hexes!".formatted(hexGrid.getMaxHexes())));
         }
 
         // every hex has to have correct coordinates
@@ -125,12 +125,12 @@ public class PartDTO extends Validable {
             }
         }
         if (duplicates > 0)
-            errors.add(new MessageError("Part must not have any duplicate hexes!"));
+            errors.add(new ValidationError(getValidableValue(), "hexes", duplicates, "Part must not have any duplicate hexes!"));
 
         // must include center hex
         Optional<HexDTO> centerHex = getHexes().stream().filter(hex -> hex.getQ() == 0 && hex.getR() == 0 && hex.getS() == 0).findFirst();
         if (centerHex.isEmpty()) {
-            errors.add(new MessageError("Part must include center hex!"));
+            errors.add(new ValidationError(getValidableValue(), "hexes", null, "Part must include center hex!"));
             return;
         }
 
