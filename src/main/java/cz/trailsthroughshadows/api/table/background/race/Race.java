@@ -28,6 +28,9 @@ public class Race {
     @Column(nullable = false)
     public int baseInitiative;
 
+    @Column(length = 64)
+    private String tag;
+
     @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "idRace")
     public Collection<RaceEffect> effects;

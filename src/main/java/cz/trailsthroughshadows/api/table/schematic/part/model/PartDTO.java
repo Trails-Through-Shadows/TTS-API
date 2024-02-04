@@ -20,7 +20,7 @@ public class PartDTO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Integer id;
 
-    @Column(name = "tag")
+    @Column(name = "tag", length = 64)
     protected String tag;
 
     @OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)

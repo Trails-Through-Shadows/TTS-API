@@ -29,6 +29,8 @@ public class Clazz {
     @Column(nullable = false)
     private int baseInitiative;
 
+    @Column(length = 64)
+    private String tag;
 
     @OneToMany
     @JoinColumn(name = "idClass")

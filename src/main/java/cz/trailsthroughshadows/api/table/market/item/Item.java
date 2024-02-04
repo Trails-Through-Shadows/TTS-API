@@ -29,6 +29,9 @@ public class Item {
     @Column
     private String description;
 
+    @Column(length = 64)
+    private String tag;
+
     @Column(nullable = false)
     private String requirements;
 

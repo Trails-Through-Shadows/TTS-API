@@ -30,6 +30,9 @@ public class ObstacleDTO {
     @Column(nullable = false)
     public boolean crossable;
 
+    @Column(length = 64)
+    private String tag;
+
     @Column
     public Integer usages = 0;
 

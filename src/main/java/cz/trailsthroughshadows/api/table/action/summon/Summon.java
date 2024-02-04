@@ -29,6 +29,9 @@ public class Summon implements Cloneable {
     @Column
     private Integer health;
 
+    @Column(length = 64)
+    private String tag;
+
     @ManyToOne()
     @JoinColumn(name = "idAction")
     private Action action;

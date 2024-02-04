@@ -29,6 +29,9 @@ public class EnemyDTO implements Cloneable {
     @Column(nullable = false)
     private int baseDefence;
 
+    @Column(length = 64)
+    private String tag;
+
     @Column
     private Integer usages;
 
