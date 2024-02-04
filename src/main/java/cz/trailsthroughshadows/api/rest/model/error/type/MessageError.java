@@ -12,4 +12,9 @@ public class MessageError extends RestSubError {
     public MessageError(String message, Object... args) {
         this.message = message.formatted(args);
     }
+
+    @Override
+    public String toString() {
+        return message;
+    }
 }

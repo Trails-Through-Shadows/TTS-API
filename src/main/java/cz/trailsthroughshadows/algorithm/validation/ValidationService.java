@@ -2,14 +2,13 @@ package cz.trailsthroughshadows.algorithm.validation;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
-import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
+import cz.trailsthroughshadows.api.rest.model.error.RestSubError;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Data
 @Slf4j
@@ -18,31 +17,23 @@ public class ValidationService {
 
     private ValidationConfig validationConfig;
 
-    public ValidationResponse validate(Validable validable) {
-        String name = validable.getClass().getSimpleName();
-        name = name.endsWith("DTO") ? name.replace("DTO", "") : name;
-        String str = validable.getIdentifier();
+    public String validate(Validable validable) {
+        String name = validable.getValidableClass();
+        String value = validable.getValidableValue();
 
-        log.debug("Validating {} '{}'", name, str);
+        log.debug("Validating {} '{}'", name, value);
 
-        List<String> errors = validable.validate(validationConfig);
-        boolean valid = errors.isEmpty();
+        Optional<RestError> error = validable.validate(validationConfig);
+        boolean valid = error.isEmpty();
 
-        ValidationResponse response = new ValidationResponse(
-            valid,
-            "%s '%s' is %s!".formatted(name, str, valid ? "valid" : "not valid"),
-            errors);
-
-        log.debug(response.message());
+        String response = "%s '%s' is %s!".formatted(name, value, valid ? "valid" : "not valid");
+        log.debug(response);
 
         if (!valid) {
-            RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, response.message());
-            for (var e : errors) {
-                log.debug(" > " + e);
-                error.addSubError(new MessageError(e));
+            for (RestSubError subError : error.get().getErrors()) {
+                log.debug("  - {}", subError.toString());
             }
-
-            throw new RestException(error);
+            throw new RestException(error.get());
         }
 
         return response;

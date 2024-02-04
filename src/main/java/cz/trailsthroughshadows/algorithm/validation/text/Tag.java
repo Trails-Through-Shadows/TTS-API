@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.algorithm.validation.text;
 
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 
 public class Tag extends Text {
 
@@ -14,7 +15,7 @@ public class Tag extends Text {
 
         // check prefix regex
         if (validationConfig.getTag().getPrefix() != null && !text.matches(validationConfig.getTag().getPrefix())) {
-            errors.add("Tag has to start with a correct prefix!");
+            errors.add(new ValidationError("Tag", "text", text, "Tag has to start with a correct prefix!"));
         }
     }
 }

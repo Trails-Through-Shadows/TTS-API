@@ -75,7 +75,7 @@ public class EnemyDTO extends Validable implements Cloneable {
     }
 
     @Override
-    public String getIdentifier() {
+    public String getValidableValue() {
         return getTitle();
     }
     //endregion

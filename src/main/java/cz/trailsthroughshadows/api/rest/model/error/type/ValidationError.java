@@ -14,8 +14,8 @@ public class ValidationError extends RestSubError {
     private Object rejectedValue;
     private String message;
 
-    public ValidationError(String object, String message) {
-        this.object = object;
-        this.message = message;
+    @Override
+    public String toString() {
+        return object + "." + field + ": " + message + " (rejected value: " + rejectedValue + ")";
     }
 }

@@ -2,6 +2,7 @@ package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,13 +49,14 @@ public class HexDTO extends Validable {
     @Override
     public void validateInner(ValidationConfig validationConfig) {
         // hex has to have correct coordinates
-        if (getQ() + getR() + getS() != 0) {
-            errors.add("Hex %s has to have correct coordinates!".formatted(getIdentifier()));
+        int sum = getQ() + getR() + getS();
+        if (sum != 0) {
+            errors.add(new ValidationError("Hex", "coords", sum, "Sum of coords q + r + s has to be 0!"));
         }
     }
 
     @Override
-    public String getIdentifier() {
+    public String getValidableValue() {
         return "(%d, %d, %d)".formatted(getQ(), getR(), getS());
     }
     //endregion

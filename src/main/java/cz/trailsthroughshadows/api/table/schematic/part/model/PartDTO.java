@@ -3,8 +3,11 @@ package cz.trailsthroughshadows.api.table.schematic.part.model;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.location.Navigation;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
+import cz.trailsthroughshadows.algorithm.validation.text.Tag;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
+import cz.trailsthroughshadows.api.rest.model.error.RestSubError;
+import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -53,22 +56,37 @@ public class PartDTO extends Validable {
     //region Validation
     @Override
     public void validateInner(ValidationConfig validationConfig) {
+        ValidationConfig.HexGrid hexGrid = validationConfig.getHexGrid();
+
+        List<RestSubError> textErrors = new ArrayList<>();
+
+        // part has to have a correct tag and title
+        Title title = new Title(getTitle());
+        title.validate(validationConfig).ifPresent(restError -> textErrors.addAll(restError.getErrors()));
+
+        Tag tag = new Tag(getTag());
+        tag.validate(validationConfig).ifPresent(restError -> textErrors.addAll(restError.getErrors()));
+
         // min 5 hexes
-        if (getHexes().size() < validationConfig.getHexGrid().getMinHexes()) {
-            errors.add("Part must have at least %d hexes!".formatted(validationConfig.getHexGrid().getMinHexes()));
+        if (getHexes().size() < hexGrid.getMinHexes()) {
+            errors.add(new MessageError("Part must have at least %d hexes!", hexGrid.getMinHexes()));
         }
 
         // max 50 hexes
-        if (getHexes().size() > validationConfig.getHexGrid().getMaxHexes()) {
-            errors.add("Part must have at most 50 hexes!");
+        if (getHexes().size() > hexGrid.getMaxHexes()) {
+            errors.add(new MessageError("Part must have at most %d hexes!", hexGrid.getMaxHexes()));
         }
 
         // every hex has to have correct coordinates
         for (HexDTO hex : getHexes()) {
-            errors.addAll(hex.validate(validationConfig));
+            hex.validate(validationConfig).ifPresent(restError -> errors.addAll(restError.getErrors()));
         }
-        if (!errors.isEmpty())
+        if (!errors.isEmpty()) {
+            errors.addAll(textErrors);
             return;
+        }
+
+        errors.addAll(textErrors);
 
         // max 8 hexes wide
         List<Integer> coordinates = new ArrayList<>();
@@ -81,8 +99,16 @@ public class PartDTO extends Validable {
         int diffR = rStats.getMax() - rStats.getMin() - 1;
         int diffS = sStats.getMax() - sStats.getMin() - 1;
 
-        if (diffQ > validationConfig.getHexGrid().getMaxWidth() || diffR > validationConfig.getHexGrid().getMaxWidth() || diffS > validationConfig.getHexGrid().getMaxWidth()) {
-            errors.add("Part must not be wider than %d hexes!".formatted(validationConfig.getHexGrid().getMaxWidth()));
+        String widthError = "Part must not be wider than %d hexes!".formatted(hexGrid.getMaxWidth());
+
+        if (diffQ > hexGrid.getMaxWidth()) {
+            errors.add(new ValidationError(getValidableValue(), "qCoord", diffQ, widthError));
+        }
+        if (diffR > hexGrid.getMaxWidth()) {
+            errors.add(new ValidationError(getValidableValue(), "rCoord", diffR, widthError));
+        }
+        if (diffS > hexGrid.getMaxWidth()) {
+            errors.add(new ValidationError(getValidableValue(), "sCoord", diffS, widthError));
         }
 
         // no hexes can be on the same position
@@ -99,12 +125,12 @@ public class PartDTO extends Validable {
             }
         }
         if (duplicates > 0)
-            errors.add("Part must not have duplicate hexes!");
+            errors.add(new MessageError("Part must not have any duplicate hexes!"));
 
         // must include center hex
         Optional<HexDTO> centerHex = getHexes().stream().filter(hex -> hex.getQ() == 0 && hex.getR() == 0 && hex.getS() == 0).findFirst();
         if (centerHex.isEmpty()) {
-            errors.add("Part must include a center hex!");
+            errors.add(new MessageError("Part must include center hex!"));
             return;
         }
 
@@ -116,19 +142,15 @@ public class PartDTO extends Validable {
                 continue;
 
             if (navigation.getPath(centerHex.get(), hex) == null) {
-                errors.add("All hexes must be connected!");
+                errors.add(new ValidationError(getValidableValue(), hex.getValidableValue(), null, "Part must be connected!"));
                 break;
             }
         }
-
-        // part has to have a correct tag and title
-        Title title = new Title(tag);
-        errors.addAll(title.validate(validationConfig));
     }
 
     @Override
-    public String getIdentifier() {
-        return getTag();
+    public String getValidableValue() {
+        return "%s (%s)".formatted(getTag(), getTitle());
     }
     //endregion
 }
