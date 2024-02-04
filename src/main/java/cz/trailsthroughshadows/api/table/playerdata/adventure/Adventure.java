@@ -22,6 +22,8 @@ public class Adventure {
     private int experience;
     @Column(nullable = false)
     private int gold;
+    @Column(nullable = false, length = 128)
+    private String title;
 
     @Column(insertable = false, updatable = false, nullable = false)
     private int idLicense;
