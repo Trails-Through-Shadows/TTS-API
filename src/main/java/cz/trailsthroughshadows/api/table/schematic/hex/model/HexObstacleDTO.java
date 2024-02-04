@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.schematic.obstacle;
+package cz.trailsthroughshadows.api.table.schematic.hex.model;
 
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
 import jakarta.persistence.*;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "HexObstacle")
-public class HexObstacle {
+public class HexObstacleDTO {
 
     @EmbeddedId
     @GeneratedValue(strategy = GenerationType.IDENTITY)

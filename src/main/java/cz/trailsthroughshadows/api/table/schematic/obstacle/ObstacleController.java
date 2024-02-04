@@ -1,15 +1,14 @@
-package cz.trailsthroughshadows.api.table.schematic;
+package cz.trailsthroughshadows.api.table.schematic.obstacle;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
+import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
-import cz.trailsthroughshadows.api.table.schematic.obstacle.ObstacleRepo;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -22,24 +21,28 @@ import java.util.List;
 
 @Slf4j
 @Component
-@Cacheable(value = "schematic")
-@RestController(value = "Schematic")
-public class SchematicController {
+//@Cacheable(value = "obstacle")
+@RestController(value = "Obstacle")
+public class ObstacleController {
     private ObstacleRepo obstacleRepo;
 
     @GetMapping("/obstacles")
     public ResponseEntity<?> getObstacles(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "100") int limit,
-            @RequestParam(defaultValue = "") String filter, // TODO: Implement filtering
-            @RequestParam(defaultValue = "id:dsc") String sort // TODO: Implement sorting)
+            @RequestParam(defaultValue = "") String filter,
+            @RequestParam(defaultValue = "id:dsc") String sort
     ) {
-        List<ObstacleDTO> entries = obstacleRepo.findAll().stream()
+        // TODO: Re-Implement filtering, sorting and pagination
+        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
+
+        List<Obstacle> entries = obstacleRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
+                .map(Obstacle::fromDTO)
                 .toList();
 
-        List<ObstacleDTO> entriesPage = entries.stream()
+        List<Obstacle> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
                 .toList();

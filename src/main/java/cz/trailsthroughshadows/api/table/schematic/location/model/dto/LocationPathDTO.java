@@ -12,18 +12,18 @@ import java.io.Serializable;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "LocationStart")
-@IdClass(LocationStartDTO.class)
-public class LocationStartDTO implements Serializable {
+@Table(name = "LocationPath")
+@IdClass(LocationPathDTO.class)
+public class LocationPathDTO implements Serializable {
 
     @Id
-    private Integer idLocation;
+    private Integer idCampaign;
 
     @Id
-    private Integer idPart;
+    private Integer idStart;
 
     @Id
-    private Integer idHex;
+    private Integer idEnd;
 
 }
 
