@@ -4,13 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.ValidationConfig;
 import jakarta.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public interface Validable {
+public abstract class Validable {
 
-    List<String> validate(@Nullable ValidationConfig validationConfig);
+    protected List<String> errors = new ArrayList<>();
+
+    public List<String> validate(@Nullable ValidationConfig validationConfig) {
+        errors = new ArrayList<>();
+        validateInner(validationConfig);
+        return errors;
+    }
+    protected abstract void validateInner(@Nullable ValidationConfig validationConfig);
 
     @JsonIgnore
-    String getIdentifier();
+    public abstract String getIdentifier();
 
 }

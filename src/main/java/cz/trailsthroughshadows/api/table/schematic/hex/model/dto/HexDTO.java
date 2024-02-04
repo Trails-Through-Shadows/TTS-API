@@ -1,9 +1,11 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
-import cz.trailsthroughshadows.algorithm.validation.ValidationService;
+import cz.trailsthroughshadows.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.Validable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -13,7 +15,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Hex")
-public class HexDTO extends ValidationService {
+@EqualsAndHashCode(callSuper = true)
+public class HexDTO extends Validable {
 
     @EmbeddedId
     private HexId key;
@@ -40,4 +43,19 @@ public class HexDTO extends ValidationService {
         private Integer id;
 
     }
+
+    //region Validation
+    @Override
+    public void validateInner(ValidationConfig validationConfig) {
+        // hex has to have correct coordinates
+        if (getQ() + getR() + getS() != 0) {
+            errors.add("Hex %s has to have correct coordinates!".formatted(getIdentifier()));
+        }
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "(%d, %d, %d)".formatted(getQ(), getR(), getS());
+    }
+    //endregion
 }

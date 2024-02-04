@@ -7,9 +7,7 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
-import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,24 +28,23 @@ public class ValidationController {
 
     @PostMapping("/validate/part")
     public ResponseEntity<RestResponse> validatePart(@RequestBody PartDTO part) {
-        return validate(Part.fromDTO(part));
+        return validate(part);
     }
 
     @PostMapping("/validate/hex")
     public ResponseEntity<RestResponse> validateHex(@RequestBody HexDTO hex) {
-        return validate(Hex.fromDTO(hex));
+        return validate(hex);
     }
 
     public ResponseEntity<RestResponse> validate(Validable validable) {
         ValidationResponse response = validation.validate(validable);
 
-        if (response.isValid()) {
-            return new ResponseEntity<>(new RestResponse(HttpStatus.OK, response.getMessage()), HttpStatus.OK);
+        if (response.valid()) {
+            return new ResponseEntity<>(new RestResponse(HttpStatus.OK, response.message()), HttpStatus.OK);
         }
 
-        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, response.getMessage());
-        for (var e : response.getErrors()) {
-            log.debug(" > " + e);
+        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, response.message());
+        for (var e : response.errors()) {
             error.addSubError(new MessageError(e));
         }
 

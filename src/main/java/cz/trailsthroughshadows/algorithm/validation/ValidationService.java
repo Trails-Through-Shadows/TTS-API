@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
 @Data
+@Slf4j
 @Service
 public class ValidationService {
 
@@ -17,9 +17,11 @@ public class ValidationService {
 
     public ValidationResponse validate(Validable validable) {
         String name = validable.getClass().getSimpleName();
+        name = name.endsWith("DTO") ? name.replace("DTO", "") : name;
         String str = validable.getIdentifier();
 
-        log.info("Validating {} '{}'", name, str);
+        log.debug("Validating {} '{}'", name, str);
+
         List<String> errors = validable.validate(validationConfig);
         boolean valid = errors.isEmpty();
 
@@ -28,7 +30,10 @@ public class ValidationService {
                 "%s '%s' is %s!".formatted(name, str, valid ? "valid" : "not valid"),
                 errors);
 
-        log.info(response.getMessage());
+        log.debug(response.message());
+        for (var e : errors) {
+            log.debug(" > " + e);
+        }
 
         return response;
     }
