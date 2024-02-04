@@ -20,10 +20,10 @@ public class PartDTO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Integer id;
 
-    @Column(name = "tag", length = 64)
+    @Column(name = "tag", length = 32)
     protected String tag;
 
-    @OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
     protected List<HexDTO> hexes = new ArrayList<>();
 
     @Column(name = "usages", columnDefinition = "INT default 0")

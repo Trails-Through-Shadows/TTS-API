@@ -30,7 +30,7 @@ public class Action {
     @Setter(AccessLevel.NONE)
     private int id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 128)
     private String title;
 
     @Column

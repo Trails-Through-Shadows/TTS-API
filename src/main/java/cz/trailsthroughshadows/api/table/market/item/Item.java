@@ -23,13 +23,13 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private ItemType type;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 128)
     private String title;
 
     @Column
     private String description;
 
-    @Column(length = 64)
+    @Column(length = 32)
     private String tag;
 
     @Column(nullable = false)
