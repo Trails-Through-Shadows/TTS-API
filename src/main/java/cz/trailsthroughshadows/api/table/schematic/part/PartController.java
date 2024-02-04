@@ -86,6 +86,8 @@ public class PartController {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
         // TODO: Validation for new or updates parts
+//        Part partValidated = Part.fromDTO(part);
+//        validate.xxx
 
         partToUpdate.setTag(part.getTag());
         partToUpdate.setHexes(part.getHexes());

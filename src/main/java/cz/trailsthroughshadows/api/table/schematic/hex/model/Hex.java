@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class Hex extends HexDTO implements Validable {
     }
 
     @Override
-    public List<String> validate() {
+    public List<String> validate(ValidationConfig validationConfig) {
         List<String> errors = new ArrayList<>();
 
         // hex has to have correct coordinates

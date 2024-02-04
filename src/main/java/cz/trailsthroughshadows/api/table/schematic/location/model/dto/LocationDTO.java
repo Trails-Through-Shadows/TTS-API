@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @Entity
@@ -73,10 +72,6 @@ public class LocationDTO {
                                 .filter(hexObstacle -> hexObstacle.getKey().getIdPart() == locationPart.getPart().getId())
                                 .toList()
                 )).toList();
-    }
-
-    public Optional<Part> getPart(int id) {
-        return getParts().stream().filter(p -> p.getId() == id).findFirst();
     }
 }
 
