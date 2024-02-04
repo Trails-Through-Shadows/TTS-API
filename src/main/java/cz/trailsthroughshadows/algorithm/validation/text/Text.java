@@ -25,7 +25,7 @@ public abstract class Text extends Validable {
 
         // check allowed regex
         if (allowedChars != null && !text.matches(allowedChars)) {
-            errors.add("%s contains disallowed characters!");
+            errors.add("%s contains disallowed characters!".formatted(name));
         }
     }
 

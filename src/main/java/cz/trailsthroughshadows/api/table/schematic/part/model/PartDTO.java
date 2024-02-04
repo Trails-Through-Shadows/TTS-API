@@ -32,6 +32,9 @@ public class PartDTO extends Validable {
     @Column(name = "tag", length = 32)
     protected String tag;
 
+    @Column(name = "title", length = 128)
+    protected String title;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
     protected List<HexDTO> hexes = new ArrayList<>();
 
@@ -120,7 +123,7 @@ public class PartDTO extends Validable {
 
         // part has to have a correct tag and title
         Title title = new Title(tag);
-        title.validate(validationConfig);
+        errors.addAll(title.validate(validationConfig));
     }
 
     @Override

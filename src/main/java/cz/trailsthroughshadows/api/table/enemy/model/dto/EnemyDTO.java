@@ -70,13 +70,13 @@ public class EnemyDTO extends Validable implements Cloneable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
-        Title title = new Title(name);
+        Title title = new Title(getTitle());
         title.validate(validationConfig);
     }
 
     @Override
     public String getIdentifier() {
-        return getName();
+        return getTitle();
     }
     //endregion
 }
