@@ -100,15 +100,20 @@ public class PartDTO extends Validable {
         int diffS = sStats.getMax() - sStats.getMin() - 1;
 
         String widthError = "Part must not be wider than %d hexes!".formatted(hexGrid.getMaxWidth());
+        List<String> coords = new ArrayList<>();
 
         if (diffQ > hexGrid.getMaxWidth()) {
-            errors.add(new ValidationError(getValidableClass(), "qCoord", diffQ, widthError));
+            coords.add("qCoord");
         }
         if (diffR > hexGrid.getMaxWidth()) {
-            errors.add(new ValidationError(getValidableClass(), "rCoord", diffR, widthError));
+            coords.add("rCoord");
         }
         if (diffS > hexGrid.getMaxWidth()) {
-            errors.add(new ValidationError(getValidableClass(), "sCoord", diffS, widthError));
+            coords.add("sCoord");
+        }
+
+        if (!coords.isEmpty()) {
+            errors.add(new ValidationError(getValidableClass(), "hexes", coords, widthError));
         }
 
         // no hexes can be on the same position
