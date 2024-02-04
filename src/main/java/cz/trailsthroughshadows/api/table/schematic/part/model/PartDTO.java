@@ -69,12 +69,12 @@ public class PartDTO extends Validable {
 
         // min 5 hexes
         if (getHexes().size() < hexGrid.getMinHexes()) {
-            errors.add(new ValidationError(getValidableValue(), "hexes", getHexes().size(), "Part must have at least %d hexes!".formatted(hexGrid.getMinHexes())));
+            errors.add(new ValidationError(getValidableClass(), "hexes", getHexes().size(), "Part must have at least %d hexes!".formatted(hexGrid.getMinHexes())));
         }
 
         // max 50 hexes
         if (getHexes().size() > hexGrid.getMaxHexes()) {
-            errors.add(new ValidationError(getValidableValue(), "hexes", getHexes().size(), "Part must have at most %d hexes!".formatted(hexGrid.getMaxHexes())));
+            errors.add(new ValidationError(getValidableClass(), "hexes", getHexes().size(), "Part must have at most %d hexes!".formatted(hexGrid.getMaxHexes())));
         }
 
         // every hex has to have correct coordinates
@@ -102,13 +102,13 @@ public class PartDTO extends Validable {
         String widthError = "Part must not be wider than %d hexes!".formatted(hexGrid.getMaxWidth());
 
         if (diffQ > hexGrid.getMaxWidth()) {
-            errors.add(new ValidationError(getValidableValue(), "qCoord", diffQ, widthError));
+            errors.add(new ValidationError(getValidableClass(), "qCoord", diffQ, widthError));
         }
         if (diffR > hexGrid.getMaxWidth()) {
-            errors.add(new ValidationError(getValidableValue(), "rCoord", diffR, widthError));
+            errors.add(new ValidationError(getValidableClass(), "rCoord", diffR, widthError));
         }
         if (diffS > hexGrid.getMaxWidth()) {
-            errors.add(new ValidationError(getValidableValue(), "sCoord", diffS, widthError));
+            errors.add(new ValidationError(getValidableClass(), "sCoord", diffS, widthError));
         }
 
         // no hexes can be on the same position
@@ -125,12 +125,12 @@ public class PartDTO extends Validable {
             }
         }
         if (duplicates > 0)
-            errors.add(new ValidationError(getValidableValue(), "hexes", duplicates, "Part must not have any duplicate hexes!"));
+            errors.add(new ValidationError(getValidableClass(), "hexes", duplicates, "Part must not have any duplicate hexes!"));
 
         // must include center hex
         Optional<HexDTO> centerHex = getHexes().stream().filter(hex -> hex.getQ() == 0 && hex.getR() == 0 && hex.getS() == 0).findFirst();
         if (centerHex.isEmpty()) {
-            errors.add(new ValidationError(getValidableValue(), "hexes", null, "Part must include center hex!"));
+            errors.add(new ValidationError(getValidableClass(), "hexes", null, "Part must include center hex!"));
             return;
         }
 
@@ -142,7 +142,7 @@ public class PartDTO extends Validable {
                 continue;
 
             if (navigation.getPath(centerHex.get(), hex) == null) {
-                errors.add(new ValidationError(getValidableValue(), hex.getValidableValue(), null, "Part must be connected!"));
+                errors.add(new ValidationError(getValidableClass(), hex.getValidableValue(), null, "Part must be connected!"));
                 break;
             }
         }
