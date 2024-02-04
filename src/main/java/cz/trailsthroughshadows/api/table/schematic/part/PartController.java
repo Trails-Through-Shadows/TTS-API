@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.part;
 
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
@@ -30,6 +31,9 @@ import java.util.stream.Collectors;
 @Cacheable(value = "part")
 @RestController(value = "Part")
 public class PartController {
+
+    @Autowired
+    ValidationService validation;
 
     private PartRepo partRepo;
 
@@ -86,8 +90,7 @@ public class PartController {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
         // TODO: Validation for new or updates parts
-//        Part partValidated = Part.fromDTO(part);
-//        validate.xxx
+        validation.validate(part);
 
         partToUpdate.setTag(part.getTag());
         partToUpdate.setHexes(part.getHexes());

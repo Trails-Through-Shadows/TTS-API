@@ -1,8 +1,12 @@
 package cz.trailsthroughshadows.algorithm.validation;
 
+import cz.trailsthroughshadows.api.rest.exception.RestException;
+import cz.trailsthroughshadows.api.rest.model.error.RestError;
+import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,13 +29,20 @@ public class ValidationService {
         boolean valid = errors.isEmpty();
 
         ValidationResponse response = new ValidationResponse(
-                valid,
-                "%s '%s' is %s!".formatted(name, str, valid ? "valid" : "not valid"),
-                errors);
+            valid,
+            "%s '%s' is %s!".formatted(name, str, valid ? "valid" : "not valid"),
+            errors);
 
         log.debug(response.message());
-        for (var e : errors) {
-            log.debug(" > " + e);
+
+        if (!valid) {
+            RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, response.message());
+            for (var e : errors) {
+                log.debug(" > " + e);
+                error.addSubError(new MessageError(e));
+            }
+
+            throw new RestException(error);
         }
 
         return response;

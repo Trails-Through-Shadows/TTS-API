@@ -65,7 +65,7 @@ public class PartDTO extends Validable {
 
         // every hex has to have correct coordinates
         for (HexDTO hex : getHexes()) {
-            errors.addAll(Hex.fromDTO(hex).validate(validationConfig));
+            errors.addAll(hex.validate(validationConfig));
         }
         if (!errors.isEmpty())
             return;
