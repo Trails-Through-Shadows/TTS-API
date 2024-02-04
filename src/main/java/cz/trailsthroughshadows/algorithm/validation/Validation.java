@@ -19,7 +19,14 @@ public class Validation {
                 "%s '%s' is %s!".formatted(name, str, valid ? "valid" : "not valid"),
                 errors);
 
-        log.info(response.getMessage());
+        if (valid)
+            log.info(response.message());
+        else {
+            log.warn(response.message());
+            for (var e : errors) {
+                log.warn("\t> {}", e);
+            }
+        }
 
         return response;
     }

@@ -4,7 +4,9 @@ import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.PropertySource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,12 +14,12 @@ import java.util.Map;
 @Slf4j
 @EnableCaching
 @SpringBootApplication
+@ConfigurationPropertiesScan(basePackages = "cz.trailsthroughshadows")
+@PropertySource("classpath:validation.properties")
 public class TtsApiApplication {
 
     public static void main(String[] args) {
 
-
-//        .env file load
         Dotenv dotenv = Dotenv.configure().directory(".config").load();
 
         Map<String, Object> env = new HashMap<>();
