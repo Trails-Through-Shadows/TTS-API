@@ -18,8 +18,8 @@ public class ObstacleDTO {
     @Id
     public Integer id;
 
-    @Column(nullable = false, length = 50)
-    public String name;
+    @Column(nullable = false, length = 128)
+    public String title;
 
     @Column
     public Integer damage;
@@ -29,6 +29,9 @@ public class ObstacleDTO {
 
     @Column(nullable = false)
     public boolean crossable;
+
+    @Column(length = 32)
+    private String tag;
 
     @Column
     public Integer usages = 0;

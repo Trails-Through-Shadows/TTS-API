@@ -24,14 +24,17 @@ public class EnemyDTO extends Validable implements Cloneable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, length = 45)
-    private String name;
+    @Column(nullable = false, length = 128)
+    private String title;
 
     @Column(nullable = false)
     private int baseHealth;
 
     @Column(nullable = false)
     private int baseDefence;
+
+    @Column(length = 32)
+    private String tag;
 
     @Column
     private Integer usages;
@@ -57,7 +60,7 @@ public class EnemyDTO extends Validable implements Cloneable {
         EnemyDTO enemy = new EnemyDTO();
 
         enemy.setId(this.getId());
-        enemy.setName(this.getName());
+        enemy.setTitle(this.getTitle());
         enemy.setBaseDefence(this.getBaseDefence());
         enemy.setBaseHealth(this.getBaseHealth());
 
