@@ -39,8 +39,8 @@ public class Character extends cz.trailsthroughshadows.algorithm.entity.Entity i
     @Column(nullable = false)
     private int idAdventure;
 
-    @Column(nullable = false, length = 50)
-    private String name;
+    @Column(nullable = false, length = 128)
+    private String title;
 
     @Column(nullable = false, length = 50)
     private String playerName;
@@ -57,7 +57,7 @@ public class Character extends cz.trailsthroughshadows.algorithm.entity.Entity i
         character.setClazz(this.getClazz());
         character.setRace(this.getRace());
         character.setLevel(this.getLevel());
-        character.setName(this.getName());
+        character.setTitle(this.getTitle());
         character.setPlayerName(this.getPlayerName());
 
         return character;

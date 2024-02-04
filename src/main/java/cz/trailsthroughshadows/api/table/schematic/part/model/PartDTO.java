@@ -18,16 +18,16 @@ public class PartDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    protected Integer id;
 
-    @Column(name = "tag")
-    private String tag;
+    @Column(name = "tag", length = 32)
+    protected String tag;
 
-    @OneToMany(mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HexDTO> hexes = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
+    protected List<HexDTO> hexes = new ArrayList<>();
 
     @Column(name = "usages", columnDefinition = "INT default 0")
-    private int usages = 0;
+    protected int usages = 0;
 
     public void setHexes(List<HexDTO> hexes) {
         if (hexes != null) {

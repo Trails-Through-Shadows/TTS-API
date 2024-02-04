@@ -1,12 +1,13 @@
 package cz.trailsthroughshadows.api.table.schematic.part.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.location.Navigation;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import lombok.Data;
@@ -43,7 +44,7 @@ public class Part extends PartDTO implements Validable {
     }
 
     public Optional<Hex> getHex(int id) {
-        return getHexes().stream().filter(h -> h.getKey().getId() == id).findFirst().map(Hex::fromDTO);
+        return hexes.stream().filter(h -> h.getKey().getId() == id).findFirst().map(Hex::fromDTO);
     }
 
     public Optional<Enemy> getEnemy(Hex hex) {
@@ -55,26 +56,22 @@ public class Part extends PartDTO implements Validable {
     }
 
     @Override
-    public List<String> validate() {
+    public List<String> validate(ValidationConfig validationConfig) {
         List<String> errors = new ArrayList<>();
 
-        int minHexes = 5;
-        int maxHexes = 50;
-        int maxHexesWide = 8;
-
         // min 5 hexes
-        if (getHexes().size() < minHexes) {
-            errors.add("Part must have at least %d hexes!".formatted(minHexes));
+        if (getHexes().size() < validationConfig.getHexGrid().getMinHexes()) {
+            errors.add("Part must have at least %d hexes!".formatted(validationConfig.getHexGrid().getMinHexes()));
         }
 
         // max 50 hexes
-        if (getHexes().size() > maxHexes) {
+        if (getHexes().size() > validationConfig.getHexGrid().getMaxHexes()) {
             errors.add("Part must have at most 50 hexes!");
         }
 
         // every hex has to have correct coordinates
         for (HexDTO hex : getHexes()) {
-            errors.addAll(Hex.fromDTO(hex).validate());
+            errors.addAll(Hex.fromDTO(hex).validate(validationConfig));
         }
         if (!errors.isEmpty())
             return errors;
@@ -90,8 +87,8 @@ public class Part extends PartDTO implements Validable {
         int diffR = rStats.getMax() - rStats.getMin() - 1;
         int diffS = sStats.getMax() - sStats.getMin() - 1;
 
-        if (diffQ > maxHexesWide || diffR > maxHexesWide || diffS > maxHexesWide) {
-            errors.add("Part must not be wider than %d hexes!".formatted(maxHexesWide));
+        if (diffQ > validationConfig.getHexGrid().getMaxWidth() || diffR > validationConfig.getHexGrid().getMaxWidth() || diffS > validationConfig.getHexGrid().getMaxWidth()) {
+            errors.add("Part must not be wider than %d hexes!".formatted(validationConfig.getHexGrid().getMaxWidth()));
         }
 
         // no hexes can be on the same position

@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Hex")
-public class HexDTO {
+public class HexDTO extends ValidationService {
 
     @EmbeddedId
     private HexId key;

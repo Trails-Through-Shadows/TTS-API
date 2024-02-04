@@ -19,8 +19,8 @@ public class Clazz {
     @Setter(AccessLevel.NONE)
     private Integer id;
 
-    @Column(nullable = false, length = 50)
-    private String name;
+    @Column(nullable = false, length = 128)
+    private String title;
 
     @Column(nullable = false)
     private int baseHealth;
@@ -29,6 +29,8 @@ public class Clazz {
     @Column(nullable = false)
     private int baseInitiative;
 
+    @Column(length = 32)
+    private String tag;
 
     @OneToMany
     @JoinColumn(name = "idClass")
