@@ -1,6 +1,8 @@
 package cz.trailsthroughshadows.api.table.schematic.location.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
@@ -16,45 +18,44 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Location")
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class LocationDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int id;
+    private int id;
 
     @Column(name = "title", nullable = false)
-    public String title;
+    private String title;
 
     @Column(name = "tag", length = 32)
-    public String tag;
+    private String tag;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    public Location.Type type;
+    private Location.Type type;
 
     @Column(name = "description", columnDefinition = "TEXT")
-    public String description;
+    private String description;
 
     @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    public List<LocationPartDTO> parts;
+    private List<LocationPartDTO> parts;
 
     @OneToMany(mappedBy = "idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<LocationDoorDTO> doors;
+    private List<LocationDoorDTO> doors;
 
     @OneToMany(mappedBy = "idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<LocationStartDTO> startHexes;
+    private List<LocationStartDTO> startHexes;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "idStart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<LocationPathDTO> paths;
+    private List<LocationPathDTO> paths;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<HexEnemyDTO> enemies;
+    private List<HexEnemyDTO> enemies;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<HexObstacleDTO> obstacles;
+    private List<HexObstacleDTO> obstacles;
 
     public List<Part> getParts() {
         if (parts == null) {

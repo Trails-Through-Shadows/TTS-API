@@ -23,7 +23,7 @@ public class EnemyEffect {
     @JsonIgnore
     private int idEffect;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private Effect effect;
 }

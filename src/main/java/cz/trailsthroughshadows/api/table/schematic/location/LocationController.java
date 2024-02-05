@@ -5,6 +5,7 @@ import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
+import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -53,12 +55,25 @@ public class LocationController {
     }
 
     @GetMapping("/locations/{id}")
-    public ResponseEntity<Location> getPartById(@PathVariable int id) {
+    public ResponseEntity<Location> getLocationById(@PathVariable int id) {
         LocationDTO locationDTO = locationRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found!", id));
 
         return new ResponseEntity<>(Location.fromDTO(locationDTO), HttpStatus.OK);
+    }
+
+    @GetMapping("/locations/{locationId}/parts/{partId}")
+    public ResponseEntity<Part> getPartByLocationId(@PathVariable int locationId, @PathVariable int partId) {
+        Part part = Objects.requireNonNull(getLocationById(locationId)
+                        .getBody())
+                .getParts()
+                .stream()
+                .filter(p -> p.getId() == partId).findFirst()
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", partId));
+
+
+        return new ResponseEntity<>(part, HttpStatus.OK);
     }
 
     /**

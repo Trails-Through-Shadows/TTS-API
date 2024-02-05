@@ -11,13 +11,13 @@ import org.modelmapper.ModelMapper;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Location extends LocationDTO {
 
-    public enum Type {
-        CITY, DUNGEON, MARKET, QUEST
-    }
-
     // TODO: Map locations only by specific campaign
     public static Location fromDTO(LocationDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Location.class);
+    }
+
+    public enum Type {
+        CITY, DUNGEON, MARKET, QUEST
     }
 }

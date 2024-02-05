@@ -3,10 +3,14 @@ package cz.trailsthroughshadows.api.table.enemy.model.dto;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
 import jakarta.annotation.Nullable;
+import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +22,8 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Enemy")
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EnemyDTO extends Validable implements Cloneable {
 
     @Id
@@ -39,10 +45,10 @@ public class EnemyDTO extends Validable implements Cloneable {
     @Column
     private Integer usages;
 
-    @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EnemyEffect> effects;
 
-    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EnemyActionDTO> actions;
 
     public List<Effect> getEffects() {
@@ -54,6 +60,13 @@ public class EnemyDTO extends Validable implements Cloneable {
         if (actions == null) return new ArrayList<>();
         return actions.stream().map(EnemyActionDTO::getAction).toList();
     }
+
+
+    public void loadAll() throws Exception {
+        Initialization init = new Initialization();
+        init.initializeAndUnproxy(this);
+    }
+
 
     @Override
     public EnemyDTO clone() {

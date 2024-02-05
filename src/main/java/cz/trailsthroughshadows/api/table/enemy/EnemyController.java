@@ -52,13 +52,19 @@ public class EnemyController {
     }
 
     @GetMapping("/enemies/{id}")
-    public ResponseEntity<Enemy> getEnemyById(@PathVariable int id) {
+    public ResponseEntity<Object> getEnemyById(@PathVariable int id, @RequestParam(defaultValue = "true") boolean lazy) {
         EnemyDTO enemyDTO = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
+        Object enemy;
+        if (lazy)
+            enemy = enemyDTO;
+        else
+            enemy = Enemy.fromDTO(enemyDTO);
 
-        return new ResponseEntity<>(Enemy.fromDTO(enemyDTO), HttpStatus.OK);
+        return new ResponseEntity<>(enemy, HttpStatus.OK);
     }
+
 
     @Autowired
     public void setRepository(EnemyRepo repository) {
