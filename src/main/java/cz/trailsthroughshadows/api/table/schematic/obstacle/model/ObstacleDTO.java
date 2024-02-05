@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.obstacle.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.ObstacleEffect;
 import jakarta.persistence.*;
@@ -13,6 +15,7 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @Table(name = "Obstacle")
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 public class ObstacleDTO {
 
     @Id

@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.enemy.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import lombok.Data;
@@ -8,7 +9,7 @@ import org.modelmapper.ModelMapper;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-//@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Enemy extends EnemyDTO {
 
     private HexDTO hex;

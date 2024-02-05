@@ -55,23 +55,24 @@ public class LocationController {
     }
 
     @GetMapping("/locations/{id}")
-    public ResponseEntity<Location> getLocationById(@PathVariable int id) {
+    public ResponseEntity<LocationDTO> getLocationById(@PathVariable int id) {
         LocationDTO locationDTO = locationRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found!", id));
 
-        return new ResponseEntity<>(Location.fromDTO(locationDTO), HttpStatus.OK);
+        return new ResponseEntity<>(locationDTO, HttpStatus.OK);
     }
 
     @GetMapping("/locations/{locationId}/parts/{partId}")
     public ResponseEntity<Part> getPartByLocationId(@PathVariable int locationId, @PathVariable int partId) {
-        Part part = Objects.requireNonNull(getLocationById(locationId)
-                        .getBody())
-                .getParts()
-                .stream()
-                .filter(p -> p.getId() == partId).findFirst()
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", partId));
 
+        LocationDTO locationDTO = locationRepo
+                .findById(locationId)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found!", locationId));
+        Location location = Location.fromDTO(locationDTO);
+
+        Part part = location.getParts().stream().filter(p -> p.getId() == partId).findFirst()
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", partId));
 
         return new ResponseEntity<>(part, HttpStatus.OK);
     }
