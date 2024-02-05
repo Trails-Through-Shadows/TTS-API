@@ -29,15 +29,12 @@ public class ObstacleDTO {
 
     @Column(nullable = false)
     public boolean crossable;
-
-    @Column(length = 32)
-    private String tag;
-
     @Column
     public Integer usages = 0;
-
     @OneToMany(mappedBy = "idObstacle", fetch = FetchType.LAZY)
     public Set<ObstacleEffect> effects;
+    @Column(length = 32)
+    private String tag;
 
     public Collection<Effect> getEffects() {
         if (effects == null) return null;

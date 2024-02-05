@@ -37,7 +37,7 @@ public class ActionController {
             log.debug("Lazy loading {}", s);
             for (Field f : action.getClass().getDeclaredFields()) {
                 f.setAccessible(true);
-                log.debug("Comparing {} with {}", f.getName(), s);
+                log.trace("Comparing {} with {}", f.getName(), s);
                 try {
                     if (Objects.equals(f.getName(), s))
                         Hibernate.initialize(f.get(action));

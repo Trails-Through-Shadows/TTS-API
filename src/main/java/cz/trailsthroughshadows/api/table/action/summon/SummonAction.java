@@ -20,7 +20,7 @@ public class SummonAction {
     @EmbeddedId
     private SummonActionId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("summon_id")
     @JoinColumn(name = "idSummon")
     private Summon summon;

@@ -21,14 +21,14 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Action")
-@JsonInclude(value = JsonInclude.Include.NON_NULL, valueFilter = LazyFieldsFilter.class)
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Action {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false, length = 128)
     private String title;
@@ -59,8 +59,8 @@ public class Action {
     @JoinColumn(name = "restoreCards")
     private RestoreCards restoreCards;
 
-    @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
-    @OneToMany(mappedBy = "idAction", fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAction")
     private List<SummonAction> summonActions;
 
     public enum Discard implements Serializable {

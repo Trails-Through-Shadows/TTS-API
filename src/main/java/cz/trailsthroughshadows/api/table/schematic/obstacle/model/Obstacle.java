@@ -12,7 +12,7 @@ import org.modelmapper.ModelMapper;
 public class Obstacle extends ObstacleDTO {
 
     private HexDTO hex;
-    
+
     public static Obstacle fromDTO(ObstacleDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Obstacle.class);

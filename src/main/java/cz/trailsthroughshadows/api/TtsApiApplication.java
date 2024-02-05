@@ -37,7 +37,7 @@ public class TtsApiApplication {
         app.setDefaultProperties(env);
         app.run(args);
         log.debug("Running with login: " + dotenv.get("DB_USER") + " -> " + dotenv.get("DB_PASSWORD"));
-        
+
         log.info("Docs running on http://localhost:8080/swagger-ui/index.html");
         log.info("API running on http://localhost:8080/");
     }
