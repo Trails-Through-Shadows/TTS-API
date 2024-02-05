@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -12,13 +14,14 @@ import java.io.Serializable;
 @Entity
 @NoArgsConstructor
 @Table(name = "HexEnemy")
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 public class HexEnemyDTO {
 
     @EmbeddedId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private HexEnemyId key;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idEnemy", insertable = false, updatable = false)
     private EnemyDTO enemy;
 

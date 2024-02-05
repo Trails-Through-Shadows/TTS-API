@@ -12,12 +12,16 @@ import java.util.Map;
 @Log4j2
 public class Initialization {
 
-    public void initializeAndUnproxy(Object entity) {
+    /**
+     * Initializes all fields of the given entity in recursive way.
+     * @param entity Entity to initialize
+     */
+    public static void hibernateInitializeAll(Object entity) {
         Map<Object, Integer> visited = new HashMap<>();
-        initializeAndUnproxy(entity, visited);
+        hibernateInitializeAll(entity, visited);
     }
 
-    private void initializeAndUnproxy(Object entity, Map<Object, Integer> visited) {
+    private static void hibernateInitializeAll(Object entity, Map<Object, Integer> visited) {
 
         if (entity == null || visited.containsKey(entity)) {
             if ((visited.get(entity) > 10))
@@ -42,10 +46,10 @@ public class Initialization {
                     Hibernate.initialize(child);
                     if (child instanceof Collection) {
                         for (Object item : (Collection) child) {
-                            initializeAndUnproxy(item, visited);
+                            hibernateInitializeAll(item, visited);
                         }
                     } else {
-                        initializeAndUnproxy(child, visited);
+                        hibernateInitializeAll(child, visited);
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -54,7 +58,7 @@ public class Initialization {
         }
     }
 
-    private boolean isPrimitiveOrWrapper(Class<?> clazz) {
+    private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
         return clazz.isPrimitive() || clazz.equals(String.class) || clazz.equals(Integer.class) || clazz.equals(Long.class) || clazz.equals(Double.class) || clazz.equals(Float.class) || clazz.equals(Character.class) || clazz.equals(Byte.class) || clazz.equals(Short.class) || clazz.equals(Boolean.class);
     }
 
