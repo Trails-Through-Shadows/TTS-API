@@ -29,10 +29,10 @@ public class ObstacleController {
 
     @GetMapping("/obstacles")
     public ResponseEntity<?> getObstacles(
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
-            @RequestParam(defaultValue = "id:dsc") String sort
+            @RequestParam(defaultValue = "") String sort
     ) {
         // TODO: Re-Implement filtering, sorting and pagination
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
