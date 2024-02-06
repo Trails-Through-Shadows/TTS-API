@@ -9,8 +9,8 @@ import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.forothers.EnemyEffect;
-import jakarta.annotation.Nullable;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -61,10 +61,8 @@ public class EnemyDTO extends Validable implements Cloneable {
         return actions.stream().map(EnemyActionDTO::getAction).toList();
     }
 
-
-    public void loadAll() throws Exception {
-        Initialization init = new Initialization();
-        init.initializeAndUnproxy(this);
+    public void loadAll() {
+        Initialization.hibernateInitializeAll(this);
     }
 
 
