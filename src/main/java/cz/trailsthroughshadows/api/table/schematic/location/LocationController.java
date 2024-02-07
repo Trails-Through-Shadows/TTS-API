@@ -55,12 +55,12 @@ public class LocationController {
     }
 
     @GetMapping("/locations/{id}")
-    public ResponseEntity<LocationDTO> getLocationById(@PathVariable int id) {
+    public ResponseEntity<Location> getLocationById(@PathVariable int id) {
         LocationDTO locationDTO = locationRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found!", id));
 
-        return new ResponseEntity<>(locationDTO, HttpStatus.OK);
+        return new ResponseEntity<>(Location.fromDTO(locationDTO), HttpStatus.OK);
     }
 
     @GetMapping("/locations/{locationId}/parts/{partId}")
