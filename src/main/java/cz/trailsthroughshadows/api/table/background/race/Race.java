@@ -24,18 +24,22 @@ public class Race {
 
     @Column(nullable = false, length = 128)
     public String title;
+    @Column(length = 32)
+    private String tag;
+    @Column(nullable = true)
+    private String description;
 
     @Column(nullable = false)
     public int baseInitiative;
+
     @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "idRace")
     public Collection<RaceEffect> effects;
+
     @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "idRace")
     @ToString.Exclude
     public Collection<RaceAction> actions;
-    @Column(length = 32)
-    private String tag;
 
     @ToString.Include(name = "actions")
     public Collection<Action> getActions() {

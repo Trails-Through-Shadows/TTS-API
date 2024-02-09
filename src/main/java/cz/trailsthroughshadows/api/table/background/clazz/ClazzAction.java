@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "ClassAction")
 @Data
 @NoArgsConstructor
-public class ClassAction {
+public class ClazzAction {
 
     @Id
     @Column(nullable = false)

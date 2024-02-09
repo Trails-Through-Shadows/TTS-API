@@ -32,6 +32,10 @@ public class EnemyDTO extends Validable implements Cloneable {
 
     @Column(nullable = false, length = 128)
     private String title;
+    @Column(length = 32)
+    private String tag;
+    @Column(nullable = true)
+    private String description;
 
     @Column(nullable = false)
     private int baseHealth;
@@ -39,8 +43,8 @@ public class EnemyDTO extends Validable implements Cloneable {
     @Column(nullable = false)
     private int baseDefence;
 
-    @Column(length = 32)
-    private String tag;
+    @Column(nullable = false)
+    private int baseInitiative;
 
     @Column
     private Integer usages;

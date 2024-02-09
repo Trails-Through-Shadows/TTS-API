@@ -21,6 +21,10 @@ public class Clazz {
 
     @Column(nullable = false, length = 128)
     private String title;
+    @Column(length = 32)
+    private String tag;
+    @Column(nullable = true)
+    private String description;
 
     @Column(nullable = false)
     private int baseHealth;
@@ -29,20 +33,17 @@ public class Clazz {
     @Column(nullable = false)
     private int baseInitiative;
 
-    @Column(length = 32)
-    private String tag;
-
     @OneToMany
     @JoinColumn(name = "idClass")
     private Collection<ClassEffect> effects;
 
     @OneToMany
     @JoinColumn(name = "idClass")
-    private Collection<ClassAction> actions;
+    private Collection<ClazzAction> actions;
 
     @ToString.Include(name = "actions")
     public Collection<Action> getActions() {
         if (actions == null) return null;
-        return actions.stream().map(ClassAction::getAction).toList();
+        return actions.stream().map(ClazzAction::getAction).toList();
     }
 }

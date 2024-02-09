@@ -33,6 +33,9 @@ public class Effect {
     @Column
     private Integer strength;
 
+    @Column(nullable = true)
+    private String description;
+
     public enum EffectType implements Serializable {
         PUSH,
         PULL,
