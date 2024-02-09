@@ -1,12 +1,16 @@
 package cz.trailsthroughshadows.api.table.action.summon;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Externalizable;
 import java.io.Serializable;
 
 @Data
@@ -14,6 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "SummonAction")
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SummonAction {
 
@@ -21,22 +26,22 @@ public class SummonAction {
     private SummonActionId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("summon_id")
+    @MapsId("idSummon")
     @JoinColumn(name = "idSummon")
     private Summon summon;
-
-    @Column(name = "idAction", insertable = false, updatable = false)
-    private int idAction;
 
     @Column
     private Integer range;
 
     @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class SummonActionId implements Serializable {
         @Column(name = "idSummon")
-        private Integer summon_id;
+        private Integer idSummon;
         @Column(name = "idAction")
-        private Integer action_id;
+        private Integer idAction;
     }
 }
 

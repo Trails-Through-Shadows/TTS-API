@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.action.summon;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.action.Action;
 import cz.trailsthroughshadows.api.table.effect.Effect;
 import cz.trailsthroughshadows.api.table.effect.foraction.SummonEffect;
@@ -16,6 +18,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Entity
 @Table(name = "Summon")
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 public class Summon implements Cloneable {
 
     @Id

@@ -34,6 +34,7 @@ public class TtsApiApplication {
         //jdbc:mariadb://49.13.93.112:3306/tts_api
 
         SpringApplication app = new SpringApplication(TtsApiApplication.class);
+
         app.setDefaultProperties(env);
         app.run(args);
         log.debug("Running with login: " + dotenv.get("DB_USER") + " -> " + dotenv.get("DB_PASSWORD"));

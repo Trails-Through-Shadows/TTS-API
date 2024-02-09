@@ -2,6 +2,8 @@ package cz.trailsthroughshadows.api.table.action;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.api.rest.jsonfilter.IncludeNullOrEmptySerializer;
 import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.action.attack.Attack;
 import cz.trailsthroughshadows.api.table.action.movement.Movement;
@@ -15,13 +17,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "Action")
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+//@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Action {
 
@@ -45,6 +48,7 @@ public class Action {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movement")
+    @JsonSerialize(using = IncludeNullOrEmptySerializer.class)
     private Movement movement;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -61,6 +65,7 @@ public class Action {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "idAction")
+    @JsonSerialize(using = IncludeNullOrEmptySerializer.class)
     private List<SummonAction> summonActions;
 
     public enum Discard implements Serializable {

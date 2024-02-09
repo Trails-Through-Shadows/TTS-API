@@ -7,21 +7,35 @@ import org.hibernate.proxy.HibernateProxy;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
 public class Initialization {
 
     /**
+     * Initializes all fields of the given entity according to filter in recursive way.
+     *
+     * @param entity Entity to initialize
+     * @param filter White list of fields to initialize
+     */
+    public static void hibernateInitializeAll(Object entity, List<String> filter) {
+        Map<Object, Integer> visited = new HashMap<>();
+        hibernateInitializeAll(entity, visited, filter);
+    }
+
+    /**
      * Initializes all fields of the given entity in recursive way.
+     *
      * @param entity Entity to initialize
      */
     public static void hibernateInitializeAll(Object entity) {
+        List<String> filter = List.of();
         Map<Object, Integer> visited = new HashMap<>();
-        hibernateInitializeAll(entity, visited);
+        hibernateInitializeAll(entity, visited, filter);
     }
 
-    private static void hibernateInitializeAll(Object entity, Map<Object, Integer> visited) {
+    private static void hibernateInitializeAll(Object entity, Map<Object, Integer> visited, List<String> filter) {
 
         if (entity == null || visited.containsKey(entity)) {
             if ((visited.get(entity) > 10))
@@ -32,24 +46,36 @@ public class Initialization {
 
         //log.debug("Initializing object: {}", entity.getClass().getSimpleName());
         Hibernate.initialize(entity);
-        if (entity instanceof HibernateProxy) {
-            entity = ((HibernateProxy) entity).getHibernateLazyInitializer().getImplementation();
-        }
+//        if (entity instanceof HibernateProxy) {
+//            entity = ((HibernateProxy) entity).getHibernateLazyInitializer().getImplementation();
+//        }
 
+        initializeFields(entity, visited, filter);
 
+    }
+
+    private static void initializeFields(Object entity, Map<Object, Integer> visited, List<String> filter) {
         for (Field field : entity.getClass().getDeclaredFields()) {
             field.setAccessible(true);
-            //log.debug("     Initializing property: {}", field.getName());
+
+            if (!(filter.contains(field.getName()) || filter.isEmpty())) {
+                log.debug("     Skipping property: {}", field.getName());
+                continue;
+            }
+
+            log.debug("     Initializing property: {}", field.getName());
+
             try {
                 Object child = field.get(entity);
                 if (child != null && !isPrimitiveOrWrapper(child.getClass())) {
                     Hibernate.initialize(child);
+                    log.debug("         Initializing item: {}", child.getClass().getSimpleName());
                     if (child instanceof Collection) {
                         for (Object item : (Collection) child) {
-                            hibernateInitializeAll(item, visited);
+                            hibernateInitializeAll(item, visited, filter);
                         }
                     } else {
-                        hibernateInitializeAll(child, visited);
+                        hibernateInitializeAll(child, visited, filter);
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -59,7 +85,8 @@ public class Initialization {
     }
 
     private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
-        return clazz.isPrimitive() || clazz.equals(String.class) || clazz.equals(Integer.class) || clazz.equals(Long.class) || clazz.equals(Double.class) || clazz.equals(Float.class) || clazz.equals(Character.class) || clazz.equals(Byte.class) || clazz.equals(Short.class) || clazz.equals(Boolean.class);
+        return clazz.isPrimitive() || clazz.equals(String.class) || clazz.equals(Integer.class) || clazz.equals(Long.class) || clazz.equals(Double.class) || clazz.equals(Float.class) || clazz.equals(Character.class) || clazz.equals(Byte.class) || clazz.equals(Short.class) || clazz.equals(Boolean.class) || clazz.isEnum();
+
     }
 
 }
