@@ -3,7 +3,10 @@ package cz.trailsthroughshadows.api.table.action.features.summon;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.text.Tag;
+import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.foraction.SummonEffect;
@@ -78,7 +81,22 @@ public class Summon extends Validable implements Cloneable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Title and tag have to be valid.
+        Title title = new Title(getTitle());
+        validateChild(title, validationConfig);
 
+        Tag tag = new Tag(getTag());
+        validateChild(tag, validationConfig);
+
+        // Duration must be greater than 0.
+        if (getDuration() <= 0) {
+            errors.add(new ValidationError("Summon", "duration", getDuration(), "Duration must be greater than 0!"));
+        }
+
+        // Health must be greater than 0.
+        if (getHealth() <= 0) {
+            errors.add(new ValidationError("Summon", "health", getHealth(), "Health must be greater than 0!"));
+        }
     }
 
     @Override
