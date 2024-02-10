@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.rest.model.error;
 
+import cz.trailsthroughshadows.algorithm.util.Sanitized;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
@@ -16,7 +17,12 @@ public class RestError {
 
     public RestError(HttpStatus status, String message, Object... args) {
         this.status = status;
-        this.message = message.formatted(args);
+        this.message = Sanitized.format(message, args);
+    }
+
+    public RestError(HttpStatus status, String message) {
+        this.status = status;
+        this.message = message;
     }
 
     public static RestError of(HttpStatus code, String message, Object... args) {

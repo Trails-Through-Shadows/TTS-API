@@ -22,7 +22,7 @@ public abstract class Validable {
             return Optional.empty();
         }
 
-        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "%s '%s' is not valid!".formatted(getValidableClass(), getValidableValue()));
+        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "{} '{}' is not valid!", getValidableClass(), getValidableValue());
 
         for (var e : errors) {
             error.addSubError(e);

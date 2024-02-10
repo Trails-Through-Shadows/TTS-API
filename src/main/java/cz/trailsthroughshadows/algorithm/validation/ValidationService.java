@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.algorithm.validation;
 
+import cz.trailsthroughshadows.algorithm.util.Sanitized;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.error.RestSubError;
@@ -26,7 +27,7 @@ public class ValidationService {
         Optional<RestError> error = validable.validate(validationConfig);
         boolean valid = error.isEmpty();
 
-        String response = "%s '%s' is %s!".formatted(name, value, valid ? "valid" : "not valid");
+        String response = Sanitized.format("{} '{}' is {}valid!", name, value, valid ? "" : "in");
         log.debug(response);
 
         if (!valid) {
