@@ -1,9 +1,9 @@
-package cz.trailsthroughshadows.api.table.action.movement;
+package cz.trailsthroughshadows.api.table.action.features.movement;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.effect.foraction.MovementEffect;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.MovementEffect;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,7 +34,7 @@ public class Movement {
 
     // Skipping n-to-n relationship, there is no additional data in that table
     @ToString.Include(name = "effects") // Including replacement field in toString
-    public Collection<Effect> getEffects() {
+    public Collection<EffectDTO> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(MovementEffect::getEffect).toList();
     }

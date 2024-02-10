@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.background.clazz;
 
 
-import cz.trailsthroughshadows.api.table.action.Action;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class ClazzAction {
 
     @ManyToOne
     @JoinColumn(name = "idAction", insertable = false, updatable = false)
-    private Action action;
+    private ActionDTO action;
 
 
 }

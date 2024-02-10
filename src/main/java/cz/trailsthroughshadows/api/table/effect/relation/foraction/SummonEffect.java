@@ -1,6 +1,6 @@
-package cz.trailsthroughshadows.api.table.effect.foraction;
+package cz.trailsthroughshadows.api.table.effect.relation.foraction;
 
-import cz.trailsthroughshadows.api.table.effect.Effect;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "SkillEffect")
-public class SkillEffect {
+@Table(name = "SummonEffect")
+public class SummonEffect {
 
     @Id
     @Column
-    private int idSkill;
+    private int idSummon;
 
     @Id
     @Column
@@ -23,6 +23,6 @@ public class SkillEffect {
 
     @ManyToOne
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
-    private Effect effect;
+    private EffectDTO effect;
 
 }

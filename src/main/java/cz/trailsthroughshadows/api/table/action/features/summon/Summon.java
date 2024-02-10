@@ -1,10 +1,13 @@
-package cz.trailsthroughshadows.api.table.action.summon;
+package cz.trailsthroughshadows.api.table.action.features.summon;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.algorithm.validation.Validable;
+import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
-import cz.trailsthroughshadows.api.table.action.Action;
-import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.effect.foraction.SummonEffect;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.SummonEffect;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +22,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "Summon")
 @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
-public class Summon implements Cloneable {
+public class Summon extends Validable implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +42,7 @@ public class Summon implements Cloneable {
 
     @ManyToOne()
     @JoinColumn(name = "idAction")
-    private Action action;
+    private ActionDTO action;
     @OneToMany(mappedBy = "idSummon")
     @ToString.Exclude
     private Collection<SummonEffect> effects;
@@ -49,7 +52,7 @@ public class Summon implements Cloneable {
 
     // Skipping n-to-n relationship, there is no additional data in that table
     @ToString.Include(name = "effects") // Including replacement field in toString
-    public Collection<Effect> getEffects() {
+    public Collection<EffectDTO> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(SummonEffect::getEffect).toList();
     }
@@ -71,4 +74,16 @@ public class Summon implements Cloneable {
 
         return summon;
     }
+
+    //region Validation
+    @Override
+    protected void validateInner(@Nullable ValidationConfig validationConfig) {
+
+    }
+
+    @Override
+    public String getValidableValue() {
+        return getTitle();
+    }
+    //endregion
 }

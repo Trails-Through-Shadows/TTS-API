@@ -1,7 +1,8 @@
 package cz.trailsthroughshadows.api.table.action;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.table.action.movement.MovementRepo;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.action.features.movement.MovementRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,11 @@ public class ActionController {
     private MovementRepo movementRepo;
 
     @GetMapping("/{id}")
-    public Action findById(
+    public ActionDTO findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> lazy
     ) {
-        Action action = actionRepo
+        ActionDTO action = actionRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
 
@@ -54,10 +55,10 @@ public class ActionController {
 
 
     @GetMapping("")
-    public Collection<Action> findAllActions(
+    public Collection<ActionDTO> findAllActions(
             @RequestParam(required = false, defaultValue = "true") boolean lazy
     ) {
-        Collection<Action> actions = actionRepo.findAll();
+        Collection<ActionDTO> actions = actionRepo.findAll();
         if (!lazy) {
             actions.forEach(action -> {
                 for (Field f : action.getClass().getDeclaredFields()) {

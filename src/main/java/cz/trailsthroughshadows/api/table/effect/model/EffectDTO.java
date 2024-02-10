@@ -1,6 +1,9 @@
-package cz.trailsthroughshadows.api.table.effect;
+package cz.trailsthroughshadows.api.table.effect.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import cz.trailsthroughshadows.algorithm.validation.Validable;
+import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +15,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "Effect")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Effect {
+public class EffectDTO extends Validable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +38,18 @@ public class Effect {
 
     @Column(nullable = true)
     private String description;
+
+    //region Validation
+    @Override
+    protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // TODO
+    }
+
+    @Override
+    public String getValidableValue() {
+        return getType().toString();
+    }
+    //endregion
 
     public enum EffectType implements Serializable {
         PUSH,

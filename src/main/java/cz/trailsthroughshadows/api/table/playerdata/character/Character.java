@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.playerdata.character;
 
-import cz.trailsthroughshadows.api.table.action.Action;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.background.clazz.Clazz;
 import cz.trailsthroughshadows.api.table.background.race.Race;
 import jakarta.persistence.*;
@@ -63,7 +63,7 @@ public class Character extends cz.trailsthroughshadows.algorithm.entity.Entity i
         return character;
     }
 
-    public List<Action> getActions() {
+    public List<ActionDTO> getActions() {
         // todo zozeeeeeee
         return new ArrayList<>();
     }

@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.background.clazz;
 
-import cz.trailsthroughshadows.api.table.action.Action;
-import cz.trailsthroughshadows.api.table.effect.forcharacter.ClassEffect;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClassEffect;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,7 +42,7 @@ public class Clazz {
     private Collection<ClazzAction> actions;
 
     @ToString.Include(name = "actions")
-    public Collection<Action> getActions() {
+    public Collection<ActionDTO> getActions() {
         if (actions == null) return null;
         return actions.stream().map(ClazzAction::getAction).toList();
     }

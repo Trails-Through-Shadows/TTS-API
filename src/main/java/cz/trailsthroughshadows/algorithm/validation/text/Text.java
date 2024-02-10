@@ -13,16 +13,16 @@ public abstract class Text extends Validable {
         String name = getValidableClass();
 
         // check min and max length
-        if (text == null || text.isBlank()) {
+        if (minLen != 0 && (text == null || text.isBlank())) {
             errors.add(new ValidationError(name, "text", text, "%s is required!".formatted(name)));
             return;
-        } else {
-            if (minLen != 0 && text.length() < minLen) {
-                errors.add(new ValidationError(name, "text", text, "%s has to be at least %d characters long!".formatted(name, minLen)));
-            }
-            if (maxLen != 0 && text.length() > maxLen) {
-                errors.add(new ValidationError(name, "text", text, "%s has to be at most %d characters long!".formatted(name, maxLen)));
-            }
+        }
+
+        if (minLen != 0 && text.length() < minLen) {
+            errors.add(new ValidationError(name, "text", text, "%s has to be at least %d characters long!".formatted(name, minLen)));
+        }
+        if (maxLen != 0 && text.length() > maxLen) {
+            errors.add(new ValidationError(name, "text", text, "%s has to be at most %d characters long!".formatted(name, maxLen)));
         }
 
         // check allowed regex

@@ -16,6 +16,13 @@ public class ValidationConfig {
     private final HexGrid hexGrid;
 
     @Data
+    public static class Description {
+        private int maxLen;
+        private String allowedChars;
+    }
+    private final Description description;
+
+    @Data
     public static class Title {
         private int minLen;
         private int maxLen;

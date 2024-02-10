@@ -1,8 +1,8 @@
-package cz.trailsthroughshadows.api.table.action.restorecards;
+package cz.trailsthroughshadows.api.table.action.features.restorecards;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import cz.trailsthroughshadows.api.table.effect.Effect;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +24,7 @@ public class RestoreCards {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Effect.EffectTarget target;
+    private EffectDTO.EffectTarget target;
 
     @Column
     private Boolean random;

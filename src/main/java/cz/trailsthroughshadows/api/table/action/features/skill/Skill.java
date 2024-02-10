@@ -1,8 +1,8 @@
-package cz.trailsthroughshadows.api.table.action.skill;
+package cz.trailsthroughshadows.api.table.action.features.skill;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.effect.foraction.SkillEffect;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.SkillEffect;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +28,7 @@ public class Skill {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Effect.EffectTarget target;
+    private EffectDTO.EffectTarget target;
 
     @OneToMany(mappedBy = "idSkill", fetch = FetchType.LAZY)
     @ToString.Exclude
@@ -37,7 +37,7 @@ public class Skill {
 
     // Skipping n-to-n relationship, there is no additional data in that table
     @ToString.Include(name = "effects") // Including replacement field in toString
-    public Collection<Effect> getEffects() {
+    public Collection<EffectDTO> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(SkillEffect::getEffect).toList();
     }

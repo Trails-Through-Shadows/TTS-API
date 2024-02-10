@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.market.item;
 
-import cz.trailsthroughshadows.api.table.action.Action;
-import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.effect.forothers.ItemEffect;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.forothers.ItemEffect;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,10 +40,10 @@ public class Item {
     private Collection<ItemEffect> effects;
     @ManyToOne
     @JoinColumn(name = "idAction")
-    private Action action;
+    private ActionDTO action;
 
     @ToString.Include(name = "effects")
-    public Collection<Effect> getEffects() {
+    public Collection<EffectDTO> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(ItemEffect::getEffect).toList();
     }

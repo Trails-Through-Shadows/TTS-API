@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.background.race;
 
-import cz.trailsthroughshadows.api.table.action.Action;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +22,6 @@ public class RaceAction {
 
     @ManyToOne
     @JoinColumn(name = "idAction", insertable = false, updatable = false)
-    private Action action;
+    private ActionDTO action;
 
 }

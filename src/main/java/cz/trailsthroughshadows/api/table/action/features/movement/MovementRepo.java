@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.action.movement;
+package cz.trailsthroughshadows.api.table.action.features.movement;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

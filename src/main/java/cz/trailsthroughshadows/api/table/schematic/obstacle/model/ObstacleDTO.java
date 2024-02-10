@@ -2,8 +2,8 @@ package cz.trailsthroughshadows.api.table.schematic.obstacle.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
-import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.effect.forothers.ObstacleEffect;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.forothers.ObstacleEffect;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,7 +41,7 @@ public class ObstacleDTO {
     @OneToMany(mappedBy = "idObstacle", fetch = FetchType.LAZY)
     public Set<ObstacleEffect> effects;
 
-    public Collection<Effect> getEffects() {
+    public Collection<EffectDTO> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(ObstacleEffect::getEffect).toList();
     }

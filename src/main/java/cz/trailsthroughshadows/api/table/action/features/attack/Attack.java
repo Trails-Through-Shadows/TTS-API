@@ -1,11 +1,11 @@
-package cz.trailsthroughshadows.api.table.action.attack;
+package cz.trailsthroughshadows.api.table.action.features.attack;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
-import cz.trailsthroughshadows.api.table.effect.Effect;
-import cz.trailsthroughshadows.api.table.effect.foraction.AttackEffect;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.AttackEffect;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,7 +35,7 @@ public class Attack {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Effect.EffectTarget target;
+    private EffectDTO.EffectTarget target;
 
     @Column(nullable = false)
     private int numAttacks;
@@ -46,7 +46,7 @@ public class Attack {
 
 
     @ToString.Include(name = "effects") // Including replacement field in toString
-    public Collection<Effect> getEffects() {
+    public Collection<EffectDTO> getEffects() {
         if (effects == null) return null;
         return effects.stream().map(AttackEffect::getEffect).toList();
     }

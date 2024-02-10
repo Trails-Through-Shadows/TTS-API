@@ -2,8 +2,8 @@ package cz.trailsthroughshadows.api.table.background.race;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
-import cz.trailsthroughshadows.api.table.action.Action;
-import cz.trailsthroughshadows.api.table.effect.forcharacter.RaceEffect;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,7 +42,7 @@ public class Race {
     public Collection<RaceAction> actions;
 
     @ToString.Include(name = "actions")
-    public Collection<Action> getActions() {
+    public Collection<ActionDTO> getActions() {
         if (actions == null) return null;
         return actions.stream().map(RaceAction::getAction).collect(Collectors.toList());
     }

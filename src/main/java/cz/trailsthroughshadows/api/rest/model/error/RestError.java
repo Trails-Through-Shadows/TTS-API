@@ -36,4 +36,8 @@ public class RestError {
     public void union(RestError error) {
         errors.addAll(error.errors);
     }
+
+    public void addTo(List<RestSubError> errors) {
+        errors.addAll(this.errors);
+    }
 }

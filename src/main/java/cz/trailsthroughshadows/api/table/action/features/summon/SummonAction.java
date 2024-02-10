@@ -1,7 +1,6 @@
-package cz.trailsthroughshadows.api.table.action.summon;
+package cz.trailsthroughshadows.api.table.action.features.summon;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
@@ -10,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Externalizable;
 import java.io.Serializable;
 
 @Data

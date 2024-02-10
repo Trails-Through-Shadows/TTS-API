@@ -1,6 +1,6 @@
-package cz.trailsthroughshadows.api.table.effect.forcharacter;
+package cz.trailsthroughshadows.api.table.effect.relation.forcharacter;
 
-import cz.trailsthroughshadows.api.table.effect.Effect;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,5 +26,5 @@ public class RaceEffect {
 
     @ManyToOne
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
-    private Effect effect;
+    private EffectDTO effect;
 }

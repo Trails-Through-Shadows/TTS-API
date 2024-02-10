@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.action.summon;
+package cz.trailsthroughshadows.api.table.action.features.summon;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

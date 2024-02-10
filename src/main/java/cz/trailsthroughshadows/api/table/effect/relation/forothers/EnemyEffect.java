@@ -1,7 +1,7 @@
-package cz.trailsthroughshadows.api.table.enemy.model.dto;
+package cz.trailsthroughshadows.api.table.effect.relation.forothers;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "EnemyAction")
-public class EnemyActionDTO {
+@Table(name = "EnemyEffect")
+public class EnemyEffect {
     @Id
     @Column(nullable = false)
     @JsonIgnore
@@ -21,10 +21,9 @@ public class EnemyActionDTO {
     @Id
     @Column(nullable = false)
     @JsonIgnore
-    private int idAction;
+    private int idEffect;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idAction", insertable = false, updatable = false)
-    private ActionDTO action;
-
+    @JoinColumn(name = "idEffect", insertable = false, updatable = false)
+    private EffectDTO effect;
 }
