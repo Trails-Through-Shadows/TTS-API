@@ -3,9 +3,9 @@ package cz.trailsthroughshadows.api.table.action.features.summon;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -36,17 +36,6 @@ public class SummonAction extends Validable {
     @Column
     private Integer range;
 
-    @Embeddable
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class SummonActionId implements Serializable {
-        @Column(name = "idSummon")
-        private Integer idSummon;
-        @Column(name = "idAction")
-        private Integer idAction;
-    }
-
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
@@ -68,6 +57,18 @@ public class SummonAction extends Validable {
     @Override
     public String getValidableValue() {
         return summon.getTitle() + " for " + range + " hexes.";
+    }
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SummonActionId implements Serializable {
+        @Column(name = "idSummon")
+        private Integer idSummon;
+
+        @Column(name = "idAction")
+        private Integer idAction;
     }
     //endregion
 }

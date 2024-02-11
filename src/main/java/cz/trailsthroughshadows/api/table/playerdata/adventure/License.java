@@ -18,10 +18,13 @@ import java.time.LocalDateTime;
 public class License {
     @Id
     private Integer id;
+
     @Column(nullable = false, length = 20)
     private String key;
+
     @Column(nullable = false)
     private String password;
+
     @Column(nullable = false)
     private LocalDateTime activated;
 

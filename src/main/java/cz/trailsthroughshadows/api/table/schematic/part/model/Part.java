@@ -19,7 +19,9 @@ import java.util.Optional;
 public class Part extends PartDTO {
 
     private Integer rotation;
+
     private List<Enemy> enemies;
+
     private List<Obstacle> obstacles;
     // TODO: Add doors to part?
 

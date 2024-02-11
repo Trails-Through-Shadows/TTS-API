@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 @Data
 public class RestResponse {
     private final HttpStatus status;
+
     private final String message;
 
     public RestResponse(HttpStatus status, String message, Object... args) {

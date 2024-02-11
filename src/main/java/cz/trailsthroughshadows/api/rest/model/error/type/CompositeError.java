@@ -11,6 +11,7 @@ import java.util.List;
 public class CompositeError extends MessageError {
 
     private String object;
+
     private List<RestSubError> errors;
 
     public CompositeError(String object, List<RestSubError> errors, String message, Object... args) {

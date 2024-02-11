@@ -8,9 +8,13 @@ import lombok.Data;
 public class Pagination {
 
     private int count;
+
     private boolean hasMoreEntries;
+
     private int totalEntries;
+
     private int page;
+
     private int limit;
 
 }

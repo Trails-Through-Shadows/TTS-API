@@ -28,6 +28,7 @@ public class Market {
     public static class MarketId implements Serializable {
         @Column
         private Integer idItem;
+
         @Column
         private Integer idLocation;
     }

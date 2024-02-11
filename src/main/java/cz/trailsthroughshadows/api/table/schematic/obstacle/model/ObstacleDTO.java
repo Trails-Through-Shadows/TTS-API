@@ -23,18 +23,25 @@ public class ObstacleDTO {
 
     @Column(nullable = false, length = 128)
     public String title;
+
     @Column
     public String description;
+
     @Column
     public Integer baseDamage;
+
     @Column
     public Integer baseHealth;
+
     @Column(nullable = false)
     public boolean crossable;
+
     @Column
     public Integer usages = 0;
+
     @OneToMany(mappedBy = "idObstacle", fetch = FetchType.LAZY)
     public Set<ObstacleEffect> effects;
+
     @Column(length = 32)
     private String tag;
 

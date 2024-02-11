@@ -27,6 +27,7 @@ public class Dice {
             new Roll(Roll.Type.SPECIAL, 1),
             new Roll(Roll.Type.SPECIAL, 2)
     ));
+
     public final List<Roll> rolls;
 
     public Dice(List<Roll> pairs) {

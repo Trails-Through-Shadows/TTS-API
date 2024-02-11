@@ -14,6 +14,7 @@ import java.util.Collection;
 public class PlayerDataController {
     @Autowired
     private CharacterRepo repository;
+
     @Autowired
     private AdventureRepo adventureRepo;
 
