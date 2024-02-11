@@ -40,4 +40,16 @@ public class RestError {
     public void addTo(List<RestSubError> errors) {
         errors.addAll(this.errors);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getMessage());
+
+        for (var e : errors) {
+            sb.append("\n").append(e.toString(1));
+        }
+
+        return sb.toString();
+    }
 }

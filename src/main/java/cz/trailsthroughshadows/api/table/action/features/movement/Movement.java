@@ -48,13 +48,13 @@ public class Movement extends Validable {
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
         // Range must be greater than 0.
         if (range <= 0) {
-            errors.add(new ValidationError("SummonAction", "range", getRange(), "Range must be greater than 0."));
+            errors.add(new ValidationError("Movement", "range", getRange(), "Range must be greater than 0."));
         }
     }
 
     @Override
     public String getValidableValue() {
-        return getType().name() + " (" + getRange() + ")";
+        return getType().name() + " for " + getRange() + " hexes.";
     }
     //endregion
 

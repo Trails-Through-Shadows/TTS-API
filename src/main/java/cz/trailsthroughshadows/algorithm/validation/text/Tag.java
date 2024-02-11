@@ -13,6 +13,10 @@ public class Tag extends Text {
     protected void validateInner(ValidationConfig validationConfig) {
         validateText(validationConfig.getTag().getMinLen(), validationConfig.getTag().getMaxLen(), validationConfig.getTag().getAllowedChars());
 
+        if (!errors.isEmpty()) {
+            return;
+        }
+
         // check prefix regex
         if (validationConfig.getTag().getPrefix() != null && !text.matches(validationConfig.getTag().getPrefix())) {
             errors.add(new ValidationError("Tag", "text", text, "Tag has to start with a correct prefix!"));

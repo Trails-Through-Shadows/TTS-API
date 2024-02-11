@@ -1,16 +1,16 @@
 package cz.trailsthroughshadows.api.rest.model.error.type;
 
+import cz.trailsthroughshadows.algorithm.util.Sanitized;
 import cz.trailsthroughshadows.api.rest.model.error.RestSubError;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
 public class MessageError extends RestSubError {
-    private String message;
+    protected String message;
 
     public MessageError(String message, Object... args) {
-        this.message = message.formatted(args);
+        this.message = Sanitized.format(message, args);
     }
 
     @Override

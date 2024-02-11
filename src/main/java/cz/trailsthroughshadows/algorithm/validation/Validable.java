@@ -3,13 +3,16 @@ package cz.trailsthroughshadows.algorithm.validation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.error.RestSubError;
+import cz.trailsthroughshadows.api.rest.model.error.type.CompositeError;
 import jakarta.annotation.Nullable;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 public abstract class Validable {
 
     /**
@@ -24,6 +27,8 @@ public abstract class Validable {
      * @return An optional containing a RestError if the object is not valid, empty otherwise.
      */
     public Optional<RestError> validate(@Nullable ValidationConfig validationConfig) {
+        log.trace("Validating {} '{}'", getValidableClass(), getValidableValue());
+
         errors = new ArrayList<>();
         validateInner(validationConfig);
 
@@ -55,8 +60,16 @@ public abstract class Validable {
      * @param validationConfig The validation configuration to use.
      */
     protected void validateChild(Validable child, @Nullable ValidationConfig validationConfig) {
+        if (child == null)
+            return;
+
         Optional<RestError> error = child.validate(validationConfig);
-        error.ifPresent(restError -> errors.addAll(restError.getErrors()));
+
+        if (error.isPresent()) {
+            RestError restError = error.get();
+            RestSubError composite = new CompositeError(child.getValidableClass(), restError.getErrors(), restError.getMessage());
+            errors.add(composite);
+        }
     }
 
     /**

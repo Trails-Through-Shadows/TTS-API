@@ -81,25 +81,24 @@ public class ActionDTO extends Validable {
         Description description = new Description(getDescription());
         validateChild(description, validationConfig);
 
-        // Level requirement must be greater than or equal to 0.
-        if (levelReq < 0) {
-            errors.add(new ValidationError(getValidableClass(), "levelReq", levelReq, "Level requirement must be greater than or equal to 0!"));
+        // Level requirement must be greater than 0, if it is not null.
+        if (levelReq != null && levelReq < 0) {
+            errors.add(new ValidationError(getValidableClass(), "levelReq", levelReq, "Level requirement must be greater than 0!"));
         }
 
         // All features must be validated.
         for (SummonAction summonAction : summonActions) {
             validateChild(summonAction.getSummon(), validationConfig);
         }
-
-        // Action has to include at least one feature.
-        if (movement == null && skill == null && attack == null && restoreCards == null && (summonActions == null || summonActions.isEmpty())) {
-            errors.add(new ValidationError(getValidableClass(), "features", null, "Action must include at least one feature!"));
-        }
+        validateChild(movement, validationConfig);
+        validateChild(skill, validationConfig);
+        validateChild(attack, validationConfig);
+        validateChild(restoreCards, validationConfig);
     }
 
     @Override
     public String getValidableValue() {
-        return null;
+        return getTitle();
     }
     //endregion
 

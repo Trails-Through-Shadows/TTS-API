@@ -18,6 +18,11 @@ public class Sanitized {
      * @return the formatted message
      */
     public static String format(String format, Object... args) {
+        // if args are null or empty array, return the format string
+        if (args == null || args.length == 0) {
+            return format;
+        }
+
         return new ParameterizedMessage(format, args).getFormattedMessage();
     }
 }

@@ -1,21 +1,24 @@
 package cz.trailsthroughshadows.api.rest.model.error.type;
 
-import cz.trailsthroughshadows.api.rest.model.error.RestSubError;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
-@AllArgsConstructor
-public class ValidationError extends RestSubError {
+@Getter
+@Setter
+public class ValidationError extends MessageError {
     private String object;
     private String field;
     private Object rejectedValue;
-    private String message;
+
+    public ValidationError(String object, String field, Object rejectedValue, String message, Object... args) {
+        super(message, args);
+        this.object = object;
+        this.field = field;
+        this.rejectedValue = rejectedValue;
+    }
 
     @Override
     public String toString() {
-        return object + "." + field + ": " + message + " (rejected value: '" + rejectedValue + "')";
+        return object + "." + field + ": " + getMessage() + " (rejected value: '" + rejectedValue + "')";
     }
 }
