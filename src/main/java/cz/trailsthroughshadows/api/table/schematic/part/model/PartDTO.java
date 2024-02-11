@@ -57,14 +57,12 @@ public class PartDTO extends Validable {
     public void validateInner(ValidationConfig validationConfig) {
         ValidationConfig.HexGrid hexGrid = validationConfig.getHexGrid();
 
-        List<RestSubError> textErrors = new ArrayList<>();
-
         // part has to have a correct tag and title
         Title title = new Title(getTitle());
-        title.validate(validationConfig).ifPresent(restError -> textErrors.addAll(restError.getErrors()));
+        validateChild(title, validationConfig);
 
         Tag tag = new Tag(getTag());
-        tag.validate(validationConfig).ifPresent(restError -> textErrors.addAll(restError.getErrors()));
+        validateChild(tag, validationConfig);
 
         // min 5 hexes
         if (getHexes().size() < hexGrid.getMinHexes()) {
@@ -80,12 +78,6 @@ public class PartDTO extends Validable {
         for (HexDTO hex : getHexes()) {
             hex.validate(validationConfig).ifPresent(restError -> errors.addAll(restError.getErrors()));
         }
-        if (!errors.isEmpty()) {
-            errors.addAll(textErrors);
-            return;
-        }
-
-        errors.addAll(textErrors);
 
         // max 8 hexes wide
         List<Integer> coordinates = new ArrayList<>();
