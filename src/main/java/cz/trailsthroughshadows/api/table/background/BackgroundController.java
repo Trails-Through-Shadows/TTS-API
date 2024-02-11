@@ -17,6 +17,7 @@ public class BackgroundController {
 
     @Autowired
     private ClazzRepo clazzRepo;
+
     @Autowired
     private RaceRepo raceRepo;
 

@@ -2,7 +2,8 @@ package cz.trailsthroughshadows.api.rest.model.error.type;
 
 import cz.trailsthroughshadows.algorithm.util.Sanitized;
 import cz.trailsthroughshadows.api.rest.model.error.RestSubError;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

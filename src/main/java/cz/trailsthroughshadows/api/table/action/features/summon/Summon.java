@@ -46,6 +46,7 @@ public class Summon extends Validable implements Cloneable {
     @ManyToOne()
     @JoinColumn(name = "idAction")
     private ActionDTO action;
+
     @OneToMany(mappedBy = "idSummon")
     @ToString.Exclude
     private Collection<SummonEffect> effects;

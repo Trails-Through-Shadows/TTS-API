@@ -7,7 +7,9 @@ import lombok.Setter;
 @Setter
 public class ValidationError extends MessageError {
     private String object;
+
     private String field;
+
     private Object rejectedValue;
 
     public ValidationError(String object, String field, Object rejectedValue, String message, Object... args) {

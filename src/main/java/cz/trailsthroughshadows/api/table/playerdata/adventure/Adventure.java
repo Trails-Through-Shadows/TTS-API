@@ -16,19 +16,25 @@ import java.util.Collection;
 public class Adventure {
     @Id
     private Integer id;
+
     @Column(nullable = false)
     private int reputation;
+
     @Column(nullable = false)
     private int experience;
+
     @Column(nullable = false)
     private int gold;
+
     @Column(nullable = false, length = 128)
     private String title;
+
     @Column(nullable = true)
     private String description;
 
     @Column(insertable = false, updatable = false, nullable = false)
     private int idLicense;
+
     @Column(insertable = false, updatable = false, nullable = false)
     private int idCampaign;
 

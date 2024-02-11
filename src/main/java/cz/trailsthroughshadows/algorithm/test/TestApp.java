@@ -17,10 +17,13 @@ public class TestApp {
 
     @Autowired
     LocationRepo locationRepo;
+
     @Autowired
     CharacterRepo characterRepo;
+
     @Autowired
     EnemyRepo enemyRepo;
+
     @Autowired
     SummonRepo summonRepo;
 

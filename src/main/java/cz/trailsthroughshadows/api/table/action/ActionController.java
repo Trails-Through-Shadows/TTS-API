@@ -22,6 +22,7 @@ public class ActionController {
 
     @Autowired
     private ActionRepo actionRepo;
+
     @Autowired
     private MovementRepo movementRepo;
 

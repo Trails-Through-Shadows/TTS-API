@@ -8,6 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Roll {
     private final Type type;
+
     private final int value;
 
     public Roll(Type type) {

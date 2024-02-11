@@ -16,6 +16,7 @@ import java.util.Collection;
 public class MarketController {
     @Autowired
     private ItemRepo itemRepo;
+
     @Autowired
     private MarketRepo marketRepo;
 

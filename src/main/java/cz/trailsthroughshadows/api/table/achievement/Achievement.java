@@ -17,8 +17,10 @@ public class Achievement {
 
     @Column(nullable = false, length = 128)
     private String title;
+
     @Column(nullable = false)
     private String description;
+
     @Column(nullable = false)
     private int xpReward;
 

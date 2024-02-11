@@ -38,6 +38,7 @@ public class Item {
     @OneToMany
     @JoinColumn(name = "idItem")
     private Collection<ItemEffect> effects;
+
     @ManyToOne
     @JoinColumn(name = "idAction")
     private ActionDTO action;

@@ -11,8 +11,11 @@ import java.util.List;
 @Data
 public class RestError {
     private final HttpStatus status;
+
     private final String message;
+
     private final List<RestSubError> errors = new ArrayList<>();
+
     private LocalDateTime timestamp = LocalDateTime.now();
 
     public RestError(HttpStatus status, String message, Object... args) {

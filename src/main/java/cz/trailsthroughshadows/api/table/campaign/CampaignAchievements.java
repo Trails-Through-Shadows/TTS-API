@@ -27,6 +27,7 @@ public class CampaignAchievements {
     public static class CampaignAchievementsId implements Serializable {
         @Column(nullable = false)
         private Integer idCampaign;
+
         @Column(nullable = false)
         private Integer idAchievement;
     }

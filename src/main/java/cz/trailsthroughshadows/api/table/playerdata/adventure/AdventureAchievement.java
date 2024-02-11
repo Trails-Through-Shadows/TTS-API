@@ -16,6 +16,7 @@ public class AdventureAchievement {
 
     @EmbeddedId
     private AdventureAchievementId key;
+
     @Column(nullable = false)
     private int progress;
 
@@ -25,6 +26,7 @@ public class AdventureAchievement {
     public static class AdventureAchievementId implements Serializable {
         @Column(nullable = false)
         private Integer idAdventure;
+
         @Column(nullable = false)
         private Integer idAchievement;
     }

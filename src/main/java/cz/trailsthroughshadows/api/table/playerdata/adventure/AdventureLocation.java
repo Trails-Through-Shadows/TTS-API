@@ -16,8 +16,10 @@ public class AdventureLocation {
 
     @EmbeddedId
     private AdventureLocationId key;
+
     @Column(nullable = false)
     private boolean unlocked;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LocationState state;
@@ -32,6 +34,7 @@ public class AdventureLocation {
     public static class AdventureLocationId implements Serializable {
         @Column(nullable = false)
         private Integer idAdventure;
+
         @Column(nullable = false)
         private Integer idLocation;
     }
