@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import jakarta.persistence.*;
 import lombok.Data;

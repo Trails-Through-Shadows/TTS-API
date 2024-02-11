@@ -2,12 +2,11 @@ package cz.trailsthroughshadows.api.table.schematic.location.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
-import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -70,7 +69,7 @@ public class LocationDTO {
                 .collect(Collectors.toList());
     }
 
-    public void loadAll(){
+    public void loadAll() {
         Initialization.hibernateInitializeAll(this);
     }
 

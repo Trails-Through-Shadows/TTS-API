@@ -3,7 +3,6 @@ package cz.trailsthroughshadows.api.table.schematic.location.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
-import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;

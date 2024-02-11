@@ -8,13 +8,12 @@ public class Sanitized {
     /**
      * Formats a message using the given format string and arguments.
      * <p>
-     *     This method is a wrapper around {@link ParameterizedMessage#getFormattedMessage()}.
-     *     It is used to format messages in a safe way, preventing log injection attacks.
+     * This method is a wrapper around {@link ParameterizedMessage#getFormattedMessage()}.
+     * It is used to format messages in a safe way, preventing log injection attacks.
      * </p>
      *
      * @param format the format string, using '{}' as a placeholder
      * @param args   the arguments to be substituted into the format string
-     *
      * @return the formatted message
      */
     public static String format(String format, Object... args) {

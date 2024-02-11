@@ -6,7 +6,7 @@ import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
-import cz.trailsthroughshadows.api.rest.jsonfilter.IncludeNullOrEmptySerializer;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.features.attack.Attack;
 import cz.trailsthroughshadows.api.table.action.features.movement.Movement;
@@ -27,7 +27,6 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Action")
-//@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ActionDTO extends Validable {
 
@@ -51,24 +50,27 @@ public class ActionDTO extends Validable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movement")
-    @JsonSerialize(using = IncludeNullOrEmptySerializer.class)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Movement movement;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "skill")
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Skill skill;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attack")
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Attack attack;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restoreCards")
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private RestoreCards restoreCards;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "idAction")
-    @JsonSerialize(using = IncludeNullOrEmptySerializer.class)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<SummonAction> summonActions;
 
     //region Validation

@@ -5,10 +5,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 public class Initialization {
@@ -30,7 +27,7 @@ public class Initialization {
      * @param entity Entity to initialize
      */
     public static void hibernateInitializeAll(Object entity) {
-        List<String> filter = List.of();
+        List<String> filter = new ArrayList<>();
         Map<Object, Integer> visited = new HashMap<>();
         hibernateInitializeAll(entity, visited, filter);
     }
@@ -46,9 +43,10 @@ public class Initialization {
 
         //log.debug("Initializing object: {}", entity.getClass().getSimpleName());
         Hibernate.initialize(entity);
-//        if (entity instanceof HibernateProxy) {
-//            entity = ((HibernateProxy) entity).getHibernateLazyInitializer().getImplementation();
-//        }
+
+        if (entity instanceof HibernateProxy) {
+            entity = ((HibernateProxy) entity).getHibernateLazyInitializer().getImplementation();
+        }
 
         initializeFields(entity, visited, filter);
 
@@ -59,17 +57,16 @@ public class Initialization {
             field.setAccessible(true);
 
             if (!(filter.contains(field.getName()) || filter.isEmpty())) {
-                log.debug("     Skipping property: {}", field.getName());
                 continue;
             }
 
-            log.debug("     Initializing property: {}", field.getName());
+            log.trace("     Initializing property: {}", field.getName());
 
             try {
                 Object child = field.get(entity);
                 if (child != null && !isPrimitiveOrWrapper(child.getClass())) {
                     Hibernate.initialize(child);
-                    log.debug("         Initializing item: {}", child.getClass().getSimpleName());
+                    log.trace("         Initializing item: {}", child.getClass().getSimpleName());
                     if (child instanceof Collection) {
                         for (Object item : (Collection) child) {
                             hibernateInitializeAll(item, visited, filter);
