@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
-import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
+import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,20 +31,6 @@ public class HexDTO extends Validable {
     @Column(name = "sCoord", nullable = false)
     private int s;
 
-    @Data
-    @Embeddable
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class HexId implements Serializable {
-
-        @Column(name = "idPart", nullable = false)
-        private Integer idPart;
-
-        @Column(name = "id", nullable = false)
-        private Integer id;
-
-    }
-
     //region Validation
     @Override
     public void validateInner(ValidationConfig validationConfig) {
@@ -58,6 +44,20 @@ public class HexDTO extends Validable {
     @Override
     public String getValidableValue() {
         return "(%d, %d, %d)".formatted(getQ(), getR(), getS());
+    }
+
+    @Data
+    @Embeddable
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class HexId implements Serializable {
+
+        @Column(name = "idPart", nullable = false)
+        private Integer idPart;
+
+        @Column(name = "id", nullable = false)
+        private Integer id;
+
     }
     //endregion
 }

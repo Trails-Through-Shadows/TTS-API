@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.action;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.action.features.movement.MovementRepo;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;

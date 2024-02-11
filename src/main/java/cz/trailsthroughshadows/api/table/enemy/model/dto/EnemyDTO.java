@@ -1,12 +1,13 @@
 package cz.trailsthroughshadows.api.table.enemy.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Tag;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
-import cz.trailsthroughshadows.algorithm.validation.Validable;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
@@ -24,45 +25,50 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Enemy")
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EnemyDTO extends Validable implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false, length = 128)
     private String title;
+
     @Column(length = 32)
     private String tag;
+
     @Column(nullable = true)
     private String description;
 
     @Column(nullable = false)
-    private int baseHealth;
+    private Integer baseHealth;
 
     @Column(nullable = false)
-    private int baseDefence;
+    private Integer baseDefence;
 
     @Column(nullable = false)
-    private int baseInitiative;
+    private Integer baseInitiative;
 
     @Column
     private Integer usages;
 
     @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyEffect> effects;
 
     @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyActionDTO> actions;
 
-    public List<EffectDTO> getEffects() {
+    @JsonIgnore
+    public List<EffectDTO> getMappedEffects() {
         if (effects == null) return new ArrayList<>();
         return effects.stream().map(EnemyEffect::getEffect).toList();
     }
 
-    public List<ActionDTO> getActions() {
+    @JsonIgnore
+    public List<ActionDTO> getMappedActions() {
         if (actions == null) return new ArrayList<>();
         return actions.stream().map(EnemyActionDTO::getAction).toList();
     }
@@ -101,8 +107,8 @@ public class EnemyDTO extends Validable implements Cloneable {
         }
 
         // All actions and effects must be validated.
-        List<ActionDTO> actions = getActions();
-        List<EffectDTO> effects = getEffects();
+        List<ActionDTO> actions = getMappedActions();
+        List<EffectDTO> effects = getMappedEffects();
 
         for (ActionDTO action : actions) {
             validateChild(action, validationConfig);

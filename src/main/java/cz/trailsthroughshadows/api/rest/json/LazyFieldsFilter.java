@@ -1,10 +1,12 @@
-package cz.trailsthroughshadows.api.rest.jsonfilter;
+package cz.trailsthroughshadows.api.rest.json;
 
 import jakarta.persistence.Persistence;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Collection;
 
+/**
+ * Filter non fetched lazy fields from serialization.
+ */
 public class LazyFieldsFilter {
     @Override
     public boolean equals(Object obj) {
@@ -18,9 +20,6 @@ public class LazyFieldsFilter {
 //        if (obj instanceof HibernateProxy)
 //            return false;
 
-        if (Persistence.getPersistenceUtil().isLoaded(obj))
-            return false;
-
-        return true;
+        return !Persistence.getPersistenceUtil().isLoaded(obj);
     }
 }

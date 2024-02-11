@@ -3,7 +3,7 @@ package cz.trailsthroughshadows.api.table.action.features.attack;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.foraction.AttackEffect;
 import jakarta.persistence.*;

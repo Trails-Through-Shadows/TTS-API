@@ -24,6 +24,7 @@ public class Market {
     // TODO getter for items in this market
 
     @Embeddable
+    @Data
     public static class MarketId implements Serializable {
         @Column
         private Integer idItem;

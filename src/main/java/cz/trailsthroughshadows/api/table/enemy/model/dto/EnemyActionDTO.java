@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.enemy.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,15 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "EnemyAction")
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 public class EnemyActionDTO {
     @Id
     @Column(nullable = false)
-    @JsonIgnore
     private int idEnemy;
 
     @Id
     @Column(nullable = false)
-    @JsonIgnore
     private int idAction;
 
     @ManyToOne(fetch = FetchType.LAZY)

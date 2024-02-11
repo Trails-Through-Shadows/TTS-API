@@ -23,6 +23,7 @@ public class CampaignAchievements {
     private Achievement achievement;
 
     @Embeddable
+    @Data
     public static class CampaignAchievementsId implements Serializable {
         @Column(nullable = false)
         private Integer idCampaign;

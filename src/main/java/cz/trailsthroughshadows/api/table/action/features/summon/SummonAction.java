@@ -3,7 +3,7 @@ package cz.trailsthroughshadows.api.table.action.features.summon;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.rest.jsonfilter.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
