@@ -3,7 +3,11 @@ package cz.trailsthroughshadows.api.table.schematic.obstacle.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.text.Description;
+import cz.trailsthroughshadows.algorithm.validation.text.Tag;
+import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forothers.ObstacleEffectDTO;
 import jakarta.annotation.Nullable;
@@ -55,13 +59,35 @@ public class ObstacleDTO extends Validable {
         return effects.stream().map(ObstacleEffectDTO::getEffect).toList();
     }
 
+    //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
-        // TODO: Implement validation
+        // Title, tag and description have to be valid.
+        validateChild(new Title(getTitle()), validationConfig);
+        validateChild(new Tag(getTag()), validationConfig);
+        validateChild(new Description(getDescription()), validationConfig);
+
+        // BaseDamage must be greater than or equal to 0. If it is not crossable, it must be 0.
+        if (!crossable && baseDamage != 0) {
+            errors.add(new ValidationError("Obstacle", "baseDamage", getBaseDamage(), "Base damage must be 0 if obstacle is not crossable."));
+        } else if (baseDamage < 0) {
+            errors.add(new ValidationError("Obstacle", "baseDamage", getBaseDamage(), "Base damage must be greater than or equal to 0."));
+        }
+
+        // BaseHealth must be greater than 0 or -1 (invincible).
+        if (baseHealth != -1 && baseHealth <= 0) {
+            errors.add(new ValidationError("Obstacle", "baseHealth", getBaseHealth(), "Base health must be greater than 0 or -1 (invincible)."));
+        }
+
+        // All effects must be validated.
+        for (var effect : getMappedEffects()) {
+            validateChild(effect, validationConfig);
+        }
     }
 
     @Override
     public String getValidableValue() {
-        return null;
+        return getTitle();
     }
+    //endregion
 }

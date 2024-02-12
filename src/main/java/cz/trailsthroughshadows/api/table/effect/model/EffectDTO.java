@@ -3,11 +3,14 @@ package cz.trailsthroughshadows.api.table.effect.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.text.Description;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -42,7 +45,22 @@ public class EffectDTO extends Validable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
-        // TODO
+        // Description has to be valid.
+        Description description = new Description(getDescription());
+        validateChild(description, validationConfig);
+
+        // Duration must be greater than 0 or exactly -1 (infinity).
+        if (duration < 1 && duration != -1) {
+            errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be greater than 0 or -1."));
+        }
+
+        // Strength must be positive. It must be null for types Disarm, Root, Stun, Confusion, Guidance and Incorporeal.
+        List<String> noStrength = List.of("DISARM", "ROOT", "STUN", "CONFUSION", "GUIDANCE", "INCORPOREAL");
+        if (noStrength.contains(type.toString()) && strength != null) {
+            errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be null for this type of effect."));
+        } else if (strength != null && strength < 1) {
+            errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than 0."));
+        }
     }
 
     @Override
@@ -63,21 +81,23 @@ public class EffectDTO extends Validable {
         BLEED_RESISTANCE,
         DISARM,
         DISARM_RESISTANCE,
+        ROOT,
+        ROOT_RESISTANCE,
         STUN,
         STUN_RESISTANCE,
         CONFUSION,
         CONFUSION_RESISTANCE,
-        CHARM,
-        CHARM_RESISTANCE,
-        FEAR,
-        FEAR_RESISTANCE,
-        INVISIBILITY,
+        GUIDANCE,
+        INVINCIBILITY,
         SHIELD,
         HEAL,
         REGENERATION,
-        BONUS_HEALTH,
-        BONUS_DAMAGE,
-        BONUS_MOVEMENT,
+        EMPOWER,
+        ENFEEBLE,
+        ENFEEBLE_RESISTANCE,
+        SPEED,
+        SLOW,
+        REACH,
     }
 
     public enum EffectTarget implements Serializable {

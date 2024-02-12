@@ -50,6 +50,11 @@ public class Movement extends Validable {
         if (range <= 0) {
             errors.add(new ValidationError("Movement", "range", getRange(), "Range must be greater than 0."));
         }
+
+        // All effects must be validated.
+        for (var e : effects) {
+            validateChild(e.getEffect(), validationConfig);
+        }
     }
 
     @Override

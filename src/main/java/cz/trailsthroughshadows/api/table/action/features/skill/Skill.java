@@ -59,6 +59,11 @@ public class Skill extends Validable {
         if (area < 0) {
             errors.add(new ValidationError("Skill", "area", getArea(), "Area of effect must be greater than 0."));
         }
+
+        // All effects must be validated.
+        for (var e : effects) {
+            validateChild(e.getEffect(), validationConfig);
+        }
     }
 
     @Override

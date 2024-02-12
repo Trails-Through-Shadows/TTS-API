@@ -98,6 +98,12 @@ public class Summon extends Validable implements Cloneable {
         if (getHealth() <= 0) {
             errors.add(new ValidationError("Summon", "health", getHealth(), "Health must be greater than 0!"));
         }
+
+        // The action and all effects must be validated.
+        validateChild(getAction(), validationConfig);
+        for (var e : getEffects()) {
+            validateChild(e, validationConfig);
+        }
     }
 
     @Override

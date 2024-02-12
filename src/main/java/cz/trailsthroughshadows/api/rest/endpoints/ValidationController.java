@@ -12,6 +12,8 @@ import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
+import cz.trailsthroughshadows.api.table.schematic.obstacle.ObstacleRepo;
+import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.PartRepo;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.extern.log4j.Log4j2;
@@ -34,30 +36,13 @@ public class ValidationController {
 
     //region Schema
 
-    @Autowired
-    PartRepo partRepo;
-
-    @Autowired
-    EnemyRepo enemyRepo;
-
-    @Autowired
-    SummonRepo summonRepo;
-
-    @Autowired
-    ActionRepo actionRepo;
-
-    //endregion
-
-    //region Encounter
-
-    @Autowired
-    EffectRepo effectRepo;
-
     @PostMapping("/part")
     public ResponseEntity<RestResponse> validatePart(@RequestBody PartDTO part) {
         return validate(part);
     }
 
+    @Autowired
+    PartRepo partRepo;
     @PostMapping("/part/{id}")
     public ResponseEntity<RestResponse> validatePartById(@PathVariable int id) {
         return validate(partRepo.findById(id));
@@ -68,27 +53,47 @@ public class ValidationController {
         return validate(hex);
     }
 
+    //endregion
+
+    //region Encounter
+
     @PostMapping("/enemy")
     public ResponseEntity<RestResponse> validateEnemy(@RequestBody EnemyDTO enemy) {
         return validate(enemy);
     }
 
+    @Autowired
+    EnemyRepo enemyRepo;
     @PostMapping("/enemy/{id}")
     public ResponseEntity<RestResponse> validateEnemyById(@PathVariable int id) {
         return validate(enemyRepo.findById(id));
     }
-
-    //endregion
 
     @PostMapping("/summon")
     public ResponseEntity<RestResponse> validateSummon(@RequestBody Summon summon) {
         return validate(summon);
     }
 
+    @Autowired
+    SummonRepo summonRepo;
     @PostMapping("/summon/{id}")
     public ResponseEntity<RestResponse> validateSummonById(@PathVariable int id) {
         return validate(summonRepo.findById(id));
     }
+
+    @PostMapping("/obstacle")
+    public ResponseEntity<RestResponse> validateObstacle(@RequestBody Obstacle obstacle) {
+        return validate(obstacle);
+    }
+
+    @Autowired
+    ObstacleRepo obstacleRepo;
+    @PostMapping("/obstacle/{id}")
+    public ResponseEntity<RestResponse> validateObstacleById(@PathVariable int id) {
+        return validate(obstacleRepo.findById(id));
+    }
+
+    //endregion
 
     //region Combat
     @PostMapping("/action")
@@ -96,6 +101,8 @@ public class ValidationController {
         return validate(action);
     }
 
+    @Autowired
+    ActionRepo actionRepo;
     @PostMapping("/action/{id}")
     public ResponseEntity<RestResponse> validateActionById(@PathVariable int id) {
         return validate(actionRepo.findById(id));
@@ -106,6 +113,8 @@ public class ValidationController {
         return validate(effect);
     }
 
+    @Autowired
+    EffectRepo effectRepo;
     @PostMapping("/effect/{id}")
     public ResponseEntity<RestResponse> validateEffectById(@PathVariable int id) {
         return validate(effectRepo.findById(id));

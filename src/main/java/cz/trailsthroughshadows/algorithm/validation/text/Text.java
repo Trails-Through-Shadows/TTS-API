@@ -12,6 +12,10 @@ public abstract class Text extends Validable {
     public void validateText(int minLen, int maxLen, String allowedChars) {
         String name = getValidableClass();
 
+        if (minLen == 0 && text == null) {
+            return;
+        }
+
         // check min and max length
         if (minLen != 0 && (text == null || text.isBlank())) {
             errors.add(new ValidationError(name, "text", text, "%s is required!".formatted(name)));

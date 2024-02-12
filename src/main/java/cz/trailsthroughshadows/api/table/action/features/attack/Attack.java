@@ -77,6 +77,11 @@ public class Attack extends Validable {
         if (numAttacks <= 0) {
             errors.add(new ValidationError("Attack", "numAttacks", getNumAttacks(), "Number of attacks must be greater than 0."));
         }
+
+        // All effects must be validated.
+        for (var e : effects) {
+            validateChild(e.getEffect(), validationConfig);
+        }
     }
 
     @Override
