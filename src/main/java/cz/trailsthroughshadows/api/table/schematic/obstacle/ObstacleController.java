@@ -1,34 +1,40 @@
 package cz.trailsthroughshadows.api.table.schematic.obstacle;
 
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.table.effect.relation.forothers.ObstacleEffectDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
-//@Cacheable(value = "obstacle")
 @RestController(value = "Obstacle")
 public class ObstacleController {
 
+    private ValidationService validation;
     private ObstacleRepo obstacleRepo;
 
     @GetMapping("/obstacles")
-    public ResponseEntity<?> getObstacles(
+    @Cacheable(value = "obstacle")
+    public ResponseEntity<RestPaginatedResult<Obstacle>> getObstacles(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
@@ -53,12 +59,91 @@ public class ObstacleController {
     }
 
     @GetMapping("/obstacles/{id}")
-    public ResponseEntity<?> getObstacleById(@PathVariable int id) {
-        ObstacleDTO obstacle = obstacleRepo
+    @Cacheable(value = "obstacle", key = "#id")
+    public ResponseEntity<Object> getObstacleById(@PathVariable int id, @RequestParam(defaultValue = "false") boolean lazy) {
+        ObstacleDTO obstacleDTO = obstacleRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
 
+        Object obstacle;
+        if (lazy) {
+            obstacle = obstacleDTO;
+        } else {
+            obstacle = Obstacle.fromDTO(obstacleDTO);
+        }
+
         return new ResponseEntity<>(obstacle, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/obstacles/{id}")
+    @CacheEvict(value = "obstacle", key = "#id")
+    public ResponseEntity<RestResponse> deleteObstacleById(@PathVariable int id) {
+        ObstacleDTO obstacleDTO = obstacleRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
+
+        obstacleRepo.delete(obstacleDTO);
+        return RestResponse.of(HttpStatus.OK,"Obstacle with id '%d' deleted!", id);
+    }
+
+    @PutMapping("/obstacles/{id}")
+    @CacheEvict(value = "obstacle", key = "#id")
+    public ResponseEntity<RestResponse> updateObstacleById(@PathVariable int id, @RequestBody ObstacleDTO obstacle) {
+        ObstacleDTO obstacleToUpdate = obstacleRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
+
+        // Validate obstacle
+        validation.validate(obstacle);
+
+        obstacleToUpdate.setTag(obstacle.getTag());
+        obstacleToUpdate.setTitle(obstacle.getTitle());
+        obstacleToUpdate.setDescription(obstacle.getDescription());
+        obstacleToUpdate.setBaseDamage(obstacle.getBaseDamage());
+        obstacleToUpdate.setBaseHealth(obstacle.getBaseHealth());
+        obstacleToUpdate.setCrossable(obstacle.isCrossable());
+
+        obstacleToUpdate.getEffects().retainAll(obstacle.getEffects());
+        obstacleToUpdate.getEffects().addAll(obstacle.getEffects());
+        obstacleToUpdate.getEffects().forEach((effect) -> effect.setIdObstacle(obstacleToUpdate.getId()));
+
+        obstacleRepo.save(obstacleToUpdate);
+        return RestResponse.of(HttpStatus.OK, "Obstacle with id '%d' updated!", id);
+    }
+
+    @PostMapping("/obstacles")
+    public ResponseEntity<RestResponse> createObstacle(@RequestBody List<Obstacle> obstacles) {
+        log.debug("Creating new obstacles: " + obstacles);
+
+        // Validate obstacle
+        obstacles.forEach(validation::validate);
+
+        // Remove ids to always create new obstacles
+        obstacles.forEach(obstacle -> obstacle.setId(null));
+
+        // Remove relations and save them for later
+        Map<String, List<ObstacleEffectDTO>> obstacleRelations = new HashMap<>();
+        obstacles.forEach(obstacle -> {
+            obstacleRelations.put(obstacle.getTag(), new ArrayList<>(obstacle.getEffects()));
+            obstacle.setEffects(null);
+        });
+
+        // Save obstacles
+        obstacles = obstacleRepo.saveAll(obstacles);
+
+        // Load relations
+        obstacles.forEach(obstacle -> {
+            List<ObstacleEffectDTO> relations = obstacleRelations.get(obstacle.getTag());
+
+            obstacle.setEffects(new ArrayList<>(relations));
+            obstacle.getEffects().forEach(effect -> effect.setIdObstacle(obstacle.getId()));
+        });
+
+        // Save obstacles relations
+        obstacles = obstacleRepo.saveAll(obstacles);
+
+        String ids = obstacles.stream().map((entry) -> String.valueOf(entry.getId())).toList().toString();
+        return RestResponse.of(HttpStatus.OK, "Obstacles with ids '%s' created!", ids);
     }
 
     /**
@@ -68,5 +153,10 @@ public class ObstacleController {
     @Autowired
     public void setObstacleRepo(ObstacleRepo obstacleRepo) {
         this.obstacleRepo = obstacleRepo;
+    }
+
+    @Autowired
+    public void setValidation(ValidationService validation) {
+        this.validation = validation;
     }
 }

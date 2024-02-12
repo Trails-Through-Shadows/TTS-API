@@ -11,7 +11,7 @@ import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
-import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffect;
+import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffectDTO;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -55,7 +55,7 @@ public class EnemyDTO extends Validable implements Cloneable {
 
     @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private List<EnemyEffect> effects;
+    private List<EnemyEffectDTO> effects;
 
     @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
@@ -64,7 +64,7 @@ public class EnemyDTO extends Validable implements Cloneable {
     @JsonIgnore
     public List<EffectDTO> getMappedEffects() {
         if (effects == null) return new ArrayList<>();
-        return effects.stream().map(EnemyEffect::getEffect).toList();
+        return effects.stream().map(EnemyEffectDTO::getEffect).toList();
     }
 
     @JsonIgnore

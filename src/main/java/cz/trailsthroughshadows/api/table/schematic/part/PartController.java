@@ -89,11 +89,13 @@ public class PartController {
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        // TODO: Validation for new or updates parts
+        // Validate part
         validation.validate(part);
 
         partToUpdate.setTag(part.getTag());
-        partToUpdate.setHexes(part.getHexes());
+
+        partToUpdate.getHexes().retainAll(part.getHexes());
+        partToUpdate.getHexes().addAll(part.getHexes());
 
         partRepo.save(partToUpdate);
 
@@ -105,6 +107,9 @@ public class PartController {
     @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<RestResponse> createParts(@RequestBody List<PartDTO> parts) {
         log.debug("Creating parts: " + parts);
+
+        // Validate all parts
+        parts.forEach(validation::validate);
 
         Map<String, List<HexDTO>> partHexes = new HashMap<>();
         parts.forEach(part -> {

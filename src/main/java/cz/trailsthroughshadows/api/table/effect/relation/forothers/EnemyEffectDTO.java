@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.effect.relation.forothers;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,17 +12,20 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ObstacleEffect")
-public class ObstacleEffect {
+@Table(name = "EnemyEffect")
+@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+public class EnemyEffectDTO {
+
     @Id
     @Column(nullable = false)
-    private int idObstacle;
+    private int idEnemy;
 
     @Id
     @Column(nullable = false)
     private int idEffect;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;
+
 }

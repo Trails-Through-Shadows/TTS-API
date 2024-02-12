@@ -1,32 +1,39 @@
 package cz.trailsthroughshadows.api.table.enemy;
 
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
+import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyActionDTO;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
+import cz.trailsthroughshadows.api.util.Pair;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
-@Cacheable(value = "enemy")
 @RestController(value = "Enemy")
 public class EnemyController {
 
+    private ValidationService validation;
     private EnemyRepo enemyRepo;
 
     @GetMapping("/enemies")
+    @Cacheable(value = "enemy")
     public ResponseEntity<RestPaginatedResult<Enemy>> getEnemies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -52,22 +59,109 @@ public class EnemyController {
     }
 
     @GetMapping("/enemies/{id}")
-    public ResponseEntity<Object> getEnemyById(@PathVariable int id, @RequestParam(defaultValue = "true") boolean lazy) {
+    @Cacheable(value = "enemy", key = "#id")
+    public ResponseEntity<Object> getEnemyById(@PathVariable int id, @RequestParam(defaultValue = "false") boolean lazy) {
         EnemyDTO enemyDTO = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
+
         Object enemy;
-        if (lazy)
+        if (lazy) {
             enemy = enemyDTO;
-        else
+        } else {
             enemy = Enemy.fromDTO(enemyDTO);
+        }
 
         return new ResponseEntity<>(enemy, HttpStatus.OK);
     }
 
+    @DeleteMapping("/enemies/{id}")
+    @CacheEvict(value = "enemy", key = "#id")
+    public ResponseEntity<RestResponse> deleteEnemy(@PathVariable int id) {
+        EnemyDTO enemyDTO = enemyRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
+
+        enemyRepo.delete(enemyDTO);
+        return RestResponse.of(HttpStatus.OK, "Enemy with id '%d' deleted!", id);
+    }
+
+    @PutMapping("/enemies/{id}")
+    @CacheEvict(value = "enemy", key = "#id")
+    public ResponseEntity<RestResponse> updateEnemyById(@PathVariable int id, @RequestBody EnemyDTO enemy) {
+        EnemyDTO enemyToUpdate = enemyRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
+
+        // Validate enemy
+        validation.validate(enemy);
+
+        enemyToUpdate.setTag(enemy.getTag());
+        enemyToUpdate.setTitle(enemy.getTitle());
+        enemyToUpdate.setDescription(enemy.getDescription());
+        enemyToUpdate.setBaseDefence(enemy.getBaseDefence());
+        enemyToUpdate.setBaseHealth(enemy.getBaseHealth());
+        enemyToUpdate.setBaseInitiative(enemy.getBaseInitiative());
+
+        enemyToUpdate.getEffects().retainAll(enemy.getEffects());
+        enemyToUpdate.getActions().addAll(enemy.getActions());
+        enemyToUpdate.getEffects().forEach(effect -> effect.setIdEnemy(enemyToUpdate.getId()));
+
+        enemyToUpdate.getActions().retainAll(enemy.getActions());
+        enemyToUpdate.getEffects().addAll(enemy.getEffects());
+        enemyToUpdate.getActions().forEach(action -> action.setIdEnemy(enemyToUpdate.getId()));
+
+        enemyRepo.save(enemyToUpdate);
+        return RestResponse.of(HttpStatus.OK, "Enemy with id '{}' updated!", id);
+    }
+
+    @PostMapping("/enemies")
+    @CacheEvict(value = "enemy", allEntries = true)
+    public ResponseEntity<RestResponse> createEnemies(@RequestBody List<EnemyDTO> enemies) {
+        log.debug("Creating enemies: " + enemies);
+
+        // Validate all enemies
+        enemies.forEach(validation::validate);
+
+        // Remove ids to always create new enemies
+        enemies.forEach(e -> e.setId(null));
+
+        // Remove relations and save them for later
+        Map<String, Pair<List<EnemyEffectDTO>, List<EnemyActionDTO>>> enemyRelations = new HashMap<>();
+        enemies.forEach(enemy -> {
+            enemyRelations.put(enemy.getTag(), new Pair<>(new ArrayList<>(enemy.getEffects()), new ArrayList<>(enemy.getActions())));
+            enemy.setEffects(null);
+            enemy.setActions(null);
+        });
+
+        // Save enemies
+        enemies = enemyRepo.saveAll(enemies);
+
+        // Load relations
+        enemies.forEach(enemy -> {
+            Pair<List<EnemyEffectDTO>, List<EnemyActionDTO>> relations = enemyRelations.get(enemy.getTag());
+
+            enemy.setEffects(new ArrayList<>(relations.first()));
+            enemy.getEffects().forEach(effect -> effect.setIdEnemy(enemy.getId()));
+
+            enemy.setActions(new ArrayList<>(relations.second()));
+            enemy.getActions().forEach(action -> action.setIdEnemy(enemy.getId()));
+        });
+
+        // Save enemies relations
+        enemies = enemyRepo.saveAll(enemies);
+
+        String ids = enemies.stream().map((entry) -> String.valueOf(entry.getId())).toList().toString();
+        return RestResponse.of(HttpStatus.OK, "Enemies with ids '%s' created!", ids);
+    }
 
     @Autowired
     public void setRepository(EnemyRepo repository) {
         this.enemyRepo = repository;
+    }
+
+    @Autowired
+    public void setValidation(ValidationService validation) {
+        this.validation = validation;
     }
 }
