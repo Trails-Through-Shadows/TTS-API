@@ -1,47 +1,48 @@
-## TODO
----
-co všechno je namapováno
+# bugs
 
-- [x] Action
-    - Restore Cards
-    - Attack
-        - attackeffect
-    - Skill
-        - skilleffect
-    - Movement
-        - effect
-    - Summon
-        - SummonAction
-            - summonEffect
-                - effect
+- když si getnu cachovane věci co jsou už namapovane pomoci lazy tak se vrátí zacachovaná věc místo lazy
+-
 
-- [x] Effect
-    - [x] Effect
-        - [x] summonEffect
-        - [x] MovementEffect
-        - [x] AttackEffect
-        - [x] SkillEffect
-        - [x] class effect
-        - [x] race effect
-        - [x] item effect
-        - [x] enemy effect
-        - [x] obstacle effect
-- [x] Enemy
-    - [x] enemy
-    - [x] enemy effect
-    - [x] enemy action
-    - [x] hex enemy
-- [ ] Obstacle
-    - [ ] obstacle
-    - [x] obstacle effect
-    - [ ] hex obstacle
-- [ ] Character
-    - [ ] class action
-    - [ ] class
-    - [ ] race
-    - [ ] race action
-- [ ] equipment
-    - [ ] market
-    - [ ] item
-        - [x] item effect
-    - [ ] market item
+## Lazy load
+
+naopak defaultně fetchovat všechno a kdyžtak ubírat
+
+### fieldy jak se budou loadovat a co vracet
+
+všechny listy v pagination
+kde to jde lazy load
+když si getuju id tak defaultně namapované
+v listu když si getuju tak defaultně lazy
+
+# Enpoint seznam
+
+co bude mít co v sobě a co bude na co namapované
+
+- actions/
+    - cajk vrací idčka
+    - je tam namapovaný range for some reason v summon action
+- actions/{id}
+    - cajk
+- achievements/ + id
+    - cajk
+    - pagination na /
+- background/classes + id
+    - lazy load
+- background/races + id
+    - lazy load
+- campaigns
+    - pagination
+    - lazy
+    - filter
+    - winCondition přeparsovat do jsonu
+- effects
+    - pagination
+- enemies
+    - filter
+- location
+    - lazy load
+    - filter
+- markets
+    - namapovat location a item bez lazy loadu
+    - filter
+    - domapovat idk actually co všechno

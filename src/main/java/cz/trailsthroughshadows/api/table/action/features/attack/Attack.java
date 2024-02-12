@@ -34,7 +34,7 @@ public class Attack extends Validable {
     @Column(nullable = false)
     private int damage;
 
-    @Column
+    @Column(nullable = false)
     private Integer area;
 
     @Column(nullable = false)

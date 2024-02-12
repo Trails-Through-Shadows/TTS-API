@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.campaign;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +24,8 @@ public class CampaignLocation {
 //    @JoinColumn(name = "idCampaign", insertable = false, updatable = false)
 //    private Campaign campaign;
 
-    @ManyToOne//(fetch = FetchType.LAZY) // todo bulk get or lazy load or dont map by default and only return ID
+    @JsonSerialize(using = LazyFieldsSerializer.class)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idLocation", insertable = false, updatable = false)
     private LocationDTO location;
 

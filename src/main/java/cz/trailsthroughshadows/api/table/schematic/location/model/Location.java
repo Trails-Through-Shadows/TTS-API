@@ -15,7 +15,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Location extends LocationDTO {
 
-    // TODO: Map locations only by specific campaign
+    // TODO: Map locations only by specific campaign frrom database @rcMarty
     public static Location fromDTO(LocationDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         dto.loadAll();

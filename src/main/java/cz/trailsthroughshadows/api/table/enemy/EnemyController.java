@@ -30,6 +30,7 @@ import java.util.Map;
 public class EnemyController {
 
     private ValidationService validation;
+
     private EnemyRepo enemyRepo;
 
     @GetMapping("/enemies")
@@ -40,7 +41,7 @@ public class EnemyController {
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort
     ) {
-        // TODO: Re-Implement filtering, sorting and pagination
+        // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
         List<Enemy> entries = enemyRepo.findAll().stream()
@@ -64,7 +65,7 @@ public class EnemyController {
         EnemyDTO enemyDTO = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
-
+        //TODO no Object put it all into Action @rcMarty
         Object enemy;
         if (lazy) {
             enemy = enemyDTO;
