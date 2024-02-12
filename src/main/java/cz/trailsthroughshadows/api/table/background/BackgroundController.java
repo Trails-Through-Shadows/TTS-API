@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.background;
 
-import cz.trailsthroughshadows.api.table.background.clazz.Clazz;
+import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
-import cz.trailsthroughshadows.api.table.background.race.Race;
+import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
 import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,31 +22,31 @@ public class BackgroundController {
     private RaceRepo raceRepo;
 
     @GetMapping("classes/{id}")
-    public Clazz findById(@PathVariable int id) {
+    public ClazzDTO findById(@PathVariable int id) {
         return clazzRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid class Id:" + id));
     }
 
     @GetMapping("classes")
-    public Collection<Clazz> findClass() {
+    public Collection<ClazzDTO> findClass() {
         return clazzRepo.getAll();
     }
 
     @PutMapping("classes/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Clazz updateClass(
-            @PathVariable("id") final String id, @RequestBody final Clazz clazz) {
+    public ClazzDTO updateClass(
+            @PathVariable("id") final String id, @RequestBody final ClazzDTO clazz) {
         return clazz;
     }
 
     // RACE SECTION
 
     @GetMapping("races/{id}")
-    public Race findRaceById(
+    public RaceDTO findRaceById(
             @PathVariable int id,
             @RequestParam(defaultValue = "true") boolean lazyLoad
     ) {
-        Race r = raceRepo.findById(id).orElseThrow();
+        RaceDTO r = raceRepo.findById(id).orElseThrow();
 
         Hibernate.initialize(r);
 
@@ -54,7 +54,7 @@ public class BackgroundController {
     }
 
     @GetMapping("races")
-    public Collection<Race> findRaces() {
+    public Collection<RaceDTO> findRaces() {
         return raceRepo.getAll();
     }
 }

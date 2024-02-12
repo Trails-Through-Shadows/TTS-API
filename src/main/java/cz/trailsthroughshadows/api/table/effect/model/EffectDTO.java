@@ -55,8 +55,8 @@ public class EffectDTO extends Validable {
         }
 
         // Strength must be positive. It must be null for types Disarm, Root, Stun, Confusion, Guidance and Incorporeal.
-        List<String> noStrength = List.of("DISARM", "ROOT", "STUN", "CONFUSION", "GUIDANCE", "INCORPOREAL");
-        if (noStrength.contains(type.toString()) && strength != null) {
+        List<EffectDTO.EffectType> noStrength = List.of(EffectType.DISARM, EffectType.ROOT, EffectType.STUN, EffectType.CONFUSION, EffectType.GUIDANCE, EffectType.INVINCIBILITY, EffectType.SHIELD);
+        if (noStrength.contains(type) && strength != null) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be null for this type of effect."));
         } else if (strength != null && strength < 1) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than 0."));

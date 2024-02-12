@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.playerdata.adventure;
 
-import cz.trailsthroughshadows.api.table.market.item.Item;
+import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,7 +26,7 @@ public class AdventureMarket {
 
     @ManyToOne
     @JoinColumn(name = "idItem")
-    private Item item;
+    private ItemDTO item;
 
 
     @Embeddable

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ClassEffect")
-public class ClassEffect {
+public class ClazzEffect {
 
     @Id
     @Column(nullable = false)

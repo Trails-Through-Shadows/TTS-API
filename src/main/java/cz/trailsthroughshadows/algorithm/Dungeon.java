@@ -12,7 +12,7 @@
 //import cz.trailsthroughshadows.api.table.action.summon.SummonAction;
 //import cz.trailsthroughshadows.api.table.effect.model.Effect;
 //import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
-//import cz.trailsthroughshadows.api.table.playerdata.character.Character;
+//import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
 //import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 //import lombok.AllArgsConstructor;
 //import lombok.Getter;

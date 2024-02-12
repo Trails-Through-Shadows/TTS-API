@@ -7,14 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "validation")
 public class ValidationConfig {
 
-    private final HexGrid hexGrid;
-
-    private final Description description;
-
-    private final Title title;
-
-    private final Tag tag;
-
     @Data
     public static class HexGrid {
         private int minHexes;
@@ -23,6 +15,7 @@ public class ValidationConfig {
 
         private int maxWidth;
     }
+    private final HexGrid hexGrid;
 
     @Data
     public static class Description {
@@ -30,6 +23,7 @@ public class ValidationConfig {
 
         private String allowedChars;
     }
+    private final Description description;
 
     @Data
     public static class Title {
@@ -39,6 +33,7 @@ public class ValidationConfig {
 
         private String allowedChars;
     }
+    private final Title title;
 
     @Data
     public static class Tag {
@@ -50,6 +45,19 @@ public class ValidationConfig {
 
         private String prefix;
     }
+    private final Tag tag;
 
+    @Data
+    public static class Inventory {
+        private int maxItems;
+    }
+    private final Inventory inventory;
 
+    @Data
+    public static class Adventure {
+        private int maxPlayers;
+        private int minReputation;
+        private int maxReputation;
+    }
+    private final Adventure adventure;
 }

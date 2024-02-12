@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.market;
 
-import cz.trailsthroughshadows.api.table.market.item.Item;
+import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import cz.trailsthroughshadows.api.table.market.item.ItemRepo;
-import cz.trailsthroughshadows.api.table.market.market.Market;
+import cz.trailsthroughshadows.api.table.market.market.model.MarketDTO;
 import cz.trailsthroughshadows.api.table.market.market.MarketRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +21,12 @@ public class MarketController {
     private MarketRepo marketRepo;
 
     @GetMapping("/items")
-    public Collection<Item> getAllItems() {
+    public Collection<ItemDTO> getAllItems() {
         return itemRepo.findAll();
     }
 
     @GetMapping("")
-    public Collection<Market> getAllMarkets() {
+    public Collection<MarketDTO> getAllMarkets() {
         return marketRepo.findAll();
     }
 
