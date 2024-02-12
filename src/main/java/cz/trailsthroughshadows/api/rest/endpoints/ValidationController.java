@@ -7,10 +7,16 @@ import cz.trailsthroughshadows.api.table.action.ActionRepo;
 import cz.trailsthroughshadows.api.table.action.features.summon.Summon;
 import cz.trailsthroughshadows.api.table.action.features.summon.SummonRepo;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
+import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
 import cz.trailsthroughshadows.api.table.effect.EffectRepo;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
+import cz.trailsthroughshadows.api.table.market.item.ItemRepo;
+import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
+import cz.trailsthroughshadows.api.table.playerdata.character.CharacterRepo;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.ObstacleRepo;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
@@ -95,7 +101,7 @@ public class ValidationController {
 
     //endregion
 
-    //region Combat
+    //region Mechanics
     @PostMapping("/action")
     public ResponseEntity<RestResponse> validateAction(@RequestBody ActionDTO action) {
         return validate(action);
@@ -118,6 +124,74 @@ public class ValidationController {
     @PostMapping("/effect/{id}")
     public ResponseEntity<RestResponse> validateEffectById(@PathVariable int id) {
         return validate(effectRepo.findById(id));
+    }
+
+    //endregion
+
+    //region Items
+
+    @PostMapping("/item")
+    public ResponseEntity<RestResponse> validateItem(@RequestBody ItemDTO item) {
+        return validate(item);
+    }
+
+    @Autowired
+    ItemRepo itemRepo;
+    @PostMapping("/item/{id}")
+    public ResponseEntity<RestResponse> validateItemById(@PathVariable int id) {
+        return validate(itemRepo.findById(id));
+    }
+
+    //endregion
+
+    //region Characters
+
+    @PostMapping("/character")
+    public ResponseEntity<RestResponse> validateCharacter(@RequestBody Validable character) {
+        return validate(character);
+    }
+
+    @Autowired
+    CharacterRepo characterRepo;
+    @PostMapping("/character/{id}")
+    public ResponseEntity<RestResponse> validateCharacterById(@PathVariable int id) {
+        return validate(characterRepo.findById(id));
+    }
+
+    @PostMapping("/class")
+    public ResponseEntity<RestResponse> validateClass(@RequestBody Validable clazz) {
+        return validate(clazz);
+    }
+
+    @Autowired
+    ClazzRepo classRepo;
+    @PostMapping("/class/{id}")
+    public ResponseEntity<RestResponse> validateClassById(@PathVariable int id) {
+        return validate(classRepo.findById(id));
+    }
+
+    @PostMapping("/race")
+    public ResponseEntity<RestResponse> validateRace(@RequestBody Validable race) {
+        return validate(race);
+    }
+
+    @Autowired
+    RaceRepo raceRepo;
+    @PostMapping("/race/{id}")
+    public ResponseEntity<RestResponse> validateRaceById(@PathVariable int id) {
+        return validate(raceRepo.findById(id));
+    }
+
+    @PostMapping("/adventure")
+    public ResponseEntity<RestResponse> validateAdventure(@RequestBody Validable adventure) {
+        return validate(adventure);
+    }
+
+    @Autowired
+    AdventureRepo adventureRepo;
+    @PostMapping("/adventure/{id}")
+    public ResponseEntity<RestResponse> validateAdventureById(@PathVariable int id) {
+        return validate(adventureRepo.findById(id));
     }
 
     //endregion
