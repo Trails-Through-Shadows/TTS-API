@@ -136,9 +136,11 @@
                         </goals>
                         <configuration>
                             <target>
-                                <mkdir dir="${basedir}/target/destination-folder"/>
-                                <copy todir="${basedir}/target/destination-folder">
-                                    <fileset dir="${basedir}/sourcef" includes="foo.txt"/>
+                                <mkdir dir="${basedir}/properties"/>
+                                <copy todir="${basedir}/properties">
+                                    <fileset dir="${basedir}/target/classes" includes="application.properties"/>
+                                    <fileset dir="${basedir}/target/classes" includes="image.properties"/>
+                                    <fileset dir="${basedir}/target/classes" includes="validation.properties"/>
                                 </copy>
                             </target>
                         </configuration>
