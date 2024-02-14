@@ -13,16 +13,16 @@ import java.util.Collection;
 public class AchievementController {
 
     @Autowired
-    private AchievementRepo repository;
+    private AchievementRepo achievementRepo;
 
     @GetMapping("/{id}")
     public Achievement findById(@PathVariable int id) {
-        return repository.findById(id)
+        return achievementRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid achievement Id:" + id));
     }
 
     @GetMapping("")
     public Collection<Achievement> findClass() {
-        return repository.getAll();
+        return achievementRepo.getAll();
     }
 }

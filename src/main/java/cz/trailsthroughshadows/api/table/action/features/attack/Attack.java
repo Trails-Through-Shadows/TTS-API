@@ -20,7 +20,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+//@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Attack extends Validable {
     @Id

@@ -3,6 +3,7 @@ package cz.trailsthroughshadows.api.table.action;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.action.features.movement.MovementRepo;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,20 +36,10 @@ public class ActionController {
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
 
-        for (String s : lazy) {
-            log.debug("Lazy loading {}", s);
-            for (Field f : action.getClass().getDeclaredFields()) {
-                f.setAccessible(true);
-                log.trace("Comparing {} with {}", f.getName(), s);
-                try {
-                    if (Objects.equals(f.getName(), s))
-                        Hibernate.initialize(f.get(action));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
+        if (lazy.isEmpty())
+            Initialization.hibernateInitializeAll(action);
+        else
+            Initialization.hibernateInitializeAll(action, lazy);
 
         return action;
 
@@ -61,16 +52,7 @@ public class ActionController {
     ) {
         Collection<ActionDTO> actions = actionRepo.findAll();
         if (!lazy) {
-            actions.forEach(action -> {
-                for (Field f : action.getClass().getDeclaredFields()) {
-                    f.setAccessible(true);
-                    try {
-                        Hibernate.initialize(f.get(action));
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            Initialization.hibernateInitializeAll(actions);
         }
         return actions;
     }

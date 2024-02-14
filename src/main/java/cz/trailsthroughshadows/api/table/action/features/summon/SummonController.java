@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.action.features.summon;
 
+import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,11 @@ public class SummonController {
 
     @GetMapping("/{id}")
     public Summon findById(@PathVariable int id) {
-        return repository.findById(id).orElseThrow(
+        Summon s = repository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("Invalid Summon Id:" + id)
         );
+        Initialization.hibernateInitializeAll(s);
+        return s;
     }
 
     @PutMapping("/{id}")

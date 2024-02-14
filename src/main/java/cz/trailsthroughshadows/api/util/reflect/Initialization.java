@@ -12,36 +12,45 @@ public class Initialization {
 
     /**
      * Initializes all fields of the given entity according to filter in recursive way.
+     * Can take Collection or single object
      *
-     * @param entity Entity to initialize
+     * @param entity Entity to initialize, can be Collection or simple object
      * @param filter White list of fields to initialize
      */
     public static void hibernateInitializeAll(Object entity, List<String> filter) {
         Map<Object, Integer> visited = new HashMap<>();
-        hibernateInitializeAll(entity, visited, filter);
+        if (entity instanceof Collection<?>)
+            ((Collection<?>) entity).forEach(e -> hibernateInitializeAll(e, visited, filter));
+        else
+            hibernateInitializeAll(entity, visited, filter);
     }
 
     /**
      * Initializes all fields of the given entity in recursive way.
+     * Can take Collection or single object
      *
-     * @param entity Entity to initialize
+     * @param entity Entity to initialize, can be Collection or simple object
      */
     public static void hibernateInitializeAll(Object entity) {
         List<String> filter = new ArrayList<>();
         Map<Object, Integer> visited = new HashMap<>();
-        hibernateInitializeAll(entity, visited, filter);
+
+        if (entity instanceof Collection<?>)
+            ((Collection<?>) entity).forEach(e -> hibernateInitializeAll(e, visited, filter));
+        else
+            hibernateInitializeAll(entity, visited, filter);
     }
 
     private static void hibernateInitializeAll(Object entity, Map<Object, Integer> visited, List<String> filter) {
 
-        if (entity == null || visited.containsKey(entity)) {
+        if (visited.containsKey(entity)) {
             if ((visited.get(entity) > 10))
                 return;
         }
 
-        visited.put(entity, visited.getOrDefault(entity, 0) + 1);
+        visited.put(entity.getClass(), visited.getOrDefault(entity.getClass(), 0) + 1);
 
-        //log.debug("Initializing object: {}", entity.getClass().getSimpleName());
+        log.trace("Initializing object: {}", entity.getClass().getSimpleName());
         Hibernate.initialize(entity);
 
         if (entity instanceof HibernateProxy) {

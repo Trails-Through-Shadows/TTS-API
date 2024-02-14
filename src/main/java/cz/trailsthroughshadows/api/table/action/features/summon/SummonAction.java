@@ -3,9 +3,11 @@ package cz.trailsthroughshadows.api.table.action.features.summon;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -21,14 +23,14 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 @Table(name = "SummonAction")
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SummonAction extends Validable {
 
     @EmbeddedId
     private SummonActionId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne//(fetch = FetchType.LAZY)
+    //@JsonSerialize(using = LazyFieldsSerializer.class)
     @MapsId("idSummon")
     @JoinColumn(name = "idSummon")
     private Summon summon;

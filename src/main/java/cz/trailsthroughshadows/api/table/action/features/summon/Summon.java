@@ -1,11 +1,14 @@
 package cz.trailsthroughshadows.api.table.action.features.summon;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Tag;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
@@ -24,7 +27,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Entity
 @Table(name = "Summon")
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+//@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 public class Summon extends Validable implements Cloneable {
 
     @Id
@@ -43,27 +46,25 @@ public class Summon extends Validable implements Cloneable {
     @Column(length = 32)
     private String tag;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idAction")
     private ActionDTO action;
 
-    @OneToMany(mappedBy = "idSummon")
-    @ToString.Exclude
+
+    @OneToMany(mappedBy = "idSummon", fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<SummonEffect> effects;
 
-//    @OneToMany(mappedBy = "summon")
-//    private Collection<SummonAction> actions;
-
-    // Skipping n-to-n relationship, there is no additional data in that table
-    @ToString.Include(name = "effects") // Including replacement field in toString
-    public Collection<EffectDTO> getEffects() {
+    @JsonIgnore
+    public Collection<EffectDTO> getMappedEffects() {
         if (effects == null) return null;
         return effects.stream().map(SummonEffect::getEffect).toList();
     }
 
-    public Collection<SummonEffect> getRawEffects() {
-        return effects;
-    }
+//    public Collection<SummonEffect> getRawEffects() {
+//        return effects;
+//    }
 
     @Override
     public Summon clone() {
@@ -74,7 +75,7 @@ public class Summon extends Validable implements Cloneable {
         summon.setDuration(this.getDuration());
         summon.setHealth(this.getHealth());
         summon.setAction(this.getAction());
-        summon.setEffects(this.getRawEffects());
+        //summon.setEffects(this.getRawEffects());
 
         return summon;
     }
@@ -101,7 +102,7 @@ public class Summon extends Validable implements Cloneable {
 
         // The action and all effects must be validated.
         validateChild(getAction(), validationConfig);
-        for (var e : getEffects()) {
+        for (var e : getMappedEffects()) {
             validateChild(e, validationConfig);
         }
     }
