@@ -1,9 +1,9 @@
 package cz.trailsthroughshadows.api.table.background;
 
-import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
-import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
+import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
+import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

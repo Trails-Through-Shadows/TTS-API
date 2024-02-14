@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,9 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @EnableCaching
@@ -21,7 +17,7 @@ import java.util.Map;
 public class TtsApiApplication {
 
     public static void main(String[] args) {
-        
+
         //jdbc:mariadb://49.13.93.112:3306/tts_api
 
         SpringApplication app = new SpringApplication(TtsApiApplication.class);
