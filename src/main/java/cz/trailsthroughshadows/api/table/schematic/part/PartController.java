@@ -89,13 +89,11 @@ public class PartController {
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        // Validate part
         validation.validate(part);
 
         partToUpdate.setTag(part.getTag());
-
-        partToUpdate.getHexes().retainAll(part.getHexes());
-        partToUpdate.getHexes().addAll(part.getHexes());
+        partToUpdate.setHexes(part.getHexes());
+        partToUpdate.setTitle(part.getTitle());
 
         partRepo.save(partToUpdate);
 

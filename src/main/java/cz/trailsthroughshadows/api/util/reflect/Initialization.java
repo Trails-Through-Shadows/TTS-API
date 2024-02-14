@@ -48,11 +48,7 @@ public class Initialization {
             entity = ((HibernateProxy) entity).getHibernateLazyInitializer().getImplementation();
         }
 
-        initializeFields(entity, visited, filter);
-
-    }
-
-    private static void initializeFields(Object entity, Map<Object, Integer> visited, List<String> filter) {
+        // getting fields
         for (Field field : entity.getClass().getDeclaredFields()) {
             field.setAccessible(true);
 
@@ -79,6 +75,7 @@ public class Initialization {
                 e.printStackTrace();
             }
         }
+
     }
 
     private static boolean isPrimitiveOrWrapper(Class<?> clazz) {

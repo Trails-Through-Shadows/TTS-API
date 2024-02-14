@@ -14,6 +14,11 @@ public class Enemy extends EnemyDTO {
 
     private HexDTO hex;
 
+    private String url;
+
+    public String getUrl() {
+        return null;
+    }
 
     public static Enemy fromDTO(EnemyDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
