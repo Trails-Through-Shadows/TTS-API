@@ -8,7 +8,6 @@ import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
 import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,7 @@ public class BackgroundController {
     private RaceRepo raceRepo;
 
     @GetMapping("classes/{id}")
-    public ClazzDTO findById(
+    public ClazzDTO findClazzById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> lazy
     ) {
@@ -47,25 +46,21 @@ public class BackgroundController {
 
     @GetMapping("classes")
     public ResponseEntity<RestPaginatedResult<ClazzDTO>> findAllClasses(
-            @RequestParam(required = false, defaultValue = "true") boolean lazy,
+            @RequestParam(required = false, defaultValue = "") List<String> lazy,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort
     ) {
         Collection<ClazzDTO> entities = clazzRepo.findAll();
-        if (!lazy) {
+
+        if (lazy.isEmpty())
             Initialization.hibernateInitializeAll(entities);
-        }
+        else
+            Initialization.hibernateInitializeAll(entities, lazy);
+
         Pagination pagination = new Pagination(entities.size(), false, entities.size(), page, limit);
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entities), HttpStatus.OK);
-    }
-
-    @PutMapping("classes/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ClazzDTO updateClass(
-            @PathVariable("id") final String id, @RequestBody final ClazzDTO clazz) {
-        return clazz;
     }
 
     // RACE SECTION
@@ -73,17 +68,36 @@ public class BackgroundController {
     @GetMapping("races/{id}")
     public RaceDTO findRaceById(
             @PathVariable int id,
-            @RequestParam(defaultValue = "true") boolean lazyLoad
+            @RequestParam(required = false, defaultValue = "") List<String> lazy
     ) {
-        RaceDTO r = raceRepo.findById(id).orElseThrow();
+        RaceDTO entity = raceRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
 
-        Hibernate.initialize(r);
+        if (lazy.isEmpty())
+            Initialization.hibernateInitializeAll(entity);
+        else
+            Initialization.hibernateInitializeAll(entity, lazy);
 
-        return r;
+        return entity;
     }
 
     @GetMapping("races")
-    public Collection<RaceDTO> findRaces() {
-        return raceRepo.getAll();
+    public ResponseEntity<RestPaginatedResult<RaceDTO>> findAllRaces(
+            @RequestParam(required = false, defaultValue = "") List<String> lazy,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int limit,
+            @RequestParam(defaultValue = "") String filter,
+            @RequestParam(defaultValue = "") String sort
+    ) {
+        Collection<RaceDTO> entities = raceRepo.findAll();
+
+        if (lazy.isEmpty())
+            Initialization.hibernateInitializeAll(entities);
+        else
+            Initialization.hibernateInitializeAll(entities, lazy);
+
+        Pagination pagination = new Pagination(entities.size(), false, entities.size(), page, limit);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entities), HttpStatus.OK);
     }
 }

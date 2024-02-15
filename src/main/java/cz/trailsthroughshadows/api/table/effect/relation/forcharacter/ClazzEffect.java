@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -13,18 +15,24 @@ import lombok.NoArgsConstructor;
 @Table(name = "ClassEffect")
 public class ClazzEffect {
 
-    @Id
-    @Column(nullable = false)
-    private int idClass;
-
-    @Id
-    @Column(nullable = false)
-    private int idEffect;
+    @EmbeddedId
+    private ClazzEffectId key;
 
     @Column
-    private int levelReq;
+    private Integer levelReq;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;
+
+    @Embeddable
+    @Data
+    public static class ClazzEffectId implements Serializable {
+        @Column(nullable = false)
+        private Integer idClass;
+
+        @Column(nullable = false)
+        private Integer idEffect;
+    }
+
 }

@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -13,13 +15,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "RaceEffect")
 public class RaceEffect {
 
-    @Id
-    @Column(nullable = false)
-    private int idRace;
-
-    @Id
-    @Column(nullable = false)
-    private int idEffect;
+    @EmbeddedId
+    private RaceEffectId key;
 
     @Column
     private Integer levelReq;
@@ -27,4 +24,14 @@ public class RaceEffect {
     @ManyToOne
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;
+
+    @Embeddable
+    @Data
+    public static class RaceEffectId implements Serializable {
+        @Column(nullable = false)
+        private int idRace;
+
+        @Column(nullable = false)
+        private int idEffect;
+    }
 }

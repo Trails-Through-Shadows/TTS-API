@@ -50,13 +50,11 @@ public class ClazzDTO extends Validable {
     @Column(nullable = false)
     private Integer baseInitiative;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idClass")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idClass")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<ClazzEffect> effects;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idClass")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idClass")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<ClazzAction> actions;
 

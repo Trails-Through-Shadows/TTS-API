@@ -35,12 +35,18 @@ public class LazyFieldsSerializer extends com.fasterxml.jackson.databind.JsonSer
                         if (f.isAnnotationPresent(Id.class) || f.isAnnotationPresent(EmbeddedId.class)) {
                             log.trace("     serializing Field: {}", f.getName());
                             try {
+
                                 Object fieldValue = f.get(o);
                                 gen.writeObject(fieldValue);
-                                //gen.writeObjectField(f.getName(), fieldValue);
+
                             } catch (IllegalAccessException e) {
                                 log.error("Error accessing field value", e);
+                            } catch (IOException e) {
+                                log.error("Error writing field value", e);
+                            } catch (Exception e) {
+                                log.error("Error", e);
                             }
+
                         }
                     }
                     //gen.writeObject(o);

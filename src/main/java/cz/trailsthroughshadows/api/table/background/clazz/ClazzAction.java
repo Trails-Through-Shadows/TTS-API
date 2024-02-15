@@ -6,23 +6,28 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "ClassAction")
 @Data
 @NoArgsConstructor
 public class ClazzAction {
 
-    @Id
-    @Column(nullable = false)
-    private int idClass;
-
-    @Id
-    @Column(nullable = false)
-    private int idAction;
+    @EmbeddedId
+    private ClazzActionId key;
 
     @ManyToOne
     @JoinColumn(name = "idAction", insertable = false, updatable = false)
     private ActionDTO action;
 
+    @Data
+    public static class ClazzActionId implements Serializable {
+        @Column(nullable = false)
+        private Integer idClass;
+
+        @Column(nullable = false)
+        private Integer idAction;
+    }
 
 }

@@ -48,18 +48,21 @@ public class ActionController {
 
     @GetMapping("")
     public ResponseEntity<RestPaginatedResult<ActionDTO>> findAllEntities(
-            @RequestParam(required = false, defaultValue = "true") boolean lazy,
+            @RequestParam(required = false, defaultValue = "") List<String> lazy,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort
     ) {
-        Collection<ActionDTO> enities = actionRepo.findAll();
-        if (!lazy) {
-            Initialization.hibernateInitializeAll(enities);
-        }
-        Pagination pagination = new Pagination(enities.size(), false, enities.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, enities), HttpStatus.OK);
+        Collection<ActionDTO> entities = actionRepo.findAll();
+
+        if (lazy.isEmpty())
+            Initialization.hibernateInitializeAll(entities);
+        else
+            Initialization.hibernateInitializeAll(entities, lazy);
+
+        Pagination pagination = new Pagination(entities.size(), false, entities.size(), page, limit);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entities), HttpStatus.OK);
     }
 
 }
