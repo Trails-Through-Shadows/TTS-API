@@ -2,16 +2,16 @@ package cz.trailsthroughshadows.api.rest.model;
 
 import lombok.Data;
 
-import java.util.List;
+import java.util.Collection;
 
 @Data
 public class RestPaginatedResult<T> {
 
     private final Pagination pagination;
 
-    private final List<T> entries;
+    private final Collection<T> entries;
 
-    public static <T> RestPaginatedResult<T> of(Pagination pagination, List<T> entries) {
+    public static <T> RestPaginatedResult<T> of(Pagination pagination, Collection<T> entries) {
         return new RestPaginatedResult<>(pagination, entries);
     }
 }

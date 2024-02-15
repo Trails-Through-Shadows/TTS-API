@@ -72,7 +72,7 @@ public class Summon extends Validable implements Cloneable {
         summon.setDuration(this.getDuration());
         summon.setHealth(this.getHealth());
         summon.setAction(this.getAction());
-        //summon.setEffects(this.getRawEffects());
+        summon.setEffects(this.getEffects());
 
         return summon;
     }

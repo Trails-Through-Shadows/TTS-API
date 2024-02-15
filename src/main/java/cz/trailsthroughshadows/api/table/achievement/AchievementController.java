@@ -1,12 +1,11 @@
 package cz.trailsthroughshadows.api.table.achievement;
 
+import cz.trailsthroughshadows.api.rest.model.Pagination;
+import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collection;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/achievements")
@@ -22,7 +21,15 @@ public class AchievementController {
     }
 
     @GetMapping("")
-    public Collection<Achievement> findClass() {
-        return achievementRepo.getAll();
+    public ResponseEntity<RestPaginatedResult<Achievement>> findAllEntities(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int limit,
+            @RequestParam(defaultValue = "") String filter,
+            @RequestParam(defaultValue = "") String sort
+    ) {
+        var entities = achievementRepo.getAll();
+        Pagination pagination = new Pagination(entities.size(), false, entities.size(), page, limit);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entities), HttpStatus.OK);
+
     }
 }

@@ -1,10 +1,14 @@
 package cz.trailsthroughshadows.api.table.background.clazz.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.algorithm.validation.text.Tag;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.background.clazz.ClazzAction;
@@ -20,6 +24,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Entity
 @Table(name = "Class")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ClazzDTO extends Validable {
 
     @Id
@@ -37,24 +42,26 @@ public class ClazzDTO extends Validable {
     private String description;
 
     @Column(nullable = false)
-    private int baseHealth;
+    private Integer baseHealth;
 
     @Column(nullable = false)
-    private int baseDefence;
+    private Integer baseDefence;
 
     @Column(nullable = false)
-    private int baseInitiative;
+    private Integer baseInitiative;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "idClass")
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<ClazzEffect> effects;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "idClass")
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<ClazzAction> actions;
 
-    @ToString.Include(name = "actions")
-    public Collection<ActionDTO> getActions() {
+    @JsonIgnore
+    public Collection<ActionDTO> getMappedActions() {
         if (actions == null) return null;
         return actions.stream().map(ClazzAction::getAction).toList();
     }

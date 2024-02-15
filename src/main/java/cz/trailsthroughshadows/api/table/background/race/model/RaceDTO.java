@@ -1,12 +1,14 @@
 package cz.trailsthroughshadows.api.table.background.race.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.algorithm.validation.text.Tag;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
-import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.background.race.RaceAction;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Entity
 @Table(name = "Race")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class RaceDTO extends Validable {
 
     @Id
@@ -34,15 +37,14 @@ public class RaceDTO extends Validable {
     public String title;
 
     @Column(nullable = false)
-    public int baseInitiative;
+    public Integer baseInitiative;
 
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "idRace")
     public Collection<RaceEffect> effects;
 
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "idRace")
-    @ToString.Exclude
     public Collection<RaceAction> actions;
 
     @Column(length = 32)
@@ -51,8 +53,8 @@ public class RaceDTO extends Validable {
     @Column
     private String description;
 
-    @ToString.Include(name = "actions")
-    public Collection<ActionDTO> getActions() {
+    @JsonIgnore
+    public Collection<ActionDTO> getMappedActions() {
         if (actions == null) return null;
         return actions.stream().map(RaceAction::getAction).collect(Collectors.toList());
     }
