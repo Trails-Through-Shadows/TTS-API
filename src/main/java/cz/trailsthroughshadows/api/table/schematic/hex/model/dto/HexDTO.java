@@ -45,6 +45,7 @@ public class HexDTO extends Validable {
     public String getValidableValue() {
         return "(%d, %d, %d)".formatted(getQ(), getR(), getS());
     }
+    //endregion
 
     @Data
     @Embeddable
@@ -59,5 +60,4 @@ public class HexDTO extends Validable {
         private Integer id;
 
     }
-    //endregion
 }
