@@ -17,13 +17,6 @@ v listu když si getuju tak defaultně lazy
 
 co bude mít co v sobě a co bude na co namapované
 
-- achievements/ + id
-    - cajk
-    - pagination na /
-- background/classes + id
-    - lazy load
-- background/races + id
-    - lazy load
 - campaigns
     - pagination
     - lazy
@@ -46,3 +39,10 @@ co bude mít co v sobě a co bude na co namapované
 - actions/ /{id}
     - cajk vrací idčka
     - je tam namapovaný range for some reason v summon action
+- achievements/ + id
+    - cajk
+    - pagination na /
+- background/classes + id
+    - lazy load
+- background/races + id
+    - lazy load

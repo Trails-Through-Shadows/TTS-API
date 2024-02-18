@@ -23,7 +23,7 @@ public class Location extends LocationDTO {
     }
 
     @Override
-    public List<Part> getParts() {
+    public List<Part> getMappedParts() {
         if (parts == null) {
             return new ArrayList<>();
         }

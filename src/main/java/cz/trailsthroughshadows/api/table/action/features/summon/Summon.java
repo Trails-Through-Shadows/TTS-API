@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.action.features.summon;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
@@ -24,7 +25,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Entity
 @Table(name = "Summon")
-//@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Summon extends Validable implements Cloneable {
 
     @Id
@@ -49,7 +50,7 @@ public class Summon extends Validable implements Cloneable {
     private ActionDTO action;
 
 
-    @OneToMany(mappedBy = "idSummon", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "key.idSummon", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<SummonEffect> effects;
 
@@ -58,10 +59,6 @@ public class Summon extends Validable implements Cloneable {
         if (effects == null) return null;
         return effects.stream().map(SummonEffect::getEffect).toList();
     }
-
-//    public Collection<SummonEffect> getRawEffects() {
-//        return effects;
-//    }
 
     @Override
     public Summon clone() {

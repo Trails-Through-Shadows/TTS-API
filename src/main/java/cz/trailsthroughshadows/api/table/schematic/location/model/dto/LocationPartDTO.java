@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.location.model.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +20,8 @@ public class LocationPartDTO {
     @EmbeddedId
     private LocationPartId key;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idPart", insertable = false, updatable = false)
     private PartDTO part;
 
@@ -30,10 +33,10 @@ public class LocationPartDTO {
     public static class LocationPartId implements Serializable {
 
         @Column(name = "idLocation")
-        private int idLocation;
+        private Integer idLocation;
 
         @Column(name = "idPart")
-        private int idPart;
+        private Integer idPart;
 
     }
 }

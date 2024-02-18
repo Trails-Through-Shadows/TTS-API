@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.util.reflect;
 
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
@@ -18,34 +20,34 @@ public class Initialization {
      * @param filter White list of fields to initialize
      */
     public static void hibernateInitializeAll(Object entity, List<String> filter) {
+        if (entity instanceof Collection<?>) {
+            throw new IllegalArgumentException("Entity can't be Collection");
+        }
         Map<Object, Integer> visited = new HashMap<>();
-        if (entity instanceof Collection<?>)
-            ((Collection<?>) entity).forEach(e -> hibernateInitializeAll(e, visited, filter));
-        else
-            hibernateInitializeAll(entity, visited, filter);
+        hibernateInitializeAll(entity, visited, filter);
     }
 
     /**
      * Initializes all fields of the given entity in recursive way.
-     * Can take Collection or single object
+     * Only simple object
      *
-     * @param entity Entity to initialize, can be Collection or simple object
+     * @param entity Entity to initialize, can't be Collection
      */
     public static void hibernateInitializeAll(Object entity) {
+        if (entity instanceof Collection<?>) {
+            throw new IllegalArgumentException("Entity can't be Collection");
+        }
         List<String> filter = new ArrayList<>();
         Map<Object, Integer> visited = new HashMap<>();
-
-        if (entity instanceof Collection<?>)
-            ((Collection<?>) entity).forEach(e -> hibernateInitializeAll(e, visited, filter));
-        else
-            hibernateInitializeAll(entity, visited, filter);
+        hibernateInitializeAll(entity, visited, filter);
     }
 
     private static void hibernateInitializeAll(Object entity, Map<Object, Integer> visited, List<String> filter) {
-
         if (visited.containsKey(entity)) {
-            if ((visited.get(entity) > 10))
+            if ((visited.get(entity) > 10)) {
+                log.error("There is more than 10 entites in this class {}", entity.getClass().getSimpleName());
                 return;
+            }
         }
 
         visited.put(entity.getClass(), visited.getOrDefault(entity.getClass(), 0) + 1);
@@ -64,14 +66,17 @@ public class Initialization {
             if (!(filter.contains(field.getName()) || filter.isEmpty())) {
                 continue;
             }
+            if (!(field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToOne.class))) {
+                continue;
+            }
 
             log.trace("     Initializing property: {}", field.getName());
-
+            Hibernate.initialize(field);
             try {
                 Object child = field.get(entity);
                 if (child != null && !isPrimitiveOrWrapper(child.getClass())) {
-                    Hibernate.initialize(child);
-                    log.trace("         Initializing item: {}", child.getClass().getSimpleName());
+                    log.trace("         Initializing child Class: {}", child.getClass());
+
                     if (child instanceof Collection) {
                         for (Object item : (Collection) child) {
                             hibernateInitializeAll(item, visited, filter);
@@ -79,9 +84,13 @@ public class Initialization {
                     } else {
                         hibernateInitializeAll(child, visited, filter);
                     }
+
+                    field.set(entity, child);
+                    log.trace("                  Initialized child Class: {}", child.getClass());
+
                 }
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                log.error("Error accessing field value", e);
             }
         }
 

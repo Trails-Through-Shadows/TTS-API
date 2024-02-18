@@ -2,8 +2,10 @@ package cz.trailsthroughshadows.api.table.action.features.summon;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -23,10 +25,10 @@ import java.util.Objects;
 public class SummonAction extends Validable {
 
     @EmbeddedId
-    private SummonActionId id;
+    private SummonActionId key;
 
-    @ManyToOne//(fetch = FetchType.LAZY)
-    //@JsonSerialize(using = LazyFieldsSerializer.class)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @MapsId("idSummon")
     @JoinColumn(name = "idSummon")
     private Summon summon;
@@ -44,8 +46,8 @@ public class SummonAction extends Validable {
 
         // Summon can't have the same action as the one that summoned it.
         // TODO this needs to be more complex
-        if (Objects.equals(summon.getAction().getId(), id.getIdAction())) {
-            errors.add(new ValidationError("SummonAction", "id", id, "Summon can't have the same action as the one that summoned it."));
+        if (Objects.equals(summon.getAction().getId(), key.getIdAction())) {
+            errors.add(new ValidationError("SummonAction", "id", key, "Summon can't have the same action as the one that summoned it."));
         }
 
         // Summon itself must be validated.

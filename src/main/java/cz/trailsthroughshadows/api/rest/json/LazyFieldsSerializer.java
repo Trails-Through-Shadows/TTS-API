@@ -2,10 +2,10 @@ package cz.trailsthroughshadows.api.rest.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Id;
-import jakarta.persistence.Persistence;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.io.IOException;
@@ -17,45 +17,49 @@ import java.util.Collection;
  */
 @Slf4j
 public class LazyFieldsSerializer extends com.fasterxml.jackson.databind.JsonSerializer<Object> {
+
+    private void writeFieldsWithoutLazy(Object value, JsonGenerator gen) throws IOException {
+        gen.writeStartObject();
+        for (Field f : value.getClass().getDeclaredFields()) {
+            f.setAccessible(true);
+            if (f.isAnnotationPresent(OneToMany.class) || f.isAnnotationPresent(ManyToOne.class)) {
+                continue;
+            }
+            try {
+                Object fieldValue = f.get(value);
+                gen.writeObjectField(f.getName(), fieldValue);
+            } catch (IllegalAccessException e) {
+                log.error("Error accessing field value", e);
+            } catch (IOException e) {
+                log.error("Error writing field value", e);
+            } catch (Exception e) {
+                log.error("Error", e);
+            }
+        }
+        gen.writeEndObject();
+    }
+
+    private void writeCollectionFieldsWithoutLazy(Object value, JsonGenerator gen) throws IOException {
+        gen.writeStartArray();
+        for (Object o : (Collection) value) {
+            writeFieldsWithoutLazy(o, gen);
+        }
+        gen.writeEndArray();
+    }
+
+
     @Override
     public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         if (value == null) {
             gen.writeNull();
-        } else if (!Persistence.getPersistenceUtil().isLoaded(value)) {
+        } else if (!Hibernate.isInitialized(value)) {
             if (value instanceof Collection) {
-                gen.writeStartArray();
-
-                for (Object o : (Collection) value) {
-
-                    // serialize only @Id or @EmbeddedId
-                    log.trace("serializing Object: {}, has {} fields", o.getClass().getSimpleName(), o.getClass().getDeclaredFields().length);
-
-                    for (Field f : o.getClass().getDeclaredFields()) {
-                        f.setAccessible(true);
-                        if (f.isAnnotationPresent(Id.class) || f.isAnnotationPresent(EmbeddedId.class)) {
-                            log.trace("     serializing Field: {}", f.getName());
-                            try {
-
-                                Object fieldValue = f.get(o);
-                                gen.writeObject(fieldValue);
-
-                            } catch (IllegalAccessException e) {
-                                log.error("Error accessing field value", e);
-                            } catch (IOException e) {
-                                log.error("Error writing field value", e);
-                            } catch (Exception e) {
-                                log.error("Error", e);
-                            }
-
-                        }
-                    }
-                    //gen.writeObject(o);
-                }
-                gen.writeEndArray();
+                writeCollectionFieldsWithoutLazy(value, gen);
             } else {
                 gen.writeObject(((HibernateProxy) value).getHibernateLazyInitializer().getIdentifier());
             }
-            //TODO?? MAYBE?? ignore fields which are annotated with @Id or @Embedded id in m:n tables
+            // TO.DO?? MAYBE?? ignore fields which are annotated with @Id or @Embedded id in m:n tables
+            // nope bcs it woudnt deserialize properly
         } else {
             gen.writeObject(value);
         }

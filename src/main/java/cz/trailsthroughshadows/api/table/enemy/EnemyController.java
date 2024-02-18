@@ -11,6 +11,7 @@ import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyActionDTO;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.util.Pair;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
+import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,20 +61,22 @@ public class EnemyController {
     }
 
     @GetMapping("/enemies/{id}")
-    @Cacheable(value = "enemy", key = "#id")
-    public ResponseEntity<Object> getEnemyById(@PathVariable int id, @RequestParam(defaultValue = "false") boolean lazy) {
-        EnemyDTO enemyDTO = enemyRepo
+    //@Cacheable(value = "enemy", key = "#id")
+    public EnemyDTO findById(
+            @PathVariable int id,
+            @RequestParam(required = false, defaultValue = "") List<String> lazy
+    ) {
+        EnemyDTO entity = enemyRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
-        //TODO no Object put it all into Action @rcMarty
-        Object enemy;
-        if (lazy) {
-            enemy = enemyDTO;
-        } else {
-            enemy = Enemy.fromDTO(enemyDTO);
-        }
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
 
-        return new ResponseEntity<>(enemy, HttpStatus.OK);
+        if (lazy.isEmpty())
+            Initialization.hibernateInitializeAll(entity);
+        else
+            Initialization.hibernateInitializeAll(entity, lazy);
+
+        return entity;//Enemy.fromDTO(entity);
+
     }
 
     @DeleteMapping("/enemies/{id}")
@@ -110,7 +113,7 @@ public class EnemyController {
 
         enemyToUpdate.getActions().retainAll(enemy.getActions());
         enemyToUpdate.getEffects().addAll(enemy.getEffects());
-        enemyToUpdate.getActions().forEach(action -> action.setIdEnemy(enemyToUpdate.getId()));
+        enemyToUpdate.getActions().forEach(action -> action.getKey().setIdEnemy(enemyToUpdate.getId()));
 
         enemyRepo.save(enemyToUpdate);
         return RestResponse.of(HttpStatus.OK, "Enemy with id '{}' updated!", id);
@@ -146,7 +149,7 @@ public class EnemyController {
             enemy.getEffects().forEach(effect -> effect.setIdEnemy(enemy.getId()));
 
             enemy.setActions(new ArrayList<>(relations.second()));
-            enemy.getActions().forEach(action -> action.setIdEnemy(enemy.getId()));
+            enemy.getActions().forEach(action -> action.getKey().setIdEnemy(enemy.getId()));
         });
 
         // Save enemies relations

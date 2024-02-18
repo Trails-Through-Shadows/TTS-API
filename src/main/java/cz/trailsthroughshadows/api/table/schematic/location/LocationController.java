@@ -70,7 +70,7 @@ public class LocationController {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found!", locationId));
         Location location = Location.fromDTO(locationDTO);
 
-        Part part = location.getParts().stream().filter(p -> p.getId() == partId).findFirst()
+        Part part = location.getMappedParts().stream().filter(p -> p.getId() == partId).findFirst()
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", partId));
 
         return new ResponseEntity<>(part, HttpStatus.OK);

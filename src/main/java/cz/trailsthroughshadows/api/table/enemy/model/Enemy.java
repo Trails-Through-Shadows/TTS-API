@@ -22,11 +22,6 @@ public class Enemy extends EnemyDTO {
 
     public static Enemy fromDTO(EnemyDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
-        try {
-            dto.loadAll();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
         return modelMapper.map(dto, Enemy.class);
     }
 

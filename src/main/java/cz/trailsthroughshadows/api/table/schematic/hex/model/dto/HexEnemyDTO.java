@@ -1,11 +1,10 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -14,7 +13,6 @@ import java.io.Serializable;
 @Entity
 @NoArgsConstructor
 @Table(name = "HexEnemy")
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 public class HexEnemyDTO {
 
     @EmbeddedId
@@ -22,11 +20,12 @@ public class HexEnemyDTO {
     private HexEnemyId key;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idEnemy", insertable = false, updatable = false)
     private EnemyDTO enemy;
 
-    @Getter
     @Embeddable
+    @Data
     public static class HexEnemyId implements Serializable {
 
         @Column(name = "idEnemy", nullable = false)

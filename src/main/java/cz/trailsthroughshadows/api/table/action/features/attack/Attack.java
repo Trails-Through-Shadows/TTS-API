@@ -1,9 +1,12 @@
 package cz.trailsthroughshadows.api.table.action.features.attack;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.foraction.AttackEffect;
@@ -11,6 +14,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 @Entity
@@ -18,9 +22,8 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-//@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Attack extends Validable {
+public class Attack extends Validable implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
@@ -42,13 +45,12 @@ public class Attack extends Validable {
     @Column(nullable = false)
     private int numAttacks;
 
-    @OneToMany(mappedBy = "idAttack", fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @OneToMany(mappedBy = "key.idAttack", fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<AttackEffect> effects;
-
-
-    @ToString.Include(name = "effects") // Including replacement field in toString
-    public Collection<EffectDTO> getEffects() {
+    
+    @JsonIgnore
+    public Collection<EffectDTO> getMappedEffects() {
         if (effects == null) return null;
         return effects.stream().map(AttackEffect::getEffect).toList();
     }

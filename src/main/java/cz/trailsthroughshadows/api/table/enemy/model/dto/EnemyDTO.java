@@ -15,6 +15,7 @@ import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffectDT
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,7 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Enemy")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EnemyDTO extends Validable implements Cloneable {
@@ -38,7 +40,7 @@ public class EnemyDTO extends Validable implements Cloneable {
     @Column(length = 32)
     private String tag;
 
-    @Column(nullable = true)
+    @Column
     private String description;
 
     @Column(nullable = false)
@@ -57,7 +59,7 @@ public class EnemyDTO extends Validable implements Cloneable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyEffectDTO> effects;
 
-    @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyActionDTO> actions;
 

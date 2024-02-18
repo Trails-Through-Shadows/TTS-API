@@ -56,10 +56,8 @@ public class ActionController {
     ) {
         Collection<ActionDTO> entities = actionRepo.findAll();
 
-        if (lazy.isEmpty())
-            Initialization.hibernateInitializeAll(entities);
-        else
-            Initialization.hibernateInitializeAll(entities, lazy);
+        if (!lazy.isEmpty())
+            entities.forEach(e -> Initialization.hibernateInitializeAll(e, lazy));
 
         Pagination pagination = new Pagination(entities.size(), false, entities.size(), page, limit);
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entities), HttpStatus.OK);

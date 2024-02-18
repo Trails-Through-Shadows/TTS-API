@@ -1,10 +1,12 @@
 package cz.trailsthroughshadows.api.table.schematic.part.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.location.Navigation;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Tag;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import jakarta.persistence.*;
@@ -37,6 +39,7 @@ public class PartDTO extends Validable {
     protected String title;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idPart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     protected List<HexDTO> hexes = new ArrayList<>();
 
     @Column(name = "usages", columnDefinition = "INT default 0")

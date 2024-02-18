@@ -1,5 +1,8 @@
 package cz.trailsthroughshadows.api.table.background.race;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,12 +16,14 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "RaceAction")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class RaceAction {
 
     @EmbeddedId
     private RaceActionId key;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idAction", insertable = false, updatable = false)
     private ActionDTO action;
 

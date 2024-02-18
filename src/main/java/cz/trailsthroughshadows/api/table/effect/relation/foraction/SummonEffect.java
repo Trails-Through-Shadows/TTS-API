@@ -1,28 +1,37 @@
 package cz.trailsthroughshadows.api.table.effect.relation.foraction;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "SummonEffect")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SummonEffect {
 
-    @Id
-    @Column
-    private int idSummon;
-
-    @Id
-    @Column
-    private int idEffect;
+    @EmbeddedId
+    private SummonEffectId key;
 
     @ManyToOne
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;
+
+    @Data
+    @Embeddable
+    public static class SummonEffectId implements Serializable {
+        @Column(nullable = false)
+        private Integer idSummon;
+
+        @Column(nullable = false)
+        private Integer idEffect;
+    }
 
 }

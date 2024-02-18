@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "Effect")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class EffectDTO extends Validable {
+public class EffectDTO extends Validable implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class EffectDTO extends Validable {
     @Column
     private Integer strength;
 
-    @Column(nullable = true)
+    @Column
     private String description;
 
     //region Validation

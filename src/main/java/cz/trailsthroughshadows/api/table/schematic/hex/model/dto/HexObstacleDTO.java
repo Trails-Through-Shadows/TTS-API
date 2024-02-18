@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +13,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "HexObstacle")
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 public class HexObstacleDTO {
 
     @EmbeddedId
@@ -23,6 +22,7 @@ public class HexObstacleDTO {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idObstacle", insertable = false, updatable = false)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private ObstacleDTO obstacle;
 
     @Getter

@@ -1,8 +1,11 @@
 package cz.trailsthroughshadows.api.table.action.features.skill;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.foraction.SkillEffect;
@@ -35,14 +38,16 @@ public class Skill extends Validable {
     @Enumerated(EnumType.STRING)
     private EffectDTO.EffectTarget target;
 
-    @OneToMany(mappedBy = "idSkill", fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @OneToMany(mappedBy = "key.idSkill", fetch = FetchType.LAZY)
+    //@ToString.Exclude
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<SkillEffect> effects;
 
 
     // Skipping n-to-n relationship, there is no additional data in that table
-    @ToString.Include(name = "effects") // Including replacement field in toString
-    public Collection<EffectDTO> getEffects() {
+    //@ToString.Include(name = "effects") // Including replacement field in toString
+    @JsonIgnore
+    public Collection<EffectDTO> getMappedEffects() {
         if (effects == null) return null;
         return effects.stream().map(SkillEffect::getEffect).toList();
     }
@@ -69,7 +74,7 @@ public class Skill extends Validable {
     @Override
     public String getValidableValue() {
         StringBuilder res = new StringBuilder();
-        List<String> effectNames = getEffects().stream().map(EffectDTO::getType).map(EffectDTO.EffectType::name).toList();
+        List<String> effectNames = getMappedEffects().stream().map(EffectDTO::getType).map(EffectDTO.EffectType::name).toList();
         res.append(String.join(", ", effectNames));
         return res + " within " + getRange() + " hexes.";
     }

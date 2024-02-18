@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.achievement;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,11 +9,12 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "Achievement")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Achievement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE) //zrušení jen setteru
+    @Setter(AccessLevel.NONE)
     private Integer id;
 
     @Column(nullable = false, length = 128)

@@ -1,9 +1,12 @@
 package cz.trailsthroughshadows.api.table.action.features.movement;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.foraction.MovementEffect;
@@ -32,13 +35,14 @@ public class Movement extends Validable {
     @Enumerated(EnumType.STRING)
     private MovementType type = MovementType.WALK;
 
-    @OneToMany(mappedBy = "idMovement", fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @OneToMany(mappedBy = "key.idMovement", fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<MovementEffect> effects;
 
     // Skipping n-to-n relationship, there is no additional data in that table
-    @ToString.Include(name = "effects") // Including replacement field in toString
-    public Collection<EffectDTO> getEffects() {
+    //@ToString.Include(name = "effects") // Including replacement field in toString
+    @JsonIgnore
+    public Collection<EffectDTO> getMappedEffects() {
         if (effects == null) return null;
         return effects.stream().map(MovementEffect::getEffect).toList();
     }

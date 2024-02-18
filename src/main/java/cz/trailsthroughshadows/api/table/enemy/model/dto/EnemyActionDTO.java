@@ -1,30 +1,37 @@
 package cz.trailsthroughshadows.api.table.enemy.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import cz.trailsthroughshadows.api.rest.json.LazyFieldsFilter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "EnemyAction")
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 public class EnemyActionDTO {
-    @Id
-    @Column(nullable = false)
-    private int idEnemy;
 
-    @Id
-    @Column(nullable = false)
-    private int idAction;
+    @EmbeddedId
+    private EnemyActionId key;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idAction", insertable = false, updatable = false)
     private ActionDTO action;
 
+    @Embeddable
+    @Data
+    public static class EnemyActionId implements Serializable {
+        @Column(nullable = false)
+        private Integer idEnemy;
+
+        @Column(nullable = false)
+        private Integer idAction;
+    }
 }
