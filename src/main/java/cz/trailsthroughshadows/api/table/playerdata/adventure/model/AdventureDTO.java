@@ -1,15 +1,18 @@
 package cz.trailsthroughshadows.api.table.playerdata.adventure.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.campaign.Campaign;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureAchievement;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureLocation;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureMarket;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.license.License;
+import cz.trailsthroughshadows.api.table.playerdata.character.model.CharacterDTO;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -47,32 +50,36 @@ public class AdventureDTO extends Validable {
     private String description;
 
     @Column(insertable = false, updatable = false, nullable = false)
-    private int idLicense;
+    private Integer idLicense;
 
     @Column(insertable = false, updatable = false, nullable = false)
-    private int idCampaign;
+    private Integer idCampaign;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idLicense")
     private License license;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idCampaign")
     private Campaign campaign;
 
-    // Not healthy
-//    @OneToMany
-//    @JoinColumn(name = "idAdventure")
-//    private Collection<Character> characters;
 
+    @OneToMany(mappedBy = "key.idAdventure", fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
+    private Collection<CharacterDTO> characters;
 
-    @OneToMany(mappedBy = "key.idAdventure")
+    @OneToMany(mappedBy = "key.idAdventure", fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<AdventureMarket> adventureMarkets;
 
-    @OneToMany(mappedBy = "key.idAdventure")
+    @OneToMany(mappedBy = "key.idAdventure", fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<AdventureLocation> adventureLocations;
 
-    @OneToMany(mappedBy = "key.idAdventure")
+    @OneToMany(mappedBy = "key.idAdventure", fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<AdventureAchievement> adventureAchievements;
 
     //region Validation

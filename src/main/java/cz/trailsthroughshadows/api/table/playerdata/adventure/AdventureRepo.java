@@ -10,4 +10,5 @@ public interface AdventureRepo extends JpaRepository<AdventureDTO, Integer> {
     @Query("SELECT COUNT(*) FROM AdventureDTO WHERE idLicense = :licenseId")
     int getCountByLicenseId(@Param("licenseId") int licenseId);
 
+
 }

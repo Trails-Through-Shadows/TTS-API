@@ -1,11 +1,13 @@
 package cz.trailsthroughshadows.api.table.market.item.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.algorithm.validation.text.Tag;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forothers.ItemEffect;
@@ -14,7 +16,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.Collection;
 
@@ -46,16 +47,16 @@ public class ItemDTO extends Validable {
     @Column(nullable = false)
     private String requirements;
 
-    @OneToMany
-    @JoinColumn(name = "idItem")
+    @OneToMany(mappedBy = "key.idItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<ItemEffect> effects;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idAction")
     private ActionDTO action;
 
-    @ToString.Include(name = "effects")
-    public Collection<EffectDTO> getEffects() {
+    public Collection<EffectDTO> getMappedEffects() {
         if (effects == null) return null;
         return effects.stream().map(ItemEffect::getEffect).toList();
     }

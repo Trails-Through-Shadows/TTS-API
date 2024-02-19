@@ -5,7 +5,11 @@ import cz.trailsthroughshadows.algorithm.session.credentials.AuthResponse;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.table.campaign.Campaign;
+import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.license.License;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.license.LicenseRepo;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,17 +38,23 @@ public class SessionController {
     @Autowired
     AdventureRepo adventureRepo;
 
+    @Autowired
+    CampaignRepo campaignRepo;
+
+    @Autowired
+    LicenseRepo licenseRepo;
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> validatePart(@RequestBody AuthRequest creds) {
         return new ResponseEntity<>(sessionHandler.authorize(creds), HttpStatus.OK);
     }
 
-    @PostMapping("/hello/{token}")
+    @PostMapping("/hello")
     public ResponseEntity<RestResponse> hello(@RequestParam UUID token) {
         return new ResponseEntity<>(new RestResponse(HttpStatus.OK, sessionHandler.getSession(token).hello()), HttpStatus.OK);
     }
 
-    @PutMapping("/adventure/{token}")
+    @PutMapping("/adventure")
     public ResponseEntity<RestResponse> addAdventure(@RequestParam UUID token, @RequestBody AdventureDTO adventure) {
         Session session = sessionHandler.getSession(token);
 
@@ -62,8 +72,27 @@ public class SessionController {
 
         validation.validate(adventure);
 
-        log.debug("Saving adventure '{}' for license '{}'", adventure, session.getLicenseId());
         session.getAdventures().add(adventure);
+        log.debug("Saving adventure '{}' for license '{}'", adventure, session.getLicenseId());
+
+
+        //TODO chce se mi grcat
+        Campaign mappedCampaign = campaignRepo.findById(adventure.getIdCampaign()).orElse(null);
+        if (mappedCampaign == null) {
+            String response = "Campaign not found!";
+            log.warn(response);
+            return new ResponseEntity<>(new RestResponse(HttpStatus.NOT_FOUND, response), HttpStatus.NOT_FOUND);
+        }
+        adventure.setCampaign(mappedCampaign);
+
+        License mappedLicense = licenseRepo.findById(adventure.getIdLicense()).orElse(null);
+        if (mappedLicense == null) {
+            String response = "License not found!";
+            log.warn(response);
+            return new ResponseEntity<>(new RestResponse(HttpStatus.NOT_FOUND, response), HttpStatus.NOT_FOUND);
+        }
+        adventure.setLicense(mappedLicense);
+
         adventureRepo.save(adventure);
 
         return new ResponseEntity<>(new RestResponse(HttpStatus.OK, "Adventure added!"), HttpStatus.OK);
