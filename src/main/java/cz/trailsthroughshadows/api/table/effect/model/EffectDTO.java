@@ -7,22 +7,23 @@ import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "Effect")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EffectDTO extends Validable implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private Integer id;
 
     @Column

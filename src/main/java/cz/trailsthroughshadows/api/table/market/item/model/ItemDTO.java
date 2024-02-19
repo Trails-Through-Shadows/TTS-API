@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.market.item.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Description;
@@ -10,19 +11,23 @@ import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forothers.ItemEffect;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Collection;
 
-@Entity
-@Table(name = "Item")
 @Data
+@Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "Item")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ItemDTO extends Validable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false)
