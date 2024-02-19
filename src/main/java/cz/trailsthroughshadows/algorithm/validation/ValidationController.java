@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.rest.endpoints;
+package cz.trailsthroughshadows.algorithm.validation;
 
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;

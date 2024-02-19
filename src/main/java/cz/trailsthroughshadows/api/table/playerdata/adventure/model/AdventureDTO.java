@@ -9,7 +9,7 @@ import cz.trailsthroughshadows.api.table.campaign.Campaign;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureAchievement;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureLocation;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureMarket;
-import cz.trailsthroughshadows.api.table.playerdata.adventure.License;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.license.License;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,6 +25,7 @@ import java.util.Collection;
 @Entity
 public class AdventureDTO extends Validable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false)
@@ -99,9 +100,9 @@ public class AdventureDTO extends Validable {
             errors.add(new ValidationError("Adventure", "gold", gold, "Gold must be positive."));
         }
 
-        // Level must be greater than 0.
-        if (level <= 0) {
-            errors.add(new ValidationError("Adventure", "level", level, "Level must be greater than 0."));
+        // Level must be positive.
+        if (level < 0) {
+            errors.add(new ValidationError("Adventure", "level", level, "Level must be positive."));
         }
 
         // All characters must be validated.

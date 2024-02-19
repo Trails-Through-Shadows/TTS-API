@@ -60,4 +60,10 @@ public class ValidationConfig {
         private int maxReputation;
     }
     private final Adventure adventure;
+
+    @Data
+    public static class License {
+        private int maxAdventures;
+    }
+    private final License license;
 }
