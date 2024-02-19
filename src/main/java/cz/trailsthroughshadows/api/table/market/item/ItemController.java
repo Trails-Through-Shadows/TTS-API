@@ -1,9 +1,10 @@
-package cz.trailsthroughshadows.api.table.effect;
+package cz.trailsthroughshadows.api.table.market.item;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.Pagination;
 import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
-import cz.trailsthroughshadows.api.table.effect.model.Effect;
+import cz.trailsthroughshadows.api.table.market.item.model.Item;
+import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +21,13 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class EffectController {
+public class ItemController {
 
-    private EffectRepo effectRepo;
+    private ItemRepo itemRepo;
 
-    @GetMapping("/effects")
-    @Cacheable(value = "effect")
-    public ResponseEntity<RestPaginatedResult<Effect>> getEnemies(
+    @GetMapping("/items")
+    @Cacheable(value = "item")
+    public ResponseEntity<RestPaginatedResult<Item>> getEnemies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
@@ -35,13 +36,13 @@ public class EffectController {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        List<Effect> entries = effectRepo.findAll().stream()
+        List<Item> entries = itemRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
-                .map(Effect::fromDTO)
+                .map(Item::fromDTO)
                 .toList();
 
-        List<Effect> entriesPage = entries.stream()
+        List<Item> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
                 .toList();
@@ -50,19 +51,19 @@ public class EffectController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
-    @GetMapping("/effects/{id}")
-    @Cacheable(value = "effect", key = "#id")
-    public Effect findById(
+    @GetMapping("/items/{id}")
+    @Cacheable(value = "item", key = "#id")
+    public ItemDTO findById(
             @PathVariable int id
     ) {
-        return effectRepo
+        return itemRepo
                 .findById(id)
-                .map(Effect::fromDTO)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '%d' not found! " + id));
+                .map(Item::fromDTO)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '%d' not found! " + id));//Enemy.fromDTO(entity);
     }
 
     @Autowired
-    public void setRepository(EffectRepo repository) {
-        this.effectRepo = repository;
+    public void setRepository(ItemRepo repository) {
+        this.itemRepo = repository;
     }
 }
