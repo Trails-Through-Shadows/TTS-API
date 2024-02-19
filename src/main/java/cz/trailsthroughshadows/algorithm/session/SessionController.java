@@ -77,6 +77,7 @@ public class SessionController {
 
 
         //TODO chce se mi grcat
+        // custom insert or update
         Campaign mappedCampaign = campaignRepo.findById(adventure.getIdCampaign()).orElse(null);
         if (mappedCampaign == null) {
             String response = "Campaign not found!";
