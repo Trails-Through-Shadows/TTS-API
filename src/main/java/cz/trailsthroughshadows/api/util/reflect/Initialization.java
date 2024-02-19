@@ -20,6 +20,8 @@ public class Initialization {
      * @param filter White list of fields to initialize
      */
     public static void hibernateInitializeAll(Object entity, List<String> filter) {
+        if (filter.contains("NONE"))
+            throw new IllegalArgumentException("NONE is reserved word for filter");
         if (entity instanceof Collection<?>) {
             throw new IllegalArgumentException("Entity can't be Collection");
         }
@@ -38,6 +40,7 @@ public class Initialization {
             throw new IllegalArgumentException("Entity can't be Collection");
         }
         List<String> filter = new ArrayList<>();
+        filter.add("NONE");
         Map<Object, Integer> visited = new HashMap<>();
         hibernateInitializeAll(entity, visited, filter);
     }
@@ -63,7 +66,7 @@ public class Initialization {
         for (Field field : entity.getClass().getDeclaredFields()) {
             field.setAccessible(true);
 
-            if (!(filter.contains(field.getName()) || filter.isEmpty())) {
+            if (!(filter.contains(field.getName()) || filter.contains("NONE") )) {
                 continue;
             }
             if (!(field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToOne.class))) {
