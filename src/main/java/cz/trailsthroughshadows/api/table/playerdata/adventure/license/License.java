@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.playerdata.adventure;
+package cz.trailsthroughshadows.api.table.playerdata.adventure.license;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
