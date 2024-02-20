@@ -1,8 +1,7 @@
-package cz.trailsthroughshadows.api.rest.model;
+package cz.trailsthroughshadows.api.rest.model.response;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Getter
 public class MessageResponse extends RestResponse {

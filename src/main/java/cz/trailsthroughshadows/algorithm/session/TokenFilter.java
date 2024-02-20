@@ -1,7 +1,7 @@
 //package cz.trailsthroughshadows.algorithm.session;
 //
 //import cz.trailsthroughshadows.api.rest.exception.RestException;
-//import cz.trailsthroughshadows.api.rest.model.MessageResponse;
+//import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 //import cz.trailsthroughshadows.api.rest.model.error.RestError;
 //import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
 //import io.swagger.v3.oas.annotations.info.Contact;

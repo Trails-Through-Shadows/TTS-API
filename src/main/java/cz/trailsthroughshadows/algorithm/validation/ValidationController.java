@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.algorithm.validation;
 
-import cz.trailsthroughshadows.api.rest.model.MessageResponse;
-import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
 import cz.trailsthroughshadows.api.table.action.ActionRepo;
 import cz.trailsthroughshadows.api.table.action.features.summon.Summon;
 import cz.trailsthroughshadows.api.table.action.features.summon.SummonRepo;
