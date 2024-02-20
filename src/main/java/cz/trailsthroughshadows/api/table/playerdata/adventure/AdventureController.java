@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/adventure")
+@RequestMapping("/adventures")
 public class AdventureController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class AdventureController {
     @Autowired
     private AdventureService adventureService;
 
-    @GetMapping("/adventures/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<AdventureDTO> findById(
             @RequestParam UUID token,
             @PathVariable int id,
@@ -54,7 +54,7 @@ public class AdventureController {
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
-    @GetMapping("/adventures")
+    @GetMapping("")
     public ResponseEntity<RestPaginatedResult<AdventureDTO>> findAllEntities(
             @RequestParam UUID token,
             @RequestParam(defaultValue = "0") int page,
@@ -90,12 +90,12 @@ public class AdventureController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
-    @PostMapping("/adventures")
+    @PostMapping("")
     public ResponseEntity<RestResponse> addAdventure(@RequestParam UUID token, @RequestBody AdventureDTO adventure) {
         return new ResponseEntity<>(adventureService.addAdventure(adventure, sessionHandler.getSession(token)), HttpStatus.OK);
     }
 
-    @DeleteMapping("/adventures/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponse> deleteAdventure(@RequestParam UUID token, @PathVariable int id) {
         return new ResponseEntity<>(adventureService.deleteAdventure(id, sessionHandler.getSession(token)), HttpStatus.OK);
     }
