@@ -99,4 +99,9 @@ public class AdventureController {
     public ResponseEntity<MessageResponse> deleteAdventure(@RequestParam UUID token, @PathVariable int id) {
         return new ResponseEntity<>(adventureService.deleteAdventure(id, sessionHandler.getSession(token)), HttpStatus.OK);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RestResponse> updateAdventure(@RequestParam UUID token, @PathVariable int id, @RequestBody AdventureDTO adventure) {
+        return new ResponseEntity<>(adventureService.updateAdventure(id, adventure, sessionHandler.getSession(token)), HttpStatus.OK);
+    }
 }

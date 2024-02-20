@@ -58,13 +58,19 @@ public class AdventureService {
         int limit = validationConfig.getLicense().getMaxAdventures();
         int current = adventureRepo.getCountByLicenseId(session.getLicenseId());
 
+        if (adventure.getId() != null) {
+            RestError error = RestError.of(HttpStatus.BAD_REQUEST, "ID must be null!");
+            log.warn(error.toString());
+            throw new RestException(error);
+        }
+
         if (current >= limit) {
             RestError error = RestError.of(HttpStatus.BAD_REQUEST, "License has reached the maximum number of adventures!");
             log.warn(error.toString());
             throw new RestException(error);
         }
 
-        if (session.hasAccess(adventure.getIdLicense())) {
+        if (!session.hasAccess(adventure.getIdLicense())) {
             RestError error = RestError.of(HttpStatus.BAD_REQUEST, "You are not authorized to add this resource!");
             log.warn(error.toString());
             throw new RestException(error);
@@ -108,7 +114,7 @@ public class AdventureService {
             throw new RestException(error);
         }
 
-        if (session.hasAccess(adventure.getIdLicense())) {
+        if (!session.hasAccess(adventure.getIdLicense())) {
             RestError error = RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to delete this resource!");
             log.warn(error.toString());
             throw new RestException(error);
@@ -116,5 +122,33 @@ public class AdventureService {
 
         adventureRepo.delete(adventure);
         return new MessageResponse(HttpStatus.OK, "Adventure deleted!");
+    }
+
+    public RestResponse updateAdventure(Integer id, AdventureDTO newAdventure, Session session) {
+        AdventureDTO adventure = adventureRepo.findById(id).orElse(null);
+
+        if (adventure == null) {
+            RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
+            log.warn(error.toString());
+            throw new RestException(error);
+        }
+
+        if (!session.hasAccess(adventure.getIdLicense())) {
+            RestError error = RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to update this resource!");
+            log.warn(error.toString());
+            throw new RestException(error);
+        }
+
+        adventure.setTitle(newAdventure.getTitle());
+        adventure.setDescription(newAdventure.getDescription());
+        adventure.setReputation(newAdventure.getReputation());
+        adventure.setExperience(newAdventure.getExperience());
+        adventure.setGold(newAdventure.getGold());
+        adventure.setLevel(newAdventure.getLevel());
+
+        validation.validate(adventure);
+
+        adventureRepo.save(adventure);
+        return new MessageResponse(HttpStatus.OK, "Adventure updated!");
     }
 }

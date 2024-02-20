@@ -12,7 +12,7 @@ public abstract class Text extends Validable {
     public void validateText(int minLen, int maxLen, String allowedChars) {
         String name = getValidableClass();
 
-        if (minLen == 0 && text == null) {
+        if (minLen == 0 && (text == null || text.isBlank())) {
             return;
         }
 
