@@ -24,4 +24,8 @@ public class Session {
     public boolean isAdmin() {
         return licenseId == 0;
     }
+
+    public boolean hasAccess(Integer licenseId) {
+        return isAdmin() || this.licenseId.equals(licenseId);
+    }
 }

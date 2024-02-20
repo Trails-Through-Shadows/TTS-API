@@ -8,7 +8,6 @@ import cz.trailsthroughshadows.api.rest.model.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
-import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
@@ -18,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -95,5 +93,10 @@ public class AdventureController {
     @PostMapping("/adventures")
     public ResponseEntity<RestResponse> addAdventure(@RequestParam UUID token, @RequestBody AdventureDTO adventure) {
         return new ResponseEntity<>(adventureService.addAdventure(adventure, sessionHandler.getSession(token)), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/adventures/{id}")
+    public ResponseEntity<MessageResponse> deleteAdventure(@RequestParam UUID token, @PathVariable int id) {
+        return new ResponseEntity<>(adventureService.deleteAdventure(id, sessionHandler.getSession(token)), HttpStatus.OK);
     }
 }
