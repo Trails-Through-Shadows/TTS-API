@@ -80,7 +80,7 @@ public class AdventureService {
                 });
         adventure.setCampaign(mappedCampaign);
 
-        License mappedLicense = licenseRepo.findById(adventure.getIdLicense()).
+        License mappedLicense = licenseRepo.findById(session.getLicenseId()).
                 orElseThrow(() -> {
                     RestError error = RestError.of(HttpStatus.NOT_FOUND, "License not found!");
                     log.warn(error.toString());
