@@ -6,6 +6,7 @@ import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
+import cz.trailsthroughshadows.api.util.ImageLoader;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
@@ -24,6 +25,12 @@ public class Part extends PartDTO {
 
     private List<Obstacle> obstacles;
     // TODO: Add doors to part?
+
+    private String url;
+
+    public String getUrl() {
+        return ImageLoader.getPath(getTag());
+    }
 
     public static Part fromDTO(PartDTO dto) {
         ModelMapper modelMapper = new ModelMapper();

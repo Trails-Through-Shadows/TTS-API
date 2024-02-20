@@ -27,7 +27,7 @@ public class ItemController {
 
     @GetMapping("/items")
     @Cacheable(value = "item")
-    public ResponseEntity<RestPaginatedResult<ItemDTO>> findAllEntities(
+    public ResponseEntity<RestPaginatedResult<Item>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
@@ -53,13 +53,15 @@ public class ItemController {
         } else if (!lazy) {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
         }
+        //convert to Item
+        List<Item> items = entriesPage.stream().map(Item::fromDTO).toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), false, entriesPage.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, items), HttpStatus.OK);
     }
 
     @GetMapping("/items/{id}")
-    public ResponseEntity<ItemDTO> findById(
+    public ResponseEntity<Item> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "false") boolean lazy
@@ -74,7 +76,7 @@ public class ItemController {
             Initialization.hibernateInitializeAll(entity, include);
         }
 
-        return new ResponseEntity<>(entity, HttpStatus.OK);
+        return new ResponseEntity<>(Item.fromDTO(entity), HttpStatus.OK);
     }
 
     @Autowired

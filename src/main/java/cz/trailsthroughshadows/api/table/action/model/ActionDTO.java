@@ -12,7 +12,7 @@ import cz.trailsthroughshadows.api.table.action.features.attack.Attack;
 import cz.trailsthroughshadows.api.table.action.features.movement.Movement;
 import cz.trailsthroughshadows.api.table.action.features.restorecards.RestoreCards;
 import cz.trailsthroughshadows.api.table.action.features.skill.Skill;
-import cz.trailsthroughshadows.api.table.action.features.summon.SummonAction;
+import cz.trailsthroughshadows.api.table.action.features.summon.model.SummonAction;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

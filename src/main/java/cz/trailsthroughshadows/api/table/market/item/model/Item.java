@@ -1,8 +1,15 @@
 package cz.trailsthroughshadows.api.table.market.item.model;
 
+import cz.trailsthroughshadows.api.util.ImageLoader;
 import org.modelmapper.ModelMapper;
 
 public class Item extends ItemDTO {
+
+    private String url;
+
+    public String getUrl() {
+        return ImageLoader.getPath(getTag());
+    }
 
     public static Item fromDTO(ItemDTO dto) {
         ModelMapper modelMapper = new ModelMapper();

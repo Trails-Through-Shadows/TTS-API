@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.action.features.summon;
+package cz.trailsthroughshadows.api.table.action.features.summon.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -31,7 +31,7 @@ public class SummonAction extends Validable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @MapsId("idSummon")
     @JoinColumn(name = "idSummon")
-    private Summon summon;
+    private SummonDTO summon;
 
     @Column
     private Integer range;

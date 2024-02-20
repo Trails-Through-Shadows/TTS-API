@@ -3,6 +3,7 @@ package cz.trailsthroughshadows.api.table.schematic.location.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.util.ImageLoader;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
@@ -15,10 +16,16 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Location extends LocationDTO {
 
+    private String url;
+
+    public String getUrl() {
+        return ImageLoader.getPath(getTag());
+    }
+
+
     // TODO: Map locations only by specific campaign frrom database @rcMarty
     public static Location fromDTO(LocationDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
-        dto.loadAll();
         return modelMapper.map(dto, Location.class);
     }
 

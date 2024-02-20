@@ -4,6 +4,7 @@ import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
 import cz.trailsthroughshadows.api.table.action.ActionRepo;
 import cz.trailsthroughshadows.api.table.action.features.summon.Summon;
+import cz.trailsthroughshadows.api.table.action.features.summon.model.SummonDTO;
 import cz.trailsthroughshadows.api.table.action.features.summon.SummonRepo;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
@@ -48,6 +49,7 @@ public class ValidationController {
 
     @Autowired
     PartRepo partRepo;
+
     @PostMapping("/part/{id}")
     public ResponseEntity<RestResponse> validatePartById(@PathVariable int id) {
         return validate(partRepo.findById(id));
@@ -69,18 +71,20 @@ public class ValidationController {
 
     @Autowired
     EnemyRepo enemyRepo;
+
     @PostMapping("/enemy/{id}")
     public ResponseEntity<RestResponse> validateEnemyById(@PathVariable int id) {
         return validate(enemyRepo.findById(id));
     }
 
     @PostMapping("/summon")
-    public ResponseEntity<RestResponse> validateSummon(@RequestBody Summon summon) {
+    public ResponseEntity<RestResponse> validateSummon(@RequestBody SummonDTO summon) {
         return validate(summon);
     }
 
     @Autowired
     SummonRepo summonRepo;
+
     @PostMapping("/summon/{id}")
     public ResponseEntity<RestResponse> validateSummonById(@PathVariable int id) {
         return validate(summonRepo.findById(id));
@@ -93,6 +97,7 @@ public class ValidationController {
 
     @Autowired
     ObstacleRepo obstacleRepo;
+
     @PostMapping("/obstacle/{id}")
     public ResponseEntity<RestResponse> validateObstacleById(@PathVariable int id) {
         return validate(obstacleRepo.findById(id));
@@ -108,6 +113,7 @@ public class ValidationController {
 
     @Autowired
     ActionRepo actionRepo;
+
     @PostMapping("/action/{id}")
     public ResponseEntity<RestResponse> validateActionById(@PathVariable int id) {
         return validate(actionRepo.findById(id));
@@ -120,6 +126,7 @@ public class ValidationController {
 
     @Autowired
     EffectRepo effectRepo;
+
     @PostMapping("/effect/{id}")
     public ResponseEntity<RestResponse> validateEffectById(@PathVariable int id) {
         return validate(effectRepo.findById(id));
@@ -136,6 +143,7 @@ public class ValidationController {
 
     @Autowired
     ItemRepo itemRepo;
+
     @PostMapping("/item/{id}")
     public ResponseEntity<RestResponse> validateItemById(@PathVariable int id) {
         return validate(itemRepo.findById(id));
@@ -152,6 +160,7 @@ public class ValidationController {
 
     @Autowired
     CharacterRepo characterRepo;
+
     @PostMapping("/character/{id}")
     public ResponseEntity<RestResponse> validateCharacterById(@PathVariable int id) {
         return validate(characterRepo.findById(id));
@@ -164,6 +173,7 @@ public class ValidationController {
 
     @Autowired
     ClazzRepo classRepo;
+
     @PostMapping("/class/{id}")
     public ResponseEntity<RestResponse> validateClassById(@PathVariable int id) {
         return validate(classRepo.findById(id));
@@ -176,6 +186,7 @@ public class ValidationController {
 
     @Autowired
     RaceRepo raceRepo;
+
     @PostMapping("/race/{id}")
     public ResponseEntity<RestResponse> validateRaceById(@PathVariable int id) {
         return validate(raceRepo.findById(id));
@@ -188,6 +199,7 @@ public class ValidationController {
 
     @Autowired
     AdventureRepo adventureRepo;
+
     @PostMapping("/adventure/{id}")
     public ResponseEntity<RestResponse> validateAdventureById(@PathVariable int id) {
         return validate(adventureRepo.findById(id));

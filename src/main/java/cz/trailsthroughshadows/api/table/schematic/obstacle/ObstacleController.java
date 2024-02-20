@@ -9,6 +9,7 @@ import cz.trailsthroughshadows.api.table.effect.relation.forothers.ObstacleEffec
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
+import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,49 +31,63 @@ import java.util.Map;
 public class ObstacleController {
 
     private ValidationService validation;
+
     private ObstacleRepo obstacleRepo;
 
     @GetMapping("/obstacles")
     @Cacheable(value = "obstacle")
-    public ResponseEntity<RestPaginatedResult<Obstacle>> getObstacles(
+    public ResponseEntity<RestPaginatedResult<Obstacle>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
-            @RequestParam(defaultValue = "") String sort
+            @RequestParam(defaultValue = "") String sort,
+            @RequestParam(required = false, defaultValue = "") List<String> include,
+            @RequestParam(required = false, defaultValue = "true") boolean lazy
     ) {
-        // TODO: Re-Implement filtering, sorting and pagination
+        // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        List<Obstacle> entries = obstacleRepo.findAll().stream()
+        List<ObstacleDTO> entries = obstacleRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
-                .map(Obstacle::fromDTO)
                 .toList();
 
-        List<Obstacle> entriesPage = entries.stream()
+        List<ObstacleDTO> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
                 .toList();
 
-        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
+        if (!lazy && !include.isEmpty()) {
+            entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
+        } else if (!lazy) {
+            entriesPage.forEach(Initialization::hibernateInitializeAll);
+        }
+
+        //convert to Obstacle
+        List<Obstacle> obstacles = entriesPage.stream().map(Obstacle::fromDTO).toList();
+
+        Pagination pagination = new Pagination(entriesPage.size(), false, entriesPage.size(), page, limit);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, obstacles), HttpStatus.OK);
     }
 
     @GetMapping("/obstacles/{id}")
     @Cacheable(value = "obstacle", key = "#id")
-    public ResponseEntity<Object> getObstacleById(@PathVariable int id, @RequestParam(defaultValue = "false") boolean lazy) {
-        ObstacleDTO obstacleDTO = obstacleRepo
+    public ResponseEntity<Obstacle> findById(
+            @PathVariable int id,
+            @RequestParam(required = false, defaultValue = "") List<String> include,
+            @RequestParam(required = false, defaultValue = "false") boolean lazy
+    ) {
+        ObstacleDTO entity = obstacleRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
 
-        Object obstacle;
-        if (lazy) {
-            obstacle = obstacleDTO;
+        if (!lazy) {
+            Initialization.hibernateInitializeAll(entity);
         } else {
-            obstacle = Obstacle.fromDTO(obstacleDTO);
+            Initialization.hibernateInitializeAll(entity, include);
         }
 
-        return new ResponseEntity<>(obstacle, HttpStatus.OK);
+        return new ResponseEntity<>(Obstacle.fromDTO(entity), HttpStatus.OK);
     }
 
     @DeleteMapping("/obstacles/{id}")

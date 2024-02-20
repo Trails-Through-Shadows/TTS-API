@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.market.item.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
@@ -56,6 +57,7 @@ public class ItemDTO extends Validable {
     @JoinColumn(name = "idAction")
     private ActionDTO action;
 
+    @JsonIgnore
     public Collection<EffectDTO> getMappedEffects() {
         if (effects == null) return null;
         return effects.stream().map(ItemEffect::getEffect).toList();

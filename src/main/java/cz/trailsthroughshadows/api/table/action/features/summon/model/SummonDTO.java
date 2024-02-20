@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.action.features.summon;
+package cz.trailsthroughshadows.api.table.action.features.summon.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,7 +26,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "Summon")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Summon extends Validable implements Cloneable {
+public class SummonDTO extends Validable implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,8 +61,8 @@ public class Summon extends Validable implements Cloneable {
     }
 
     @Override
-    public Summon clone() {
-        Summon summon = new Summon();
+    public SummonDTO clone() {
+        SummonDTO summon = new SummonDTO();
 
         summon.setId(this.getId());
         summon.setTitle(this.getTitle());
