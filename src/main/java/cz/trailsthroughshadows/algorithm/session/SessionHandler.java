@@ -4,7 +4,7 @@ package cz.trailsthroughshadows.algorithm.session;
 import cz.trailsthroughshadows.algorithm.session.credentials.AuthRequest;
 import cz.trailsthroughshadows.algorithm.session.credentials.AuthResponse;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.MessageResponse;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
 import cz.trailsthroughshadows.api.table.playerdata.license.License;
 import cz.trailsthroughshadows.api.table.playerdata.license.LicenseRepo;

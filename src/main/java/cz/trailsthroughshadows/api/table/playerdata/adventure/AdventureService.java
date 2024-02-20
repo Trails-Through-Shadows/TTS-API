@@ -4,25 +4,21 @@ import cz.trailsthroughshadows.algorithm.session.Session;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.IdResponse;
-import cz.trailsthroughshadows.api.rest.model.ObjectResponse;
-import cz.trailsthroughshadows.api.rest.model.MessageResponse;
-import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.rest.model.response.IdResponse;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
-import cz.trailsthroughshadows.api.rest.model.error.type.MessageError;
 import cz.trailsthroughshadows.api.table.campaign.Campaign;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import cz.trailsthroughshadows.api.table.playerdata.license.License;
 import cz.trailsthroughshadows.api.table.playerdata.license.LicenseRepo;
-import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -68,8 +64,8 @@ public class AdventureService {
             throw new RestException(error);
         }
 
-        if (!Objects.equals(adventure.getIdLicense(), session.getLicenseId())) {
-            RestError error = RestError.of(HttpStatus.BAD_REQUEST, "License ID does not match session!");
+        if (session.hasAccess(adventure.getIdLicense())) {
+            RestError error = RestError.of(HttpStatus.BAD_REQUEST, "You are not authorized to add this resource!");
             log.warn(error.toString());
             throw new RestException(error);
         }
@@ -101,5 +97,24 @@ public class AdventureService {
         adventureRepo.save(adventure);
 
         return new IdResponse(HttpStatus.OK, adventure.getId());
+    }
+
+    public MessageResponse deleteAdventure(int id, Session session) {
+        AdventureDTO adventure = adventureRepo.findById(id).orElse(null);
+
+        if (adventure == null) {
+            RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
+            log.warn(error.toString());
+            throw new RestException(error);
+        }
+
+        if (session.hasAccess(adventure.getIdLicense())) {
+            RestError error = RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to delete this resource!");
+            log.warn(error.toString());
+            throw new RestException(error);
+        }
+
+        adventureRepo.delete(adventure);
+        return new MessageResponse(HttpStatus.OK, "Adventure deleted!");
     }
 }

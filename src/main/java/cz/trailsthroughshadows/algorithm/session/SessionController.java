@@ -2,8 +2,8 @@ package cz.trailsthroughshadows.algorithm.session;
 
 import cz.trailsthroughshadows.algorithm.session.credentials.AuthRequest;
 import cz.trailsthroughshadows.algorithm.session.credentials.AuthResponse;
-import cz.trailsthroughshadows.api.rest.model.MessageResponse;
-import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
