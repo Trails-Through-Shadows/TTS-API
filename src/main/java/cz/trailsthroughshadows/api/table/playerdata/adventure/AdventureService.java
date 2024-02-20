@@ -56,6 +56,7 @@ public class AdventureService {
     public RestResponse add(AdventureDTO adventure, Session session) {
         int limit = validationConfig.getLicense().getMaxAdventures();
         int current = adventureRepo.getCountByLicenseId(session.getLicenseId());
+        adventure.setIdLicense(session.getLicenseId());
 
         if (adventure.getId() != null) {
             RestError error = RestError.of(HttpStatus.BAD_REQUEST, "ID must be null!");
@@ -65,12 +66,6 @@ public class AdventureService {
 
         if (current >= limit) {
             RestError error = RestError.of(HttpStatus.BAD_REQUEST, "License has reached the maximum number of adventures!");
-            log.warn(error.toString());
-            throw new RestException(error);
-        }
-
-        if (!session.hasAccess(adventure.getIdLicense())) {
-            RestError error = RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to add this resource!");
             log.warn(error.toString());
             throw new RestException(error);
         }
