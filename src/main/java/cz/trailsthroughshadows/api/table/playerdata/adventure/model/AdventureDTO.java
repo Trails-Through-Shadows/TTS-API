@@ -66,7 +66,7 @@ public class AdventureDTO extends Validable {
     private Campaign campaign;
 
 
-    @OneToMany(mappedBy = "key.idAdventure", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<CharacterDTO> characters;
 
