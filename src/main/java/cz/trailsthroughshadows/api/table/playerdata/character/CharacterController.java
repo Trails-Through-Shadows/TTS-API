@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -37,7 +36,7 @@ public class CharacterController {
     AdventureService adventureService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<CharacterDTO> findById(
+    public ResponseEntity<Character> findById(
             @RequestParam UUID token,
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -57,11 +56,11 @@ public class CharacterController {
             Initialization.hibernateInitializeAll(entity, include);
         }
 
-        return new ResponseEntity<>(entity, HttpStatus.OK);
+        return new ResponseEntity<>(Character.fromDTO(entity), HttpStatus.OK);
     }
 
     @GetMapping("")
-    public ResponseEntity<RestPaginatedResult<CharacterDTO>> findAllEntities(
+    public ResponseEntity<RestPaginatedResult<Character>> findAllEntities(
             @RequestParam UUID token,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -91,9 +90,10 @@ public class CharacterController {
         } else if (!lazy) {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
         }
+        List<Character> characters = entriesPage.stream().map(Character::fromDTO).toList();
 
         Pagination pagination = new Pagination(entriesPage.size(), false, entriesPage.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, characters), HttpStatus.OK);
     }
 
     @PostMapping("/{adventureId}")

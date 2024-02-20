@@ -1,8 +1,11 @@
 package cz.trailsthroughshadows.api.table.playerdata.character.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
 import cz.trailsthroughshadows.api.table.playerdata.character.inventory.InventoryDTO;
@@ -21,17 +24,20 @@ import java.util.Collection;
 @AllArgsConstructor
 @Table(name = "`Character`")
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CharacterDTO extends Validable implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idClass")
     private ClazzDTO clazz;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idRace")
     private RaceDTO race;
 
@@ -50,8 +56,8 @@ public class CharacterDTO extends Validable implements Cloneable {
     @Column(nullable = false, length = 50)
     private String playerName;
 
-    @OneToMany
-    @JoinColumn(name = "idCharacter")
+    @OneToMany(mappedBy = "key.idCharacter", fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<InventoryDTO> inventory;
 
     @Override
