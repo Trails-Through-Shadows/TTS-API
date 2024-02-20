@@ -62,21 +62,22 @@ public class EnemyController {
 
     @GetMapping("/enemies/{id}")
     //@Cacheable(value = "enemy", key = "#id")
-    public EnemyDTO findById(
+    public ResponseEntity<Enemy> findById(
             @PathVariable int id,
-            @RequestParam(required = false, defaultValue = "") List<String> lazy
+            @RequestParam(required = false, defaultValue = "") List<String> include,
+            @RequestParam(required = false, defaultValue = "false") boolean lazy
     ) {
         EnemyDTO entity = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
 
-        if (lazy.isEmpty())
+        if (!lazy) {
             Initialization.hibernateInitializeAll(entity);
-        else
-            Initialization.hibernateInitializeAll(entity, lazy);
+        } else {
+            Initialization.hibernateInitializeAll(entity, include);
+        }
 
-        return entity;//Enemy.fromDTO(entity);
-
+        return new ResponseEntity<>(Enemy.fromDTO(entity), HttpStatus.OK);
     }
 
     @DeleteMapping("/enemies/{id}")

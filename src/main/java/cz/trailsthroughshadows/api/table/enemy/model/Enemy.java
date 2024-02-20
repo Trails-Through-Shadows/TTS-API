@@ -3,6 +3,7 @@ package cz.trailsthroughshadows.api.table.enemy.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
+import cz.trailsthroughshadows.api.util.ImageLoader;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
@@ -17,7 +18,7 @@ public class Enemy extends EnemyDTO {
     private String url;
 
     public String getUrl() {
-        return null;
+        return ImageLoader.getPath(getTag());
     }
 
     public static Enemy fromDTO(EnemyDTO dto) {

@@ -12,6 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 @EnableCaching
 @SpringBootApplication
 @PropertySource("classpath:validation.properties")
+@PropertySource("classpath:image.properties")
 @ComponentScan(basePackages = "cz.trailsthroughshadows")
 @ConfigurationPropertiesScan(basePackages = "cz.trailsthroughshadows")
 public class TtsApiApplication {
