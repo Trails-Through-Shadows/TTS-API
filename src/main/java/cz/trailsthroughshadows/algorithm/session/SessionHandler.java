@@ -55,12 +55,8 @@ public class SessionHandler {
 
         Optional<License> license = licenseRepo.findByKey(credentials.getKey());
 
-        if (license.isEmpty()) {
-            responseFail(HttpStatus.UNAUTHORIZED, "License '{}' not found!", credentials.getKey());
-        }
-
-        if (!Objects.equals(license.get().getPassword(), credentials.getPassword())) {
-            responseFail(HttpStatus.UNAUTHORIZED, "Invalid password!");
+        if (license.isEmpty() || !Objects.equals(license.get().getPassword(), credentials.getPassword())) {
+            responseFail(HttpStatus.UNAUTHORIZED, "Invalid credentials!");
         }
 
         if (license.get().getActivated() == null) {
