@@ -35,6 +35,12 @@ public class CharacterDTO extends Validable implements Cloneable {
     @JoinColumn(name = "idRace")
     private RaceDTO race;
 
+    @Column(insertable = false, updatable = false, nullable = false)
+    private Integer idClass;
+
+    @Column(insertable = false, updatable = false, nullable = false)
+    private Integer idRace;
+
     @Column(nullable = false)
     private int idAdventure;
 

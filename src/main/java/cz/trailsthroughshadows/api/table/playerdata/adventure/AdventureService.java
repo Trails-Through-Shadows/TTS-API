@@ -40,21 +40,20 @@ public class AdventureService {
     LicenseRepo licenseRepo;
 
     public AdventureDTO findById(int id) {
-        AdventureDTO adventure = adventureRepo.findById(id).orElse(null);
 
-        if (adventure == null) {
-            RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
-            log.warn(error.toString());
-            throw new RestException(error);
-        }
-        return adventure;
+        return adventureRepo.findById(id)
+                .orElseThrow(() -> {
+                    RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
+                    log.warn(error.toString());
+                    return new RestException(error);
+                });
     }
 
     public List<AdventureDTO> findAll() {
         return adventureRepo.findAll();
     }
 
-    public RestResponse addAdventure(AdventureDTO adventure, Session session) {
+    public RestResponse add(AdventureDTO adventure, Session session) {
         int limit = validationConfig.getLicense().getMaxAdventures();
         int current = adventureRepo.getCountByLicenseId(session.getLicenseId());
 
@@ -71,48 +70,44 @@ public class AdventureService {
         }
 
         if (!session.hasAccess(adventure.getIdLicense())) {
-            RestError error = RestError.of(HttpStatus.BAD_REQUEST, "You are not authorized to add this resource!");
+            RestError error = RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to add this resource!");
             log.warn(error.toString());
             throw new RestException(error);
         }
-
-        validation.validate(adventure);
-
-        session.getAdventures().add(adventure);
-        log.debug("Saving adventure '{}' for license '{}'", adventure, session.getLicenseId());
-
 
         //TODO chce se mi grcat
         // custom insert or update
-        Campaign mappedCampaign = campaignRepo.findById(adventure.getIdCampaign()).orElse(null);
-        if (mappedCampaign == null) {
-            RestError error = RestError.of(HttpStatus.NOT_FOUND, "Campaign not found!");
-            log.warn(error.toString());
-            throw new RestException(error);
-        }
+        Campaign mappedCampaign = campaignRepo.findById(adventure.getIdCampaign())
+                .orElseThrow(() -> {
+                    RestError error = RestError.of(HttpStatus.NOT_FOUND, "Campaign not found!");
+                    log.warn(error.toString());
+                    return new RestException(error);
+                });
         adventure.setCampaign(mappedCampaign);
 
-        License mappedLicense = licenseRepo.findById(adventure.getIdLicense()).orElse(null);
-        if (mappedLicense == null) {
-            RestError error = RestError.of(HttpStatus.NOT_FOUND, "License not found!");
-            log.warn(error.toString());
-            throw new RestException(error);
-        }
+        License mappedLicense = licenseRepo.findById(adventure.getIdLicense()).
+                orElseThrow(() -> {
+                    RestError error = RestError.of(HttpStatus.NOT_FOUND, "License not found!");
+                    log.warn(error.toString());
+                    return new RestException(error);
+                });
         adventure.setLicense(mappedLicense);
 
+        validation.validate(adventure);
+
+        log.debug("Saving adventure '{}' for license '{}'", adventure, session.getLicenseId());
         adventureRepo.save(adventure);
 
         return new IdResponse(HttpStatus.OK, adventure.getId());
     }
 
-    public MessageResponse deleteAdventure(int id, Session session) {
-        AdventureDTO adventure = adventureRepo.findById(id).orElse(null);
-
-        if (adventure == null) {
-            RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
-            log.warn(error.toString());
-            throw new RestException(error);
-        }
+    public RestResponse delete(int id, Session session) {
+        AdventureDTO adventure = adventureRepo.findById(id)
+                .orElseThrow(() -> {
+                    RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
+                    log.warn(error.toString());
+                    return new RestException(error);
+                });
 
         if (!session.hasAccess(adventure.getIdLicense())) {
             RestError error = RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to delete this resource!");
@@ -124,14 +119,13 @@ public class AdventureService {
         return new MessageResponse(HttpStatus.OK, "Adventure deleted!");
     }
 
-    public RestResponse updateAdventure(Integer id, AdventureDTO newAdventure, Session session) {
-        AdventureDTO adventure = adventureRepo.findById(id).orElse(null);
-
-        if (adventure == null) {
-            RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
-            log.warn(error.toString());
-            throw new RestException(error);
-        }
+    public RestResponse update(Integer id, AdventureDTO newAdventure, Session session) {
+        AdventureDTO adventure = adventureRepo.findById(id)
+                .orElseThrow(() -> {
+                    RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
+                    log.warn(error.toString());
+                    return new RestException(error);
+                });
 
         if (!session.hasAccess(adventure.getIdLicense())) {
             RestError error = RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to update this resource!");
@@ -148,7 +142,8 @@ public class AdventureService {
 
         validation.validate(adventure);
 
+        log.debug("Saving adventure '{}' for license '{}'", adventure, session.getLicenseId());
         adventureRepo.save(adventure);
-        return new MessageResponse(HttpStatus.OK, "Adventure updated!");
+        return new IdResponse(HttpStatus.OK, adventure.getId());
     }
 }

@@ -13,4 +13,7 @@ public interface CharacterRepo extends JpaRepository<CharacterDTO, Integer> {
 
     @Query("SELECT c FROM CharacterDTO c WHERE c.idAdventure = ?1")
     Collection<CharacterDTO> getByAdventure(int idAdventure);
+
+    @Query("SELECT COUNT(*) FROM CharacterDTO WHERE idAdventure = :adventureId")
+    int getCountByAdventureId(int adventureId);
 }

@@ -1,14 +1,16 @@
-package cz.trailsthroughshadows.api.table.playerdata.adventure;
+package cz.trailsthroughshadows.api.table.playerdata.character;
 
 import cz.trailsthroughshadows.algorithm.session.Session;
 import cz.trailsthroughshadows.algorithm.session.SessionHandler;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
-import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureService;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
+import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
+import cz.trailsthroughshadows.api.table.playerdata.character.model.CharacterDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -22,26 +24,30 @@ import java.util.Objects;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/adventures")
-public class AdventureController {
+@RequestMapping("/characters")
+public class CharacterController {
 
     @Autowired
-    private SessionHandler sessionHandler;
+    SessionHandler sessionHandler;
 
     @Autowired
-    private AdventureService adventureService;
+    CharacterService characterService;
+
+    @Autowired
+    AdventureService adventureService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdventureDTO> findById(
+    public ResponseEntity<CharacterDTO> findById(
             @RequestParam UUID token,
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "false") boolean lazy
     ) {
         Session session = sessionHandler.getSession(token);
-        AdventureDTO entity = adventureService.findById(id);
+        CharacterDTO entity = characterService.findById(id);
+        AdventureDTO adventure = adventureService.findById(entity.getIdAdventure());
 
-        if (!session.hasAccess(entity.getIdLicense())) {
+        if (!session.hasAccess(adventure.getIdLicense())) {
             throw new RestException(RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to access this resource!"));
         }
 
@@ -55,7 +61,7 @@ public class AdventureController {
     }
 
     @GetMapping("")
-    public ResponseEntity<RestPaginatedResult<AdventureDTO>> findAllEntities(
+    public ResponseEntity<RestPaginatedResult<CharacterDTO>> findAllEntities(
             @RequestParam UUID token,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -69,13 +75,13 @@ public class AdventureController {
 
         Session session = sessionHandler.getSession(token);
 
-        List<AdventureDTO> entries = adventureService.findAll().stream()
+        List<CharacterDTO> entries = characterService.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))) &&
-                        session.hasAccess(entry.getIdLicense()))
+                        session.hasAccess(adventureService.findById(entry.getIdAdventure()).getIdLicense()))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
-        List<AdventureDTO> entriesPage = entries.stream()
+        List<CharacterDTO> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
                 .toList();
@@ -91,17 +97,17 @@ public class AdventureController {
     }
 
     @PostMapping("")
-    public ResponseEntity<RestResponse> addAdventure(@RequestParam UUID token, @RequestBody AdventureDTO adventure) {
-        return new ResponseEntity<>(adventureService.add(adventure, sessionHandler.getSession(token)), HttpStatus.OK);
+    public ResponseEntity<RestResponse> addCharacter(@RequestParam UUID token, @RequestBody CharacterDTO character) {
+        return new ResponseEntity<>(characterService.add(character, sessionHandler.getSession(token)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RestResponse> updateAdventure(@RequestParam UUID token, @PathVariable int id, @RequestBody AdventureDTO adventure) {
-        return new ResponseEntity<>(adventureService.update(id, adventure, sessionHandler.getSession(token)), HttpStatus.OK);
+    public ResponseEntity<RestResponse> updateCharacter(@RequestParam UUID token, @PathVariable int id, @RequestBody CharacterDTO character) {
+        return new ResponseEntity<>(characterService.update(id, character, sessionHandler.getSession(token)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<RestResponse> deleteAdventure(@RequestParam UUID token, @PathVariable int id) {
-        return new ResponseEntity<>(adventureService.delete(id, sessionHandler.getSession(token)), HttpStatus.OK);
+    public ResponseEntity<RestResponse> deleteCharacter(@RequestParam UUID token, @PathVariable int id) {
+        return new ResponseEntity<>(characterService.delete(id, sessionHandler.getSession(token)), HttpStatus.OK);
     }
 }
