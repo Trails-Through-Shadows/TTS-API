@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.rest.model;
+package cz.trailsthroughshadows.api.rest.model.pagination;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

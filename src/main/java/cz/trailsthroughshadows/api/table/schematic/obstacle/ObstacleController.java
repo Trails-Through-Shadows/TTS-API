@@ -2,9 +2,9 @@ package cz.trailsthroughshadows.api.table.schematic.obstacle;
 
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.Pagination;
-import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
-import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
+import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.MessageResponse;
 import cz.trailsthroughshadows.api.table.effect.relation.forothers.ObstacleEffectDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
@@ -77,18 +77,18 @@ public class ObstacleController {
 
     @DeleteMapping("/obstacles/{id}")
     @CacheEvict(value = "obstacle", key = "#id")
-    public ResponseEntity<RestResponse> deleteObstacleById(@PathVariable int id) {
+    public ResponseEntity<MessageResponse> deleteObstacleById(@PathVariable int id) {
         ObstacleDTO obstacleDTO = obstacleRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
 
         obstacleRepo.delete(obstacleDTO);
-        return RestResponse.of(HttpStatus.OK,"Obstacle with id '%d' deleted!", id);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' deleted!", id), HttpStatus.OK);
     }
 
     @PutMapping("/obstacles/{id}")
     @CacheEvict(value = "obstacle", key = "#id")
-    public ResponseEntity<RestResponse> updateObstacleById(@PathVariable int id, @RequestBody ObstacleDTO obstacle) {
+    public ResponseEntity<MessageResponse> updateObstacleById(@PathVariable int id, @RequestBody ObstacleDTO obstacle) {
         ObstacleDTO obstacleToUpdate = obstacleRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
@@ -108,11 +108,11 @@ public class ObstacleController {
         obstacleToUpdate.getEffects().forEach((effect) -> effect.setIdObstacle(obstacleToUpdate.getId()));
 
         obstacleRepo.save(obstacleToUpdate);
-        return RestResponse.of(HttpStatus.OK, "Obstacle with id '%d' updated!", id);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' updated!", id), HttpStatus.OK);
     }
 
     @PostMapping("/obstacles")
-    public ResponseEntity<RestResponse> createObstacle(@RequestBody List<Obstacle> obstacles) {
+    public ResponseEntity<MessageResponse> createObstacle(@RequestBody List<Obstacle> obstacles) {
         log.debug("Creating new obstacles: " + obstacles);
 
         // Validate obstacle
@@ -143,7 +143,7 @@ public class ObstacleController {
         obstacles = obstacleRepo.saveAll(obstacles);
 
         String ids = obstacles.stream().map((entry) -> String.valueOf(entry.getId())).toList().toString();
-        return RestResponse.of(HttpStatus.OK, "Obstacles with ids '%s' created!", ids);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacles with ids '%s' created!", ids), HttpStatus.OK);
     }
 
     /**

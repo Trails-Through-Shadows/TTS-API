@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.playerdata.adventure;
+package cz.trailsthroughshadows.api.table.playerdata.adventure.relation;
 
 import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import jakarta.persistence.*;

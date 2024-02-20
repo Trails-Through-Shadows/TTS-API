@@ -4,9 +4,10 @@ package cz.trailsthroughshadows.algorithm.session;
 import cz.trailsthroughshadows.algorithm.session.credentials.AuthRequest;
 import cz.trailsthroughshadows.algorithm.session.credentials.AuthResponse;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
+import cz.trailsthroughshadows.api.rest.model.MessageResponse;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
-import cz.trailsthroughshadows.api.table.playerdata.adventure.license.License;
-import cz.trailsthroughshadows.api.table.playerdata.adventure.license.LicenseRepo;
+import cz.trailsthroughshadows.api.table.playerdata.license.License;
+import cz.trailsthroughshadows.api.table.playerdata.license.LicenseRepo;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +34,23 @@ public class SessionHandler {
         throw RestException.of(HttpStatus.UNAUTHORIZED, message, args);
     }
 
+    public boolean isSessionValid(UUID token) {
+        return sessions.stream().anyMatch(s -> s.getToken().equals(token));
+    }
+
     public Session getSession(UUID uuid) {
 
         return sessions.stream()
                 .filter(s -> s.getToken().equals(uuid))
                 .findFirst()
                 .orElseThrow(() -> {
-                    String response = "Session not found!";
+                    String response = "Invalid session token!";
                     log.warn(response);
                     return RestException.of(HttpStatus.UNAUTHORIZED, response);
                 });
     }
 
-    public AuthResponse authorize(AuthRequest credentials) {
+    public AuthResponse login(AuthRequest credentials) {
         log.debug("Authorizing session for '{}'", credentials.getKey());
 
         Optional<License> license = licenseRepo.findByKey(credentials.getKey());
@@ -76,6 +81,14 @@ public class SessionHandler {
         log.debug("Creating new session for license #{}.", session.getLicenseId());
         sessions.add(session);
         return new AuthResponse(session);
+    }
+
+    public MessageResponse logout(UUID token) {
+        if (sessions.stream().noneMatch(s -> s.getToken().equals(token))) {
+            responseFail(HttpStatus.UNAUTHORIZED, "Invalid session token!");
+        }
+        sessions.removeIf(s -> s.getToken().equals(token));
+        return new MessageResponse(HttpStatus.OK, "Logged out!");
     }
 
 

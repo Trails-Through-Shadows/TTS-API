@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.effect;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.Pagination;
-import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
+import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.table.effect.model.Effect;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;

@@ -13,9 +13,15 @@ public class Session {
     private UUID token;
     private Integer licenseId;
 
+    private static Session ADMINISTRATOR_SESSION = new Session(UUID.fromString("00000000-0000-0000-0000-000000000000"), 0, List.of());
+
     private List<AdventureDTO> adventures;
 
     public String hello() {
         return "Hello from session " + licenseId;
+    }
+
+    public boolean isAdmin() {
+        return licenseId == 0;
     }
 }

@@ -34,15 +34,4 @@ public class PlayerDataController {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid character Id:" + id));
     }
-
-    @GetMapping("/adventures/{id}")
-    public AdventureDTO findAdventureById(@PathVariable int id) {
-        return adventureRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Adventure Id: " + id));
-    }
-
-    @GetMapping("/adventures")
-    public Collection<AdventureDTO> findAdventures() {
-        return adventureRepo.findAll();
-    }
 }

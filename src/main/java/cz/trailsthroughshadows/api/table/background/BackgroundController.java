@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.background;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.Pagination;
-import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
+import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
 import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.table.background.race.RaceRepo;

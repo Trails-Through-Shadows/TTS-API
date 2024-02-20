@@ -1,8 +1,8 @@
 package cz.trailsthroughshadows.api.table.market.item;
 
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.Pagination;
-import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
+import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.table.market.item.model.Item;
 import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;

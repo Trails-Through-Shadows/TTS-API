@@ -1,6 +1,5 @@
-package cz.trailsthroughshadows.api.table.playerdata.adventure.license;
+package cz.trailsthroughshadows.api.table.playerdata.license;
 
-import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

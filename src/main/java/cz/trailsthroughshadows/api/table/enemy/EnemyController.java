@@ -2,9 +2,9 @@ package cz.trailsthroughshadows.api.table.enemy;
 
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.Pagination;
-import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
-import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
+import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.MessageResponse;
 import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyActionDTO;
@@ -81,18 +81,18 @@ public class EnemyController {
 
     @DeleteMapping("/enemies/{id}")
     @CacheEvict(value = "enemy", key = "#id")
-    public ResponseEntity<RestResponse> deleteEnemy(@PathVariable int id) {
+    public ResponseEntity<MessageResponse> deleteEnemy(@PathVariable int id) {
         EnemyDTO enemyDTO = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
 
         enemyRepo.delete(enemyDTO);
-        return RestResponse.of(HttpStatus.OK, "Enemy with id '%d' deleted!", id);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' deleted!", id), HttpStatus.OK);
     }
 
     @PutMapping("/enemies/{id}")
     @CacheEvict(value = "enemy", key = "#id")
-    public ResponseEntity<RestResponse> updateEnemyById(@PathVariable int id, @RequestBody EnemyDTO enemy) {
+    public ResponseEntity<MessageResponse> updateEnemyById(@PathVariable int id, @RequestBody EnemyDTO enemy) {
         EnemyDTO enemyToUpdate = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
@@ -116,12 +116,12 @@ public class EnemyController {
         enemyToUpdate.getActions().forEach(action -> action.getKey().setIdEnemy(enemyToUpdate.getId()));
 
         enemyRepo.save(enemyToUpdate);
-        return RestResponse.of(HttpStatus.OK, "Enemy with id '{}' updated!", id);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' updated!", id), HttpStatus.OK);
     }
 
     @PostMapping("/enemies")
     @CacheEvict(value = "enemy", allEntries = true)
-    public ResponseEntity<RestResponse> createEnemies(@RequestBody List<EnemyDTO> enemies) {
+    public ResponseEntity<MessageResponse> createEnemies(@RequestBody List<EnemyDTO> enemies) {
         log.debug("Creating enemies: " + enemies);
 
         // Validate all enemies
@@ -156,7 +156,7 @@ public class EnemyController {
         enemies = enemyRepo.saveAll(enemies);
 
         String ids = enemies.stream().map((entry) -> String.valueOf(entry.getId())).toList().toString();
-        return RestResponse.of(HttpStatus.OK, "Enemies with ids '%s' created!", ids);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemies with ids '%s' created!", ids), HttpStatus.OK);
     }
 
     @Autowired

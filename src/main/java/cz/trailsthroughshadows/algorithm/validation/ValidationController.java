@@ -1,7 +1,6 @@
 package cz.trailsthroughshadows.algorithm.validation;
 
-import cz.trailsthroughshadows.algorithm.validation.Validable;
-import cz.trailsthroughshadows.algorithm.validation.ValidationService;
+import cz.trailsthroughshadows.api.rest.model.MessageResponse;
 import cz.trailsthroughshadows.api.rest.model.RestResponse;
 import cz.trailsthroughshadows.api.table.action.ActionRepo;
 import cz.trailsthroughshadows.api.table.action.features.summon.Summon;
@@ -201,6 +200,6 @@ public class ValidationController {
     }
 
     private ResponseEntity<RestResponse> validate(Optional<? extends Validable> validable) {
-        return new ResponseEntity<>(new RestResponse(HttpStatus.OK, validation.validate(validable)), HttpStatus.OK);
+        return new ResponseEntity<>(new MessageResponse(HttpStatus.OK, validation.validate(validable)), HttpStatus.OK);
     }
 }

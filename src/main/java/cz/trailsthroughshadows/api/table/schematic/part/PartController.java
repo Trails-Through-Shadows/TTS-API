@@ -2,9 +2,9 @@ package cz.trailsthroughshadows.api.table.schematic.part;
 
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.Pagination;
-import cz.trailsthroughshadows.api.rest.model.RestPaginatedResult;
-import cz.trailsthroughshadows.api.rest.model.RestResponse;
+import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
+import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.MessageResponse;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
@@ -73,18 +73,18 @@ public class PartController {
 
     @DeleteMapping("/parts/{id}")
     @CacheEvict(value = "part", allEntries = true)
-    public ResponseEntity<RestResponse> deletePartById(@PathVariable int id) {
+    public ResponseEntity<MessageResponse> deletePartById(@PathVariable int id) {
         PartDTO partDTO = partRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
         partRepo.delete(partDTO);
-        return RestResponse.of(HttpStatus.OK, "Part deleted!");
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Part deleted!"), HttpStatus.OK);
     }
 
     @PutMapping("/parts/{id}")
     @CacheEvict(value = "part", allEntries = true)
-    public ResponseEntity<RestResponse> updatePartById(@PathVariable int id, @RequestBody PartDTO part) {
+    public ResponseEntity<MessageResponse> updatePartById(@PathVariable int id, @RequestBody PartDTO part) {
         PartDTO partToUpdate = partRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
@@ -97,13 +97,13 @@ public class PartController {
 
         partRepo.save(partToUpdate);
 
-        return RestResponse.of(HttpStatus.OK, "Part updated!");
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Part updated!"), HttpStatus.OK);
     }
 
     @PostMapping("/parts")
     @CacheEvict(value = "part", allEntries = true)
     @Transactional(rollbackOn = Exception.class)
-    public ResponseEntity<RestResponse> createParts(@RequestBody List<PartDTO> parts) {
+    public ResponseEntity<MessageResponse> createParts(@RequestBody List<PartDTO> parts) {
         log.debug("Creating parts: " + parts);
 
         // Validate all parts
@@ -132,7 +132,7 @@ public class PartController {
         parts = partRepo.saveAll(parts);
 
         String ids = parts.stream().map((part) -> String.valueOf(part.getId())).collect(Collectors.joining(", "));
-        return RestResponse.of(HttpStatus.OK, "Parts with ids '%s' created!", ids);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Parts created: " + ids), HttpStatus.OK);
     }
 
     /**
