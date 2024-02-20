@@ -60,7 +60,7 @@ public class ActionController {
 
     @GetMapping("/actions/{id}")
     // TODO: Cacheable
-    public ActionDTO findById(
+    public ResponseEntity<ActionDTO> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "false") boolean lazy
@@ -75,7 +75,7 @@ public class ActionController {
             Initialization.hibernateInitializeAll(entity, include);
         }
 
-        return entity;
+        return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
     @Autowired

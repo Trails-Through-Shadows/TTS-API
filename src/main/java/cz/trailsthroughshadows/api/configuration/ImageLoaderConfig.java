@@ -11,4 +11,8 @@ public class ImageLoaderConfig {
 
     private static String url;
 
+    public static String getPath(String tag) {
+        return path;
+    }
+
 }
