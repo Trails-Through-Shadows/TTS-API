@@ -90,9 +90,9 @@ public class AdventureController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
-    @PostMapping("")
-    public ResponseEntity<RestResponse> addAdventure(@RequestParam UUID token, @RequestBody AdventureDTO adventure) {
-        return new ResponseEntity<>(adventureService.add(adventure, sessionHandler.getSession(token)), HttpStatus.OK);
+    @PostMapping("/{licenseId}")
+    public ResponseEntity<RestResponse> addAdventure(@RequestParam UUID token, @PathVariable int licenseId, @RequestBody AdventureDTO adventure) {
+        return new ResponseEntity<>(adventureService.add(adventure, licenseId, sessionHandler.getSession(token)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

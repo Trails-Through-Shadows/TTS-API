@@ -53,10 +53,17 @@ public class AdventureService {
         return adventureRepo.findAll();
     }
 
-    public RestResponse add(AdventureDTO adventure, Session session) {
+    public RestResponse add(AdventureDTO adventure, Integer licenseId, Session session) {
         int limit = validationConfig.getLicense().getMaxAdventures();
-        int current = adventureRepo.getCountByLicenseId(session.getLicenseId());
-        adventure.setIdLicense(session.getLicenseId());
+        int current = adventureRepo.getCountByLicenseId(licenseId);
+
+        if (session.hasAccess(licenseId)) {
+            RestError error = RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to access this resource!");
+            log.warn(error.toString());
+            throw new RestException(error);
+        }
+
+        adventure.setIdLicense(licenseId);
 
         if (adventure.getId() != null) {
             RestError error = RestError.of(HttpStatus.BAD_REQUEST, "ID must be null!");
@@ -96,7 +103,7 @@ public class AdventureService {
         return new IdResponse(HttpStatus.OK, adventure.getId());
     }
 
-    public RestResponse delete(int id, Session session) {
+    public RestResponse delete(Integer id, Session session) {
         AdventureDTO adventure = adventureRepo.findById(id)
                 .orElseThrow(() -> {
                     RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");

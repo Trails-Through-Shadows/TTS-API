@@ -58,13 +58,14 @@ public class CharacterService {
         return characterRepo.findAll();
     }
 
-    public RestResponse add(CharacterDTO character, Session session) {
-        AdventureDTO adventure = adventureRepo.findById(character.getIdAdventure())
+    public RestResponse add(CharacterDTO character, Integer adventureId, Session session) {
+        AdventureDTO adventure = adventureRepo.findById(adventureId)
                 .orElseThrow(() -> {
                     RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
                     log.warn(error.toString());
                     return new RestException(error);
                 });
+        character.setIdAdventure(adventureId);
 
         int limit = validationConfig.getAdventure().getMaxPlayers();
         int current = characterRepo.getCountByAdventureId(adventure.getId());
@@ -111,7 +112,7 @@ public class CharacterService {
         return new IdResponse(HttpStatus.OK, character.getId());
     }
 
-    public RestResponse delete(int id, Session session) {
+    public RestResponse delete(Integer id, Session session) {
         CharacterDTO character = characterRepo.findById(id)
                 .orElseThrow(() -> {
                     RestError error = RestError.of(HttpStatus.NOT_FOUND, "Character not found!");
