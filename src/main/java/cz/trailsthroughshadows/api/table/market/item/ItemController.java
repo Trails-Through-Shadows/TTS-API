@@ -10,6 +10,7 @@ import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Cascade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -60,7 +61,8 @@ public class ItemController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
-    public ItemDTO findById(
+    @GetMapping("/items/{id}")
+    public ResponseEntity<ItemDTO> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "false") boolean lazy
@@ -75,7 +77,7 @@ public class ItemController {
             Initialization.hibernateInitializeAll(entity, include);
         }
 
-        return entity;
+        return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
     @Autowired
