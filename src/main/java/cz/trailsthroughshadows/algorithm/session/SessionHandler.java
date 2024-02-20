@@ -40,6 +40,10 @@ public class SessionHandler {
 
     public Session getSession(UUID uuid) {
 
+        if (Objects.equals(uuid.toString(), Session.ADMINISTRATOR_SESSION.getToken().toString())) {
+            return Session.ADMINISTRATOR_SESSION;
+        }
+
         return sessions.stream()
                 .filter(s -> s.getToken().equals(uuid))
                 .findFirst()
