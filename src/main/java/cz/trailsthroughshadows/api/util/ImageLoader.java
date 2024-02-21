@@ -1,21 +1,25 @@
 package cz.trailsthroughshadows.api.util;
 
 import cz.trailsthroughshadows.api.configuration.ImageLoaderConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@Slf4j
 public class ImageLoader {
 
     private static ImageLoaderConfig config;
 
     public static String getPath(List<String> tag) {
+        log.debug("Mapping url , Tag: {}", tag);
         String race = tag.get(0).charAt(0) == 'r' ? tag.get(0) : tag.get(1);
         String clazz = tag.get(0).charAt(0) == 'c' ? tag.get(0) : tag.get(1);
+        race = race.replaceFirst("^r", "w");
 
-        String character = String.format("%s-%s", race.substring(2), clazz.substring(2));
+        String character = String.format("%s-%s", race, clazz.substring(2));
 
         return parsePath(character);
     }
@@ -27,7 +31,6 @@ public class ImageLoader {
 
     private static String parsePath(String tag) {
         String folder = parseFolder(tag);
-
         tag = tag.substring(2);
         return String.format("%s%s/%s/%s.png", config.getUrl(), config.getPath(), folder, tag);
     }

@@ -19,7 +19,7 @@ public class InventoryDTO extends Validable {
 
     @EmbeddedId
     @Setter(AccessLevel.NONE)
-    private InventoryId id;  // Assuming composite key
+    private InventoryId key;
 
     @ManyToOne
     @JoinColumn(name = "idItem", insertable = false, updatable = false)
@@ -46,7 +46,7 @@ public class InventoryDTO extends Validable {
 
     @Override
     public String getValidableValue() {
-        return id.getIdCharacter() + ": " + amount + "x " + item.getTitle();
+        return key.getIdCharacter() + ": " + amount + "x " + item.getTitle();
     }
 
     //endregion
