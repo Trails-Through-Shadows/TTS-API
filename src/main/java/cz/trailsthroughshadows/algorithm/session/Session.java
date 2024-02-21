@@ -22,7 +22,7 @@ public class Session {
     }
 
     public boolean isAdmin() {
-        return licenseId == 0;
+        return token == ADMINISTRATOR_SESSION.token;
     }
 
     public boolean hasAccess(Integer licenseId) {

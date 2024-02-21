@@ -57,7 +57,7 @@ public class AdventureService {
         int limit = validationConfig.getLicense().getMaxAdventures();
         int current = adventureRepo.getCountByLicenseId(licenseId);
 
-        if (session.hasAccess(licenseId)) {
+        if (!session.hasAccess(licenseId)) {
             RestError error = RestError.of(HttpStatus.FORBIDDEN, "You are not authorized to access this resource!");
             log.warn(error.toString());
             throw new RestException(error);
@@ -77,8 +77,6 @@ public class AdventureService {
             throw new RestException(error);
         }
 
-        //TODO chce se mi grcat
-        // custom insert or update
         Campaign mappedCampaign = campaignRepo.findById(adventure.getIdCampaign())
                 .orElseThrow(() -> {
                     RestError error = RestError.of(HttpStatus.NOT_FOUND, "Campaign not found!");
@@ -87,7 +85,8 @@ public class AdventureService {
                 });
         adventure.setCampaign(mappedCampaign);
 
-        License mappedLicense = licenseRepo.findById(session.getLicenseId()).
+        adventure.setIdLicense(licenseId);
+        License mappedLicense = licenseRepo.findById(adventure.getIdLicense()).
                 orElseThrow(() -> {
                     RestError error = RestError.of(HttpStatus.NOT_FOUND, "License not found!");
                     log.warn(error.toString());
@@ -134,6 +133,14 @@ public class AdventureService {
             log.warn(error.toString());
             throw new RestException(error);
         }
+
+        Campaign mappedCampaign = campaignRepo.findById(newAdventure.getIdCampaign())
+                .orElseThrow(() -> {
+                    RestError error = RestError.of(HttpStatus.NOT_FOUND, "Campaign not found!");
+                    log.warn(error.toString());
+                    return new RestException(error);
+                });
+        adventure.setCampaign(mappedCampaign);
 
         adventure.setTitle(newAdventure.getTitle());
         adventure.setDescription(newAdventure.getDescription());
