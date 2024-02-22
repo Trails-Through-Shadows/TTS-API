@@ -8,7 +8,7 @@ import cz.trailsthroughshadows.api.rest.model.response.IdResponse;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
-import cz.trailsthroughshadows.api.table.campaign.Campaign;
+import cz.trailsthroughshadows.api.table.campaign.model.CampaignDTO;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import cz.trailsthroughshadows.api.table.playerdata.license.License;
@@ -77,7 +77,7 @@ public class AdventureService {
             throw new RestException(error);
         }
 
-        Campaign mappedCampaign = campaignRepo.findById(adventure.getIdCampaign())
+        CampaignDTO mappedCampaign = campaignRepo.findById(adventure.getIdCampaign())
                 .orElseThrow(() -> {
                     RestError error = RestError.of(HttpStatus.NOT_FOUND, "Campaign not found!");
                     log.warn(error.toString());
@@ -134,7 +134,7 @@ public class AdventureService {
             throw new RestException(error);
         }
 
-        Campaign mappedCampaign = campaignRepo.findById(newAdventure.getIdCampaign())
+        CampaignDTO mappedCampaign = campaignRepo.findById(newAdventure.getIdCampaign())
                 .orElseThrow(() -> {
                     RestError error = RestError.of(HttpStatus.NOT_FOUND, "Campaign not found!");
                     log.warn(error.toString());

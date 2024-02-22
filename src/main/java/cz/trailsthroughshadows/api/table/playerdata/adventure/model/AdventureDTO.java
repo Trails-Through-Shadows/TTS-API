@@ -7,7 +7,7 @@ import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
-import cz.trailsthroughshadows.api.table.campaign.Campaign;
+import cz.trailsthroughshadows.api.table.campaign.model.CampaignDTO;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.relation.AdventureAchievement;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.relation.AdventureLocation;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.relation.AdventureMarket;
@@ -63,7 +63,7 @@ public class AdventureDTO extends Validable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idCampaign")
-    private Campaign campaign;
+    private CampaignDTO campaign;
 
     @OneToMany(mappedBy = "idAdventure", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)

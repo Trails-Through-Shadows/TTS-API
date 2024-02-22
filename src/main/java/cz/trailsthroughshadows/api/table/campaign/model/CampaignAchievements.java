@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.campaign;
+package cz.trailsthroughshadows.api.table.campaign.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

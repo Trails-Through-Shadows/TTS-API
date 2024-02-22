@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.campaign;
+package cz.trailsthroughshadows.api.table.campaign.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,7 +20,7 @@ import java.util.List;
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "Campaign")
-public class Campaign {
+public class CampaignDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
