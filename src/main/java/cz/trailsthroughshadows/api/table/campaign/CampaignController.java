@@ -3,8 +3,10 @@ package cz.trailsthroughshadows.api.table.campaign;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +58,18 @@ public class CampaignController {
 
         return entity;
 
+    }
+
+    @PostMapping("")
+    @CacheEvict(value = "enemy", allEntries = true)
+    public ResponseEntity<MessageResponse> create(@RequestBody List<Campaign> campaigns) {
+
+        //TODO validation of the input
+
+        campaigns.forEach(e -> e.setId(null));
+
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Campaigns created successfully!"), HttpStatus.OK);
     }
 
 }

@@ -32,11 +32,11 @@ public class Campaign {
     @Column
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idCampaign")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idCampaign", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<CampaignAchievements> achievements;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idCampaign")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idCampaign", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<CampaignLocation> locations;
 
