@@ -28,20 +28,29 @@ public class ImageLoader {
         return parsePath(character);
     }
 
-
+    /**
+     * @param tag
+     * @return parsed url to image based on tag, if tag is unknown, returns unknown.png
+     */
     public static String getPath(String tag) {
         return parsePath(tag);
     }
 
     private static String parsePath(String tag) {
         String folder = parseFolder(tag);
+        if (folder.equals("unknown")) {
+            return String.format("%s%s/unknown.png", config.getUrl(), config.getPath());
+        }
         tag = tag.substring(2);
         return String.format("%s%s/%s/%s.png", config.getUrl(), config.getPath(), folder, tag);
     }
 
     private static String parseFolder(String tag) {
 
-        //get first character of tag
+        if (tag.charAt(1) != '-') {
+            return "unknown";
+        }
+
         char first = tag.charAt(0);
 
         return switch (first) {
