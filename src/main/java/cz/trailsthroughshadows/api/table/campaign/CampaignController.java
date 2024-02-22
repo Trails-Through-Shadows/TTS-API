@@ -77,9 +77,7 @@ public class CampaignController {
 
     @GetMapping("/{id}/tree")
     public ResponseEntity<JsonObject> getTree(
-            @PathVariable int id,
-            @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "false") boolean lazy
+            @PathVariable int id
     ) {
         Campaign campaign = Campaign.fromDTO(campaignRepo
                 .findById(id)
