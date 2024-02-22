@@ -96,11 +96,6 @@ public class CharacterController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, characters), HttpStatus.OK);
     }
 
-    @PostMapping("/{adventureId}")
-    public ResponseEntity<RestResponse> addCharacter(@RequestParam UUID token, @PathVariable int adventureId, @RequestBody CharacterDTO character) {
-        return new ResponseEntity<>(characterService.add(character, adventureId, sessionHandler.getSession(token)), HttpStatus.OK);
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<RestResponse> updateCharacter(@RequestParam UUID token, @PathVariable int id, @RequestBody CharacterDTO character) {
         return new ResponseEntity<>(characterService.update(id, character, sessionHandler.getSession(token)), HttpStatus.OK);

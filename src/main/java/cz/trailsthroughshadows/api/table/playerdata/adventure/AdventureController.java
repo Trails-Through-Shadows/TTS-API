@@ -9,6 +9,9 @@ import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
+import cz.trailsthroughshadows.api.table.playerdata.character.CharacterService;
+import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
+import cz.trailsthroughshadows.api.table.playerdata.character.model.CharacterDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -30,6 +33,9 @@ public class AdventureController {
 
     @Autowired
     private AdventureService adventureService;
+
+    @Autowired
+    private CharacterService characterService;
 
     @GetMapping("/{id}")
     public ResponseEntity<AdventureDTO> findById(
@@ -103,5 +109,49 @@ public class AdventureController {
     @DeleteMapping("/{id}")
     public ResponseEntity<RestResponse> deleteAdventure(@RequestParam UUID token, @PathVariable int id) {
         return new ResponseEntity<>(adventureService.delete(id, sessionHandler.getSession(token)), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/characters")
+    public ResponseEntity<RestPaginatedResult<Character>> findAllEntities(
+            @RequestParam UUID token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int limit,
+            @RequestParam(defaultValue = "") String filter,
+            @RequestParam(defaultValue = "") String sort,
+            @RequestParam(required = false, defaultValue = "") List<String> include,
+            @RequestParam(required = false, defaultValue = "true") boolean lazy,
+            @PathVariable int id
+    ) {
+        // TODO: Re-Implement filtering, sorting and pagination @rcMarty
+        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
+
+        Session session = sessionHandler.getSession(token);
+
+        List<CharacterDTO> entries = characterService.findAll().stream()
+                .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))) &&
+                        session.hasAccess(adventureService.findById(entry.getIdAdventure()).getIdLicense())
+                        && entry.getIdAdventure() == id)
+                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
+                .toList();
+
+        List<CharacterDTO> entriesPage = entries.stream()
+                .skip((long) Math.max(page, 0) * limit)
+                .limit(limit)
+                .toList();
+
+        if (!lazy && !include.isEmpty()) {
+            entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
+        } else if (!lazy) {
+            entriesPage.forEach(Initialization::hibernateInitializeAll);
+        }
+        List<Character> characters = entriesPage.stream().map(Character::fromDTO).toList();
+
+        Pagination pagination = new Pagination(entriesPage.size(), false, entriesPage.size(), page, limit);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, characters), HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/characters")
+    public ResponseEntity<RestResponse> addCharacter(@RequestParam UUID token, @PathVariable int id, @RequestBody CharacterDTO character) {
+        return new ResponseEntity<>(characterService.add(character, id, sessionHandler.getSession(token)), HttpStatus.OK);
     }
 }
