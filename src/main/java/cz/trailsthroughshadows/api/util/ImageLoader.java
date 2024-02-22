@@ -15,6 +15,10 @@ public class ImageLoader {
 
     public static String getPath(List<String> tag) {
         log.debug("Mapping url , Tag: {}", tag);
+        if (tag.get(0).isEmpty() || tag.get(1).isEmpty()) {
+            return parsePath("*-unknown");
+        }
+
         String race = tag.get(0).charAt(0) == 'r' ? tag.get(0) : tag.get(1);
         String clazz = tag.get(0).charAt(0) == 'c' ? tag.get(0) : tag.get(1);
         race = race.replaceFirst("^r", "w");
