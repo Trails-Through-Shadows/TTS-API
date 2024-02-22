@@ -14,7 +14,7 @@ public class ImageLoader {
     private static ImageLoaderConfig config;
 
     public static String getPath(List<String> tag) {
-        log.debug("Mapping url , Tag: {}", tag);
+        log.debug("Mapping url, Tag: {}", tag);
         if (tag.get(0).isEmpty() || tag.get(1).isEmpty()) {
             return parsePath("*-unknown");
         }
@@ -61,7 +61,7 @@ public class ImageLoader {
             case 'w' -> "characters";
             case 'e' -> "enemies";
             case 's' -> "summons";
-            default -> "unknown";
+            default  -> "unknown";
         };
 
     }

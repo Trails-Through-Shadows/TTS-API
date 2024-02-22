@@ -15,7 +15,6 @@ import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.CharacterDTO;
-import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -66,6 +65,7 @@ public class CharacterService {
                     return new RestException(error);
                 });
         character.setIdAdventure(adventureId);
+        character.setInventory(List.of());
 
         int limit = validationConfig.getAdventure().getMaxPlayers();
         int current = characterRepo.getCountByAdventureId(adventure.getId());
@@ -107,7 +107,7 @@ public class CharacterService {
         validation.validate(character);
 
         log.debug("Saving character '{}' for adventure '{}'", character, adventure.getId());
-        adventureRepo.save(adventure);
+        characterRepo.save(character);
 
         return new IdResponse(HttpStatus.OK, character.getId());
     }

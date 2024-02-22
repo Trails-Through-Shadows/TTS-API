@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.campaign;
 
-import com.google.gson.JsonObject;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
@@ -76,12 +75,10 @@ public class CampaignController {
     }
 
     @GetMapping("/{id}/tree")
-    public ResponseEntity<JsonObject> getTree(
-            @PathVariable int id
-    ) {
+    public ResponseEntity<String> getTree(@PathVariable int id) {
         Campaign campaign = Campaign.fromDTO(campaignRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Campaign with id '%d' not found! " + id)));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Campaign with id '%d' not found!", id)));
 
         return new ResponseEntity<>(campaign.getTree(), HttpStatus.OK);
     }
