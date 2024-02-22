@@ -9,6 +9,7 @@ import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
+import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,48 +27,63 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
-@Cacheable(value = "part")
 @RestController(value = "Part")
 public class PartController {
 
-    @Autowired
-    ValidationService validation;
-
+    private ValidationService validation;
     private PartRepo partRepo;
 
     @GetMapping("/parts")
+    @Cacheable(value = "parts")
     public ResponseEntity<RestPaginatedResult<Part>> getParts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
-            @RequestParam(defaultValue = "") String sort
+            @RequestParam(defaultValue = "") String sort,
+            @RequestParam(required = false, defaultValue = "") List<String> include,
+            @RequestParam(required = false, defaultValue = "true") boolean lazy
     ) {
         // TODO: Re-Implement filtering, sorting and pagination
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        List<Part> entries = partRepo.findAll().stream()
+        List<PartDTO> entries = partRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
-                .map(Part::fromDTO)
                 .toList();
 
-        List<Part> entriesPage = entries.stream()
+        List<PartDTO> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
                 .toList();
 
+        if (!lazy && !include.isEmpty()) {
+            entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
+        } else if (!lazy) {
+            entriesPage.forEach(Initialization::hibernateInitializeAll);
+        }
+
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Part::fromDTO).toList()), HttpStatus.OK);
     }
 
     @GetMapping("/parts/{id}")
-    public ResponseEntity<Part> getPartById(@PathVariable int id) {
-        PartDTO partDTO = partRepo
+//    @Cacheable(value = "part", key = "#id")
+    public ResponseEntity<Part> findById(
+            @PathVariable int id,
+            @RequestParam(required = false, defaultValue = "") List<String> include,
+            @RequestParam(required = false, defaultValue = "false") boolean lazy
+    ) {
+        PartDTO entity = partRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
 
-        return new ResponseEntity<>(Part.fromDTO(partDTO), HttpStatus.OK);
+        if (!lazy && !include.isEmpty()) {
+            Initialization.hibernateInitializeAll(entity, include);
+        } else if (!lazy) {
+            Initialization.hibernateInitializeAll(entity);
+        }
+
+        return new ResponseEntity<>(Part.fromDTO(entity), HttpStatus.OK);
     }
 
     @DeleteMapping("/parts/{id}")
@@ -142,5 +157,10 @@ public class PartController {
     @Autowired
     private void setPartRepo(PartRepo partRepo) {
         this.partRepo = partRepo;
+    }
+
+    @Autowired
+    public void setValidation(ValidationService validation) {
+        this.validation = validation;
     }
 }

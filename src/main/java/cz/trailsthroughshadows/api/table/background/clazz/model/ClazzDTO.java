@@ -29,7 +29,6 @@ public class ClazzDTO extends Validable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private Integer id;
 
     @Column(nullable = false, length = 128)

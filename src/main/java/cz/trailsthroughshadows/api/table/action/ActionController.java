@@ -1,8 +1,10 @@
 package cz.trailsthroughshadows.api.table.action;
 
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.table.action.model.Action;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
@@ -20,14 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @Slf4j
-@RestController
+@RestController(value = "Action")
 public class ActionController {
 
+    private ValidationService validation;
     private ActionRepo actionRepo;
 
     @GetMapping("/actions")
     @Cacheable(value = "action")
-    public ResponseEntity<RestPaginatedResult<ActionDTO>> findAllEntities(
+    public ResponseEntity<RestPaginatedResult<Action>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
@@ -54,20 +57,20 @@ public class ActionController {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
         }
 
-        Pagination pagination = new Pagination(entriesPage.size(), false, entriesPage.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
+        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Action::fromDTO).toList()), HttpStatus.OK);
     }
 
     @GetMapping("/actions/{id}")
-    // TODO: Cacheable
-    public ResponseEntity<ActionDTO> findById(
+    //@Cacheable(value = "action", key = "#id")
+    public ResponseEntity<Action> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "false") boolean lazy
     ) {
         ActionDTO entity = actionRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
 
         if (!lazy) {
             Initialization.hibernateInitializeAll(entity);
@@ -75,11 +78,16 @@ public class ActionController {
             Initialization.hibernateInitializeAll(entity, include);
         }
 
-        return new ResponseEntity<>(entity, HttpStatus.OK);
+        return new ResponseEntity<>(Action.fromDTO(entity), HttpStatus.OK);
     }
 
     @Autowired
     public void setRepository(ActionRepo repository) {
         this.actionRepo = repository;
+    }
+
+    @Autowired
+    public void setValidation(ValidationService validation) {
+        this.validation = validation;
     }
 }

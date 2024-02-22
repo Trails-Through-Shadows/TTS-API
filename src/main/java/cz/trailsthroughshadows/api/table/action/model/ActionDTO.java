@@ -15,10 +15,9 @@ import cz.trailsthroughshadows.api.table.action.features.skill.Skill;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.SummonAction;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,12 +26,12 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Action")
+@EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ActionDTO extends Validable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private Integer id;
 
     @Column(nullable = false, length = 128)

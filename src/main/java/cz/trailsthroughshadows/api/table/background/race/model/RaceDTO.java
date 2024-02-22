@@ -21,16 +21,16 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "Race")
+@EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class RaceDTO extends Validable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     public Integer id;
 
     @Column(nullable = false, length = 128)
@@ -60,7 +60,6 @@ public class RaceDTO extends Validable {
     }
 
     //region Validation
-
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
         // Title, tag and description have to be valid.

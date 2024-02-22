@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.part.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.location.Navigation;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
@@ -10,10 +11,7 @@ import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.IntSummaryStatistics;
@@ -26,6 +24,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Table(name = "Part")
 @EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PartDTO extends Validable {
 
     @Id

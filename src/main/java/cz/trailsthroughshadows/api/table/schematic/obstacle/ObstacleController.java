@@ -17,7 +17,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,12 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component
 @RestController(value = "Obstacle")
 public class ObstacleController {
 
     private ValidationService validation;
-
     private ObstacleRepo obstacleRepo;
 
     @GetMapping("/obstacles")
@@ -63,15 +60,12 @@ public class ObstacleController {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
         }
 
-        //convert to Obstacle
-        List<Obstacle> obstacles = entriesPage.stream().map(Obstacle::fromDTO).toList();
-
-        Pagination pagination = new Pagination(entriesPage.size(), false, entriesPage.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, obstacles), HttpStatus.OK);
+        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Obstacle::fromDTO).toList()), HttpStatus.OK);
     }
 
     @GetMapping("/obstacles/{id}")
-    @Cacheable(value = "obstacle", key = "#id")
+//    @Cacheable(value = "obstacle", key = "#id")
     public ResponseEntity<Obstacle> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -79,12 +73,12 @@ public class ObstacleController {
     ) {
         ObstacleDTO entity = obstacleRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found! " + id));
 
-        if (!lazy) {
-            Initialization.hibernateInitializeAll(entity);
-        } else {
+        if (!lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
+        } else if (!lazy) {
+            Initialization.hibernateInitializeAll(entity);
         }
 
         return new ResponseEntity<>(Obstacle.fromDTO(entity), HttpStatus.OK);

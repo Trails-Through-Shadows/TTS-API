@@ -31,7 +31,6 @@ import java.util.Map;
 public class EnemyController {
 
     private ValidationService validation;
-
     private EnemyRepo enemyRepo;
 
     @GetMapping("/enemies")
@@ -40,24 +39,31 @@ public class EnemyController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
-            @RequestParam(defaultValue = "") String sort
+            @RequestParam(defaultValue = "") String sort,
+            @RequestParam(required = false, defaultValue = "") List<String> include,
+            @RequestParam(required = false, defaultValue = "true") boolean lazy
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        List<Enemy> entries = enemyRepo.findAll().stream()
+        List<EnemyDTO> entries = enemyRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
-                .map(Enemy::fromDTO)
                 .toList();
 
-        List<Enemy> entriesPage = entries.stream()
+        List<EnemyDTO> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
                 .toList();
 
+        if (!lazy && !include.isEmpty()) {
+            entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
+        } else if (!lazy) {
+            entriesPage.forEach(Initialization::hibernateInitializeAll);
+        }
+
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Enemy::fromDTO).toList()), HttpStatus.OK);
     }
 
     @GetMapping("/enemies/{id}")
@@ -69,12 +75,12 @@ public class EnemyController {
     ) {
         EnemyDTO entity = enemyRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id '%d' not found!", id));
 
-        if (!lazy) {
-            Initialization.hibernateInitializeAll(entity);
-        } else {
+        if (!lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
+        } else if (!lazy) {
+            Initialization.hibernateInitializeAll(entity);
         }
 
         return new ResponseEntity<>(Enemy.fromDTO(entity), HttpStatus.OK);

@@ -1,10 +1,11 @@
 package cz.trailsthroughshadows.api.table.market.item;
 
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
-import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import cz.trailsthroughshadows.api.table.market.item.model.Item;
+import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -18,13 +19,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import java.util.List;
 
 @Slf4j
-@RestController
+@RestController(value = "Item")
 public class ItemController {
 
+    private ValidationService validation;
     private ItemRepo itemRepo;
 
     @GetMapping("/items")
@@ -55,14 +56,13 @@ public class ItemController {
         } else if (!lazy) {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
         }
-        //convert to Item
-        List<Item> items = entriesPage.stream().map(Item::fromDTO).toList();
 
-        Pagination pagination = new Pagination(entriesPage.size(), false, entriesPage.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, items), HttpStatus.OK);
+        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Item::fromDTO).toList()), HttpStatus.OK);
     }
 
     @GetMapping("/items/{id}")
+    //@Cacheable(value = "item", key = "#id")
     public ResponseEntity<Item> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -70,12 +70,12 @@ public class ItemController {
     ) {
         ItemDTO entity = itemRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '%d' not found! " + id));
 
-        if (!lazy) {
-            Initialization.hibernateInitializeAll(entity);
-        } else {
+        if (!lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
+        } else if (!lazy) {
+            Initialization.hibernateInitializeAll(entity);
         }
 
         return new ResponseEntity<>(Item.fromDTO(entity), HttpStatus.OK);
@@ -84,5 +84,10 @@ public class ItemController {
     @Autowired
     public void setRepository(ItemRepo repository) {
         this.itemRepo = repository;
+    }
+
+    @Autowired
+    public void setValidation(ValidationService validation) {
+        this.validation = validation;
     }
 }

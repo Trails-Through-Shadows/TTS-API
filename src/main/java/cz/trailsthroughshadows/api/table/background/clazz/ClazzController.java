@@ -1,11 +1,11 @@
-package cz.trailsthroughshadows.api.table.effect;
+package cz.trailsthroughshadows.api.table.background.clazz;
 
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
-import cz.trailsthroughshadows.api.table.effect.model.Effect;
-import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
+import cz.trailsthroughshadows.api.table.background.clazz.model.Clazz;
+import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -22,15 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @Slf4j
-@RestController(value = "Effect")
-public class EffectController {
+@RestController(value = "Class")
+public class ClazzController {
 
     private ValidationService validation;
-    private EffectRepo effectRepo;
+    private ClazzRepo clazzRepo;
 
-    @GetMapping("/effects")
-    @Cacheable(value = "effect")
-    public ResponseEntity<RestPaginatedResult<Effect>> getEnemies(
+    @GetMapping("/classes")
+    @Cacheable(value = "class")
+    public ResponseEntity<RestPaginatedResult<Clazz>> getEnemies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
@@ -41,12 +41,12 @@ public class EffectController {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        List<EffectDTO> entries = effectRepo.findAll().stream()
+        List<ClazzDTO> entries = clazzRepo.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
                 .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
                 .toList();
 
-        List<EffectDTO> entriesPage = entries.stream()
+        List<ClazzDTO> entriesPage = entries.stream()
                 .skip((long) Math.max(page, 0) * limit)
                 .limit(limit)
                 .toList();
@@ -58,19 +58,19 @@ public class EffectController {
         }
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Effect::fromDTO).toList()), HttpStatus.OK);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Clazz::fromDTO).toList()), HttpStatus.OK);
     }
 
-    @GetMapping("/effects/{id}")
-//    @Cacheable(value = "effect", key = "#id")
-    public ResponseEntity<Effect> findById(
+    @GetMapping("/classes/{id}")
+    //@Cacheable(value = "enemy", key = "#id")
+    public ResponseEntity<Clazz> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "false") boolean lazy
     ) {
-        EffectDTO entity = effectRepo
+        ClazzDTO entity = clazzRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '%d' not found! ", id));
 
         if (!lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
@@ -78,12 +78,12 @@ public class EffectController {
             Initialization.hibernateInitializeAll(entity);
         }
 
-        return new ResponseEntity<>(Effect.fromDTO(entity), HttpStatus.OK);
+        return new ResponseEntity<>(Clazz.fromDTO(entity), HttpStatus.OK);
     }
 
     @Autowired
-    public void setRepository(EffectRepo repository) {
-        this.effectRepo = repository;
+    public void setRepository(ClazzRepo repository) {
+        this.clazzRepo = repository;
     }
 
     @Autowired
