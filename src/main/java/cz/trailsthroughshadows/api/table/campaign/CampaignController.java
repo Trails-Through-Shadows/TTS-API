@@ -10,6 +10,7 @@ import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,7 +75,7 @@ public class CampaignController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Campaigns created successfully!"), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/tree")
+    @GetMapping(value = "/{id}/tree", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getTree(@PathVariable int id) {
         Campaign campaign = Campaign.fromDTO(campaignRepo
                 .findById(id)

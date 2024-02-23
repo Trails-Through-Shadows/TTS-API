@@ -2,6 +2,7 @@ package cz.trailsthroughshadows.api.table.campaign.model;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import cz.trailsthroughshadows.algorithm.util.Color;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationPathDTO;
 import org.modelmapper.ModelMapper;
@@ -14,25 +15,30 @@ public class Campaign extends CampaignDTO {
     }
 
      public String getTree() {
-        JsonArray tree = new JsonArray();
+        JsonArray nodes = new JsonArray();
+        JsonArray links = new JsonArray();
 
         for (LocationDTO location : getMappedLocations()) {
             JsonObject node = new JsonObject();
-            node.addProperty("type", "node");
-            node.addProperty("id", location.getId());
-            node.addProperty("title", location.getTitle());
+            node.addProperty("key", location.getId());
+            node.addProperty("text", location.getTitle());
+            node.addProperty("fill", Color.getRandom());
+            node.addProperty("size", "new go.Size(%d, 30)".formatted(location.getTitle().length() * 15 + 30));
+            nodes.add(node);
 
-            tree.add(node);
-
-            for (LocationPathDTO path : location.getPaths()) {
-                JsonObject link = new JsonObject();
-                link.addProperty("type", "link");
-                link.addProperty("source", location.getId());
-                link.addProperty("target", path.getIdEnd());
-
-                tree.add(link);
+            if (location.getPaths() != null) {
+                for (LocationPathDTO path : location.getPaths()) {
+                    JsonObject link = new JsonObject();
+                    link.addProperty("from", location.getId());
+                    link.addProperty("to", path.getIdEnd());
+                    links.add(link);
+                }
             }
         }
+
+        JsonObject tree = new JsonObject();
+        tree.add("nodes", nodes);
+        tree.add("links", links);
 
         return tree.toString();
      }
