@@ -1,13 +1,12 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
-import cz.trailsthroughshadows.algorithm.session.Session;
 import cz.trailsthroughshadows.algorithm.session.SessionHandler;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
-import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
+import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +62,7 @@ public class EncounterHandler {
                     log.warn(response);
                     return RestException.of(HttpStatus.NOT_FOUND, response);
                 });
+        Initialization.hibernateInitializeAll(adventure, List.of("characters"));
 
         if (!sessionHandler.getSession(token).hasAccess(adventure.getIdLicense())) {
             String response = "Unauthorized access to adventure!";
