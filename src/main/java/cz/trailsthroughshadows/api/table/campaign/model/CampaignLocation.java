@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "CampaignLocation")
@@ -21,13 +22,20 @@ import java.io.Serializable;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CampaignLocation {
 
-    @EmbeddedId
-    private CampaignLocationId key;
+    @Id
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idLocation", insertable = false, updatable = false)
     private LocationDTO location;
+
+    @Column(nullable = false, insertable = false, updatable = false)
+    private Integer idCampaign;
+
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
+    private List<Story> stories;
 
     @Column(nullable = false)
     private Boolean start;
@@ -70,17 +78,8 @@ public class CampaignLocation {
     public static class WinCondition implements Serializable {
         private String type;
 
-        private String value;
+        private Integer value;
     }
 
-    @Embeddable
-    @Data
-    public static class CampaignLocationId implements Serializable {
-        @Column(nullable = false)
-        private Integer idCampaign;
-
-        @Column(nullable = false)
-        private Integer idLocation;
-    }
 }
 

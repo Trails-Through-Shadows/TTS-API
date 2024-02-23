@@ -36,7 +36,7 @@ public class CampaignDTO {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<CampaignAchievements> achievements;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idCampaign", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "idCampaign", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<CampaignLocation> locations;
 
