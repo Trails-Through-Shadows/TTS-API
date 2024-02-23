@@ -1,36 +1,42 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@Controller
+@RestController
+@RequestMapping("/encounter")
 public class EncounterController {
 
-    @PostMapping("/encounter/{idAdventure}")
-    public boolean startEncounter(@RequestParam UUID token, @PathVariable Integer idAdventure, @RequestParam Integer idLocation, @RequestBody List<Integer> characters) {
+    @Autowired
+    private EncounterHandler encounterHandler;
 
-        // get adventure
-        //    check them
-        // check session
-        // get characters
-        //    check them
+    @PostMapping("/{idAdventure}")
+    public ResponseEntity<Integer> startEncounter(@RequestParam UUID token, @PathVariable Integer idAdventure, @RequestParam Integer idLocation) {
+        return new ResponseEntity<>(encounterHandler.addEncounter(token, idAdventure, idLocation), HttpStatus.OK);
+    }
 
-        // get location
-        //    check it
-        //    check if the location is unlocked for the adventure
+    @GetMapping("/{id}")
+    public ResponseEntity<Encounter> getEncounter(@RequestParam UUID token, @PathVariable Integer id) {
+        return new ResponseEntity<>(encounterHandler.getEncounter(token, id), HttpStatus.OK);
+    }
 
-        // get enemies
-        //    check them
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> endEncounter(@RequestParam UUID token, @PathVariable Integer id) {
+        encounterHandler.removeEncounter(token, id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-        // get obstacles
-        //    check them
-
-        // create encounter
-
-        return true;
+    @PostMapping("/{id}/initiative")
+    public ResponseEntity<Void> rollInitiative(@RequestParam UUID token, @PathVariable Integer id, @RequestBody List<Initiative> initiatives) {
+        encounterHandler.getEncounter(token, id).rollInitiative(initiatives);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

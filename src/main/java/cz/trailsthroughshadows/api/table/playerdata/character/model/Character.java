@@ -1,16 +1,17 @@
 package cz.trailsthroughshadows.api.table.playerdata.character.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.util.ImageLoader;
+import lombok.Getter;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
+@Getter
 public class Character extends CharacterDTO {
 
     private String url;
+    private Integer initiative;
 
     public String getUrl() {
         return ImageLoader.getPath(new ArrayList<>(Arrays.asList(getRace().getTag(), getClazz().getTag())));

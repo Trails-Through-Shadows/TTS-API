@@ -3,7 +3,6 @@ package cz.trailsthroughshadows.api.table.playerdata.adventure;
 import cz.trailsthroughshadows.algorithm.session.Session;
 import cz.trailsthroughshadows.algorithm.session.SessionHandler;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
@@ -21,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -96,9 +94,9 @@ public class AdventureController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage), HttpStatus.OK);
     }
 
-    @PostMapping("/{licenseId}")
-    public ResponseEntity<RestResponse> addAdventure(@RequestParam UUID token, @PathVariable int licenseId, @RequestBody AdventureDTO adventure) {
-        return new ResponseEntity<>(adventureService.add(adventure, licenseId, sessionHandler.getSession(token)), HttpStatus.OK);
+    @PostMapping("/{idLicense}")
+    public ResponseEntity<RestResponse> addAdventure(@RequestParam UUID token, @PathVariable int idLicense, @RequestBody AdventureDTO adventure) {
+        return new ResponseEntity<>(adventureService.add(adventure, idLicense, sessionHandler.getSession(token)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
