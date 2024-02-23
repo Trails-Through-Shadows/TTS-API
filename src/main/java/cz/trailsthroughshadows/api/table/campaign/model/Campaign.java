@@ -23,7 +23,12 @@ public class Campaign extends CampaignDTO {
             node.addProperty("key", location.getId());
             node.addProperty("text", location.getTitle());
             node.addProperty("fill", Color.getRandom());
-            node.addProperty("size", "new go.Size(%d, 30)".formatted(location.getTitle().length() * 15 + 30));
+
+            JsonObject size = new JsonObject();
+            size.addProperty("width", location.getTitle().length() * 15 + 30);
+            size.addProperty("height", 30);
+            node.add("size", size);
+
             nodes.add(node);
 
             if (location.getPaths() != null) {
