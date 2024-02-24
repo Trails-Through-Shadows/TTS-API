@@ -3,9 +3,7 @@ package cz.trailsthroughshadows.api.table.action.features.summon;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
-import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.SummonDTO;
-import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -16,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 
 @RestController

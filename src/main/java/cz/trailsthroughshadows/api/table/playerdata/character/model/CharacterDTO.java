@@ -29,36 +29,36 @@ public class CharacterDTO extends Validable implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    protected Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idClass")
-    private ClazzDTO clazz;
+    protected ClazzDTO clazz;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idRace")
-    private RaceDTO race;
+    protected RaceDTO race;
 
     @Column(insertable = false, updatable = false, nullable = false)
-    private Integer idClass;
+    protected Integer idClass;
 
     @Column(insertable = false, updatable = false, nullable = false)
-    private Integer idRace;
+    protected Integer idRace;
 
     @Column(nullable = false)
-    private int idAdventure;
+    protected int idAdventure;
 
     @Column(nullable = false, length = 128)
-    private String title;
+    protected String title;
 
     @Column(nullable = false, length = 50)
-    private String playerName;
+    protected String playerName;
 
     @OneToMany(mappedBy = "key.idCharacter", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private Collection<InventoryDTO> inventory;
+    protected Collection<InventoryDTO> inventory;
 
     @Override
     public CharacterDTO clone() {

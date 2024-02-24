@@ -1,7 +1,6 @@
 package cz.trailsthroughshadows.api.table.playerdata;
 
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
-import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import cz.trailsthroughshadows.api.table.playerdata.character.CharacterRepo;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.CharacterDTO;
 import org.springframework.beans.factory.annotation.Autowired;

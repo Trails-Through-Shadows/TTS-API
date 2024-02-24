@@ -3,8 +3,10 @@ package cz.trailsthroughshadows.algorithm.encounter;
 import cz.trailsthroughshadows.algorithm.session.SessionHandler;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.model.Adventure;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
+import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import lombok.Getter;
@@ -87,7 +89,7 @@ public class EncounterHandler {
 
         // todo add entities to constructor
 
-        Encounter encounter = new Encounter(getNextId(), adventure.getIdLicense(), adventure, location, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Encounter encounter = new Encounter(getNextId(), adventure.getIdLicense(), Adventure.fromDTO(adventure), Location.fromDTO(location));
         encounters.add(encounter);
         log.info("Encounter added: {}", encounter.getId());
 

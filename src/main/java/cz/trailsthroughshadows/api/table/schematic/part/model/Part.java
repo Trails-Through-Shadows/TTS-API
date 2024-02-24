@@ -26,6 +26,8 @@ public class Part extends PartDTO {
     private List<Obstacle> obstacles;
     // TODO: Add doors to part?
 
+    private Boolean unlocked;
+
     private String url;
 
     public String getUrl() {

@@ -11,7 +11,10 @@ import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.IntSummaryStatistics;

@@ -4,54 +4,91 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.table.action.features.summon.SummonRepo;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
-import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
-import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
-import cz.trailsthroughshadows.api.table.playerdata.character.CharacterRepo;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.model.Adventure;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
-import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
+import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
+import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Data
 @AllArgsConstructor
 @JsonSerialize(using = EncounterSerializer.class)
 public class Encounter {
 
-    private CharacterRepo characterRepo;
-    private EnemyRepo enemyRepo;
-    private SummonRepo summonRepo;
-
     private Integer id;
     private Integer idLicense;
-    private AdventureDTO adventure;
-    private LocationDTO location;
+    private Adventure adventure;
+    private Location location;
+    private Part startPart;
     private EncounterState state = EncounterState.ONGOING;
     private List<EncounterEntity<?>> entities = new ArrayList<>();
 
-    public Encounter(Integer id, Integer idLicense, AdventureDTO adventure, LocationDTO location, List<Character> characters, List<Enemy> enemies, List<Summon> summons, List<Obstacle> obstacles) {
+    public Encounter(Integer id, Integer idLicense, Adventure adventure, Location location) {
         this.id = id;
         this.idLicense = idLicense;
         this.adventure = adventure;
         this.location = location;
 
-        entities.addAll(characters.stream()
-                .map(c -> new EncounterEntity<>(c.getId(), c.getInitiative(), EncounterEntity.EntityType.CHARACTER, c))
-                .toList());
+        startPart = location.getStartPart();
 
-        entities.addAll(enemies.stream()
-                .map(e -> new EncounterEntity<>(entities.size(), e.getId(), e.getInitiative(), EncounterEntity.EntityType.ENEMY, e))
-                .toList());
+        //characters.addAll()
+        var adv = Optional.of(
+                        adventure.getCharacters().stream()
+                                .map(Character::fromDTO)
+                                .peek(c -> c.setIdPart(startPart.getId()))
+                                .map(c -> new EncounterEntity<Character>(c.getId(), c.getInitiative(), EncounterEntity.EntityType.CHARACTER, c.getIdPart(), c)) //TODO get id part in class Character
+                                .toList())
+                .orElse(new ArrayList<>());
+        if (!adv.isEmpty()) {
+            entities.addAll(adv);
+        } else {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "No characters in adventure");
+        }
 
-        // todo add custom id handling
+
+        //enemies.addAll() just on unlocked parts
+        Part[] tmp = new Part[1];
+        var enem = Optional.ofNullable(
+                        location.getMappedParts().stream()
+                                .filter(Part::getUnlocked)
+                                .peek(part -> tmp[0] = part)
+                                .flatMap(p -> p.getEnemies().stream())
+                                .map(e -> new EncounterEntity<Enemy>(e.getId(), e.getInitiative(), EncounterEntity.EntityType.ENEMY, tmp[0].getId(), e)))
+                .map(s -> s.collect(Collectors.toList()))
+                .orElseGet(ArrayList::new);
+
+        if (!enem.isEmpty()) {
+            entities.addAll(enem);
+        } else {
+            log.warn("No enemies in location " + location.getId() + " or no unlocked parts");
+        }
+
+
+        //Sumonny jebat they will not be prespawned
+
+        //obstacles.addAll()
+        var obst = Optional.of(
+                        location.getMappedParts().stream()
+                                .filter(Part::getUnlocked)
+                                .map(p -> new EncounterEntity<Part>(p.getId(), 0, EncounterEntity.EntityType.OBSTACLE, p.getId(), p))
+                                .toList())
+                .orElse(new ArrayList<>());
+        if (!obst.isEmpty()) {
+            entities.addAll(obst);
+        }
+
     }
 
     public List<Initiative> getInitiative() {

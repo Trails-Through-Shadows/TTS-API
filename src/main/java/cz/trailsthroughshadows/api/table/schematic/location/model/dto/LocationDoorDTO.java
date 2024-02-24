@@ -1,9 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.location.model.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,7 +22,14 @@ public class LocationDoorDTO implements Serializable {
     @Id
     private int idPartTo;
 
-    @Id
-    private int idHex;
+
+    @Column(nullable = false)
+    private Integer qCoord;
+
+    @Column(nullable = false)
+    private Integer rCoord;
+
+    @Column(nullable = false)
+    private Integer sCoord;
 
 }
