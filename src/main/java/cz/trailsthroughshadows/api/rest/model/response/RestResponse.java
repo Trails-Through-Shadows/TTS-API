@@ -1,7 +1,9 @@
 package cz.trailsthroughshadows.api.rest.model.response;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public class RestResponse {
     private final HttpStatus status;
 
