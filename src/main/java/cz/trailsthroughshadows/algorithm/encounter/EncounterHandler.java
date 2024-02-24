@@ -43,14 +43,22 @@ public class EncounterHandler {
     }
 
     public Encounter getEncounter(UUID token, Integer id) {
+        Encounter[] enc = new Encounter[1];
+
         return encounters.stream()
-                .filter(e -> e.getId().equals(id)
-                    && sessionHandler.getSession(token).hasAccess(e.getIdLicense()))
+                .filter(e -> e.getId().equals(id) && sessionHandler.getSession(token).hasAccess(e.getIdLicense()))
+                .peek(e -> enc[0] = e)
                 .findFirst()
                 .orElseThrow(() -> {
-                    String response = "Unauthorized access to encounter!";
-                    log.warn(response);
-                    return RestException.of(HttpStatus.UNAUTHORIZED, response);
+                    if (enc[0] != null && sessionHandler.getSession(token).hasAccess(enc[0].getIdLicense())) {
+                        String response = "Unauthorized access to encounter!";
+                        log.warn(response);
+                        return RestException.of(HttpStatus.UNAUTHORIZED, response);
+                    } else {
+                        String response = "Encounter not found!";
+                        log.warn(response);
+                        return RestException.of(HttpStatus.NOT_FOUND, response);
+                    }
                 });
     }
 
@@ -62,7 +70,7 @@ public class EncounterHandler {
                     log.warn(response);
                     return RestException.of(HttpStatus.NOT_FOUND, response);
                 });
-        Initialization.hibernateInitializeAll(adventure, List.of("characters"));
+        Initialization.hibernateInitializeAll(adventure, List.of("characters", "clazz", "effects"));
 
         if (!sessionHandler.getSession(token).hasAccess(adventure.getIdLicense())) {
             String response = "Unauthorized access to adventure!";

@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
@@ -14,9 +15,7 @@ import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDT
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
+@JsonSerialize(using = EncounterSerializer.class)
 public class Encounter {
 
     private CharacterRepo characterRepo;
@@ -34,9 +34,7 @@ public class Encounter {
     private Integer idLicense;
     private AdventureDTO adventure;
     private LocationDTO location;
-
     private EncounterState state = EncounterState.ONGOING;
-
     private List<EncounterEntity<?>> entities = new ArrayList<>();
 
     public Encounter(Integer id, Integer idLicense, AdventureDTO adventure, LocationDTO location, List<Character> characters, List<Enemy> enemies, List<Summon> summons, List<Obstacle> obstacles) {
@@ -77,7 +75,7 @@ public class Encounter {
             Character character = getCharacters().stream()
                     .filter(c -> c.getId().equals(initiative.getId()))
                     .findFirst()
-                    .orElseThrow( () -> RestException.of(HttpStatus.UNAUTHORIZED,"Character not found"));
+                    .orElseThrow(() -> RestException.of(HttpStatus.UNAUTHORIZED, "Character not found"));
         }
     }
 

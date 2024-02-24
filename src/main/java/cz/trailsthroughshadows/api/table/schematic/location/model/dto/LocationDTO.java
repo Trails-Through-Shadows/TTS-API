@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
+import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
+import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import jakarta.persistence.*;
@@ -16,7 +18,6 @@ import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Entity
@@ -73,8 +74,29 @@ public class LocationDTO {
         return parts.stream()
                 .map(LocationPartDTO::getPart)
                 .map(partDTO -> modelMapper.map(partDTO, Part.class))
-                .collect(Collectors.toList());
+                .toList();
     }
+
+    @JsonIgnore
+    public List<Enemy> getMappedEnemies() {
+        if (enemies == null) return new ArrayList<>();
+        ModelMapper modelMapper = new ModelMapper();
+        return enemies.stream()
+                .map(HexEnemyDTO::getEnemy)
+                .map(enemyDTO -> modelMapper.map(enemyDTO, Enemy.class))
+                .toList();
+    }
+
+    @JsonIgnore
+    public List<Obstacle> getMappedObstacles() {
+        if (obstacles == null) return new ArrayList<>();
+        ModelMapper modelMapper = new ModelMapper();
+        return obstacles.stream()
+                .map(HexObstacleDTO::getObstacle)
+                .map(enemyDTO -> modelMapper.map(enemyDTO, Obstacle.class))
+                .toList();
+    }
+
 
     @JsonIgnore
     public void loadAll() {
