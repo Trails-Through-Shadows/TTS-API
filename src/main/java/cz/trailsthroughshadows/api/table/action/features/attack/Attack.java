@@ -69,7 +69,7 @@ public class Attack extends Validable implements Serializable {
         }
 
         // Area of effect must be greater than or equal to 0.
-        if (area < 0) {
+        if (area != null && area < 0) {
             errors.add(new ValidationError("Attack", "area", getArea(), "Area of effect must be greater than 0."));
         }
 

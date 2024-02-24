@@ -89,7 +89,7 @@ public class Skill extends Validable {
     @Override
     public String getValidableValue() {
         StringBuilder res = new StringBuilder();
-        Collection<EffectDTO> effects = getMappedEffects().stream().filter(e -> e != null).toList();
+        Collection<EffectDTO> effects = getMappedEffects().stream().filter(e -> e != null).filter(e -> e.getType() != null).toList();
         List<String> effectNames = effects.stream()
                 .map(EffectDTO::getType)
                 .map(EffectDTO.EffectType::name)

@@ -7,7 +7,9 @@ import cz.trailsthroughshadows.api.table.action.features.summon.SummonRepo;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.SummonDTO;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
+import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
+import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
 import cz.trailsthroughshadows.api.table.effect.EffectRepo;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
@@ -15,7 +17,9 @@ import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.table.market.item.ItemRepo;
 import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import cz.trailsthroughshadows.api.table.playerdata.character.CharacterRepo;
+import cz.trailsthroughshadows.api.table.playerdata.character.model.CharacterDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.ObstacleRepo;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
@@ -153,7 +157,7 @@ public class ValidationController {
     //region Characters
 
     @PostMapping("/character")
-    public ResponseEntity<RestResponse> validateCharacter(@RequestBody Validable character) {
+    public ResponseEntity<RestResponse> validateCharacter(@RequestBody CharacterDTO character) {
         return validate(character);
     }
 
@@ -166,7 +170,7 @@ public class ValidationController {
     }
 
     @PostMapping("/class")
-    public ResponseEntity<RestResponse> validateClass(@RequestBody Validable clazz) {
+    public ResponseEntity<RestResponse> validateClass(@RequestBody ClazzDTO clazz) {
         return validate(clazz);
     }
 
@@ -179,7 +183,7 @@ public class ValidationController {
     }
 
     @PostMapping("/race")
-    public ResponseEntity<RestResponse> validateRace(@RequestBody Validable race) {
+    public ResponseEntity<RestResponse> validateRace(@RequestBody RaceDTO race) {
         return validate(race);
     }
 
@@ -192,7 +196,7 @@ public class ValidationController {
     }
 
     @PostMapping("/adventure")
-    public ResponseEntity<RestResponse> validateAdventure(@RequestBody Validable adventure) {
+    public ResponseEntity<RestResponse> validateAdventure(@RequestBody AdventureDTO adventure) {
         return validate(adventure);
     }
 

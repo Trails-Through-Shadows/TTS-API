@@ -65,6 +65,11 @@ public class RaceDTO extends Validable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // BaseInitiative must not be null.
+        if (baseInitiative == null) {
+            errors.add(new ValidationError("Race", "baseInitiative", null, "Base initiative must not be null."));
+        }
+
         // Title, tag and description have to be valid.
         validateChild(new Title(title), validationConfig);
         validateChild(new Tag(tag), validationConfig);
@@ -72,7 +77,7 @@ public class RaceDTO extends Validable {
 
         // BaseInitiative must be greater than 0.
         // TODO fix base init when you figure it out
-        if (baseInitiative <= 0) {
+        if (baseInitiative != null && baseInitiative <= 0) {
             errors.add(new ValidationError("Race", "baseInitiative", baseInitiative, "Base initiative must be greater than 0."));
         }
 

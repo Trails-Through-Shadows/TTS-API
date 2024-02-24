@@ -9,6 +9,7 @@ import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.algorithm.validation.text.Tag;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forothers.ItemEffect;
@@ -67,6 +68,11 @@ public class ItemDTO extends Validable {
 
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Type must not be null.
+        if (type == null) {
+            errors.add(new ValidationError("Item", "type", null, "Type must not be null."));
+        }
+
         // Title, tag and description have to be valid.
         validateChild(new Title(title), validationConfig);
         validateChild(new Tag(tag), validationConfig);
@@ -85,7 +91,7 @@ public class ItemDTO extends Validable {
 
     @Override
     public String getValidableValue() {
-        return getTitle() + " (" + getType().name() + ")";
+        return getTitle() + " (" + (type == null ? "null" : getType().name()) + ")";
     }
 
     //endregion

@@ -85,12 +85,16 @@ public class SummonDTO extends Validable implements Cloneable {
         validateChild(tag, validationConfig);
 
         // Duration must be greater than 0.
-        if (getDuration() <= 0) {
+        if (getDuration() == null) {
+            errors.add(new ValidationError("Summon", "duration", null, "Duration must not be null!"));
+        } else if (getDuration() <= 0) {
             errors.add(new ValidationError("Summon", "duration", getDuration(), "Duration must be greater than 0!"));
         }
 
         // Health must be greater than 0.
-        if (getHealth() <= 0) {
+        if (getHealth() == null) {
+            errors.add(new ValidationError("Summon", "health", null, "Health must not be null!"));
+        } else if (getHealth() <= 0) {
             errors.add(new ValidationError("Summon", "health", getHealth(), "Health must be greater than 0!"));
         }
 

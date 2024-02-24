@@ -95,6 +95,16 @@ public class EnemyDTO extends Validable implements Cloneable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Health, defence and initiative must not be null.
+        if (baseHealth == null) {
+            errors.add(new ValidationError("Enemy", "baseHealth", null, "Base health must not be null."));
+        }
+        if (baseDefence == null) {
+            errors.add(new ValidationError("Enemy", "baseDefence", null, "Base defence must not be null."));
+        }
+        if (baseInitiative == null) {
+            errors.add(new ValidationError("Enemy", "baseInitiative", null, "Base initiative must not be null."));
+        }
 
         // Title and tag have to be valid.
         Title title = new Title(getTitle());
@@ -104,7 +114,7 @@ public class EnemyDTO extends Validable implements Cloneable {
         validateChild(tag, validationConfig);
 
         // Health must be greater than 0.
-        if (getBaseHealth() <= 0) {
+        if (baseHealth != null &&  getBaseHealth() <= 0) {
             errors.add(new ValidationError("Enemy", "baseHealth", getBaseHealth(), "Base health must be greater than 0!"));
         }
 

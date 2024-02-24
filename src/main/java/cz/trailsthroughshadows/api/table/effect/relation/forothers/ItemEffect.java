@@ -25,6 +25,8 @@ public class ItemEffect {
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;
 
+    @Embeddable
+    @Data
     public static class ItemEffectKey implements java.io.Serializable {
         @Column(nullable = false)
         private Integer idItem;

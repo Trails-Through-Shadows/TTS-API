@@ -69,24 +69,35 @@ public class ClazzDTO extends Validable {
 
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Health, defence and initiative must not be null.
+        if (baseHealth == null) {
+            errors.add(new ValidationError("Class", "baseHealth", null, "Base health must not be null."));
+        }
+        if (baseDefence == null) {
+            errors.add(new ValidationError("Class", "baseDefence", null, "Base defence must not be null."));
+        }
+        if (baseInitiative == null) {
+            errors.add(new ValidationError("Class", "baseInitiative", null, "Base initiative must not be null."));
+        }
+
         // Title, tag and description have to be valid.
         validateChild(new Title(title), validationConfig);
         validateChild(new Tag(tag), validationConfig);
         validateChild(new Description(description), validationConfig);
 
         // BaseHealth must be greater than 0.
-        if (baseHealth <= 0) {
+        if (baseHealth != null && baseHealth <= 0) {
             errors.add(new ValidationError("Class", "baseHealth", getBaseHealth(), "Base health must be greater than 0."));
         }
 
         // BaseDefence must be greater than or equal to 0.
-        if (baseDefence < 0) {
+        if (baseDefence != null && baseDefence < 0) {
             errors.add(new ValidationError("Class", "baseDefence", getBaseDefence(), "Base defence must be greater than or equal to 0."));
         }
 
         // BaseInitiative must be greater than 0.
         // TODO fix base init when you figure it out
-        if (baseInitiative <= 0) {
+        if (baseInitiative != null && baseInitiative <= 0) {
             errors.add(new ValidationError("Class", "baseInitiative", getBaseInitiative(), "Base initiative must be greater than 0."));
         }
 
