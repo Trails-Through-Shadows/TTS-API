@@ -36,15 +36,23 @@ public class RestoreCards extends Validable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Target and random must not be null.
+        if (target == null) {
+            errors.add(new ValidationError("RestoreCards", "target", null, "Target must not be null."));
+        }
+        if (random == null) {
+            errors.add(new ValidationError("RestoreCards", "random", null, "Random must not be null."));
+        }
+
         // Number of cards must be greater than 0 or exactly -1 (infinity).
-        if (numCards < 0 && numCards != -1) {
+        if (numCards != null && numCards < 0 && numCards != -1) {
             errors.add(new ValidationError("RestoreCards", "numCards", numCards, "Number of cards must be greater than 0 or exactly -1 (infinity)."));
         }
     }
 
     @Override
     public String getValidableValue() {
-        return (numCards == -1 ? "all" : numCards) + " cards to " + target.name() + (random ? " randomly." : ".");
+        return ((numCards == null ? "null" : (numCards == -1 ? "all" : numCards)) + " cards to " + (target == null ? "null" : target.name()) + (random != null && random ? " randomly." : "."));
     }
     //endregion
 }

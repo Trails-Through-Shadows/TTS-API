@@ -13,6 +13,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -48,35 +49,53 @@ public class Skill extends Validable {
     //@ToString.Include(name = "effects") // Including replacement field in toString
     @JsonIgnore
     public Collection<EffectDTO> getMappedEffects() {
-        if (effects == null) return null;
+        if (effects == null) return new ArrayList<>();
         return effects.stream().map(SkillEffect::getEffect).toList();
     }
 
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Range and target cant be null.
+        if (range == null) {
+            errors.add(new ValidationError("Skill", "range", null, "Range must not be null."));
+        }
+        if (target == null) {
+            errors.add(new ValidationError("Skill", "target", null, "Target must not be null."));
+        }
+
+        if (!errors.isEmpty()) return;
+
         // Range must be greater than 0. It can be 0 only if target is SELF.
         if (range < 0 || (range == 0 && target != EffectDTO.EffectTarget.SELF)) {
             errors.add(new ValidationError("Skill", "range", getRange(), "Range must be greater than 0."));
         }
 
         // Area of effect must be greater than or equal to 0.
-        if (area < 0) {
+        if (area != null && area < 0) {
             errors.add(new ValidationError("Skill", "area", getArea(), "Area of effect must be greater than 0."));
         }
 
         // All effects must be validated.
-        for (var e : effects) {
-            validateChild(e.getEffect(), validationConfig);
+        for (var e : getMappedEffects()) {
+            if (e == null) {
+                errors.add(new ValidationError("Skill", "effects", null, "Skill must not contain null effects."));
+                break;
+            }
+            validateChild(e, validationConfig);
         }
     }
 
     @Override
     public String getValidableValue() {
         StringBuilder res = new StringBuilder();
-        List<String> effectNames = getMappedEffects().stream().map(EffectDTO::getType).map(EffectDTO.EffectType::name).toList();
+        Collection<EffectDTO> effects = getMappedEffects().stream().filter(e -> e != null).toList();
+        List<String> effectNames = effects.stream()
+                .map(EffectDTO::getType)
+                .map(EffectDTO.EffectType::name)
+                .toList();
         res.append(String.join(", ", effectNames));
-        return res + " within " + getRange() + " hexes.";
+        return (res.isEmpty() ? "Nothing" : res) + " within " + getRange() + " hexes.";
     }
     //endregion
 }

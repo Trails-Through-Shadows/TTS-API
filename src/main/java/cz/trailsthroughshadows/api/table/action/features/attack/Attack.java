@@ -58,6 +58,11 @@ public class Attack extends Validable implements Serializable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Target cant be null.
+        if (target == null) {
+            errors.add(new ValidationError("Attack", "target", null, "Target must not be null."));
+        }
+
         // Range must be greater than 0. It can be 0 only if target is SELF.
         if (range < 0 || (range == 0 && target != EffectDTO.EffectTarget.SELF)) {
             errors.add(new ValidationError("Attack", "range", getRange(), "Range must be greater than 0."));
@@ -79,8 +84,12 @@ public class Attack extends Validable implements Serializable {
         }
 
         // All effects must be validated.
-        for (var e : effects) {
-            validateChild(e.getEffect(), validationConfig);
+        for (var e : getMappedEffects()) {
+            if (e == null) {
+                errors.add(new ValidationError("Skill", "effects", null, "Skill must not contain null effects."));
+                break;
+            }
+            validateChild(e, validationConfig);
         }
     }
 

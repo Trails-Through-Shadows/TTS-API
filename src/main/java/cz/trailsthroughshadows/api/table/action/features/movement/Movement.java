@@ -50,6 +50,11 @@ public class Movement extends Validable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Type cant be null.
+        if (type == null) {
+            errors.add(new ValidationError("Movement", "type", null, "Type must not be null."));
+        }
+
         // Range must be greater than 0.
         if (range <= 0) {
             errors.add(new ValidationError("Movement", "range", getRange(), "Range must be greater than 0."));
@@ -63,7 +68,7 @@ public class Movement extends Validable {
 
     @Override
     public String getValidableValue() {
-        return getType().name() + " for " + getRange() + " hexes.";
+        return type == null ? "Null" : getType().name() + " for " + getRange() + " hexes.";
     }
     //endregion
 

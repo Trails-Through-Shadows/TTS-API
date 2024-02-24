@@ -46,6 +46,19 @@ public class EffectDTO extends Validable implements Serializable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Type, duration and target cant be null.
+        if (type == null) {
+            errors.add(new ValidationError("Effect", "type", null, "Type must not be null."));
+        }
+        if (duration == null) {
+            errors.add(new ValidationError("Effect", "duration", null, "Duration must not be null."));
+        }
+        if (target == null) {
+            errors.add(new ValidationError("Effect", "target", null, "Target must not be null."));
+        }
+
+        if (!errors.isEmpty()) return;
+
         // Description has to be valid.
         Description description = new Description(getDescription());
         validateChild(description, validationConfig);
@@ -66,7 +79,7 @@ public class EffectDTO extends Validable implements Serializable {
 
     @Override
     public String getValidableValue() {
-        return getType().toString();
+        return type == null ? "Nothing" : getType().toString();
     }
     //endregion
 
