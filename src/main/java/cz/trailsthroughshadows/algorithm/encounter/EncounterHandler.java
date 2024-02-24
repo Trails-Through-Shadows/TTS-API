@@ -37,11 +37,12 @@ public class EncounterHandler {
 
     private Integer getNextId() {
         for (int i = 1; i < encounters.size() + 1; i++) {
-            if (encounters.get(i).getId() != i) {
+            int finalI = i;
+            if (encounters.stream().noneMatch(e -> e.getId().equals(finalI))) {
                 return i;
             }
         }
-        return encounters.size() + 2;
+        return encounters.size() + 1;
     }
 
     public Encounter getEncounter(UUID token, Integer id) {

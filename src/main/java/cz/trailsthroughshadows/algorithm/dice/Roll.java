@@ -20,7 +20,6 @@ public class Roll {
     public enum Type {
         CRIT,
         MISS,
-        SPECIAL,
         NUMBER
     }
 }

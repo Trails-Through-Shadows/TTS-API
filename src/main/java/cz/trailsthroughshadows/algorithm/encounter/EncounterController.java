@@ -31,7 +31,7 @@ public class EncounterController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> endEncounter(@RequestParam UUID token, @PathVariable Integer id) {
         encounterHandler.removeEncounter(token, id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/{id}/initiative")

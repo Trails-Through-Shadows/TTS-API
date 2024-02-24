@@ -21,11 +21,11 @@ public class Dice {
             new Roll(Roll.Type.NUMBER, 3),
             new Roll(Roll.Type.NUMBER, 4),
             new Roll(Roll.Type.NUMBER, 4),
+            new Roll(Roll.Type.NUMBER, 5),
+            new Roll(Roll.Type.NUMBER, 5),
 
             new Roll(Roll.Type.MISS),
-            new Roll(Roll.Type.CRIT),
-            new Roll(Roll.Type.SPECIAL, 1),
-            new Roll(Roll.Type.SPECIAL, 2)
+            new Roll(Roll.Type.CRIT)
     ));
 
     public final List<Roll> rolls;
