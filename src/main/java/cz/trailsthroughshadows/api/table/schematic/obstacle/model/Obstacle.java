@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Obstacle extends ObstacleDTO {
 
     private HexDTO hex;

@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.obstacle.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
@@ -25,7 +26,6 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "Obstacle")
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
 public class ObstacleDTO extends Validable {
 
     @Id
@@ -52,16 +52,18 @@ public class ObstacleDTO extends Validable {
     @Column
     public Integer usages = 0;
 
-    @OneToMany(mappedBy = "key.idObstacle", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "key.idObstacle", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     public List<ObstacleEffectDTO> effects;
 
+    @JsonIgnore
     public List<EffectDTO> getMappedEffects() {
-        if (effects == null) return null;
+        if (effects == null)
+            return null;
         return effects.stream().map(ObstacleEffectDTO::getEffect).toList();
     }
 
-    //region Validation
+    // region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
         // Title, tag and description have to be valid.
@@ -69,16 +71,20 @@ public class ObstacleDTO extends Validable {
         validateChild(new Tag(getTag()), validationConfig);
         validateChild(new Description(getDescription()), validationConfig);
 
-        // BaseDamage must be greater than or equal to 0. If it is not crossable, it must be 0.
+        // BaseDamage must be greater than or equal to 0. If it is not crossable, it
+        // must be 0.
         if (!crossable && baseDamage != 0) {
-            errors.add(new ValidationError("Obstacle", "baseDamage", getBaseDamage(), "Base damage must be 0 if obstacle is not crossable."));
+            errors.add(new ValidationError("Obstacle", "baseDamage", getBaseDamage(),
+                    "Base damage must be 0 if obstacle is not crossable."));
         } else if (baseDamage < 0) {
-            errors.add(new ValidationError("Obstacle", "baseDamage", getBaseDamage(), "Base damage must be greater than or equal to 0."));
+            errors.add(new ValidationError("Obstacle", "baseDamage", getBaseDamage(),
+                    "Base damage must be greater than or equal to 0."));
         }
 
         // BaseHealth must be greater than 0 or -1 (invincible).
         if (baseHealth != -1 && baseHealth <= 0) {
-            errors.add(new ValidationError("Obstacle", "baseHealth", getBaseHealth(), "Base health must be greater than 0 or -1 (invincible)."));
+            errors.add(new ValidationError("Obstacle", "baseHealth", getBaseHealth(),
+                    "Base health must be greater than 0 or -1 (invincible)."));
         }
 
         // All effects must be validated.
@@ -91,5 +97,5 @@ public class ObstacleDTO extends Validable {
     public String getValidableValue() {
         return getTitle();
     }
-    //endregion
+    // endregion
 }
