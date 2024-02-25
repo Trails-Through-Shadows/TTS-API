@@ -2,8 +2,6 @@ package cz.trailsthroughshadows.algorithm.encounter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
-import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,14 +17,15 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         gen.writeNumberField("id", value.getId());
         gen.writeNumberField("idLocation", value.getLocation().getId());
 
+        //ids of unlocked parts
         List<Integer> partIds = value.getLocation().getMappedParts().stream().map(PartDTO::getId).toList();
         gen.writeFieldName("idParts");
         gen.writeArray(partIds.stream().mapToInt(i -> i).toArray(), 0, partIds.size());
 
-        List<Enemy> enemies = value.getLocation().getMappedEnemies();
+        // enemies
         gen.writeFieldName("enemies");
         gen.writeStartArray();
-        enemies.forEach(e -> {
+        value.getEnemies().forEach(e -> {
             try {
                 gen.writeObject(e);
             } catch (IOException e1) {
@@ -36,22 +35,43 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         gen.writeEndArray();
         //TODO summons form enemies and players
 
-
-        List<Obstacle> obstacles = value.getLocation().getMappedObstacles();
-        gen.writeFieldName("obstacles");
+        // players
+        gen.writeFieldName("players");
         gen.writeStartArray();
-        obstacles.forEach(e -> {
+        value.getCharacters().forEach(e -> {
             try {
                 gen.writeObject(e);
             } catch (IOException e1) {
-                log.error("Error writing Obstacle", e1);
+                log.error("Error writing character", e1);
+            }
+        });
+        gen.writeEndArray();
+
+        // summons
+        gen.writeFieldName("summons");
+        gen.writeStartArray();
+        value.getSummons().forEach(e -> {
+            try {
+                gen.writeObject(e);
+            } catch (IOException e1) {
+                log.error("Error writing character", e1);
+            }
+        });
+        gen.writeEndArray();
+
+        // obstacles
+        gen.writeFieldName("obstacles");
+        gen.writeStartArray();
+        value.getObstacles().forEach(o -> {
+            try {
+                gen.writeObject(o);
+            } catch (IOException e) {
+                log.error("Error writing obstacle", e);
             }
         });
         gen.writeEndArray();
 
         gen.writeObjectField("state", value.getState());
-
-        //gen.writeObject(value.getLocation().getMappedObstacles());
 
         gen.writeEndObject();
     }

@@ -23,15 +23,15 @@ public class RestoreCards extends Validable {
     @Setter(AccessLevel.NONE)
     private Integer id;
 
-    @Column
-    private Integer numCards;
+    @Column(nullable = false)
+    private int numCards;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EffectDTO.EffectTarget target;
 
-    @Column
-    private Boolean random;
+    @Column(nullable = false)
+    private boolean random;
 
     //region Validation
     @Override

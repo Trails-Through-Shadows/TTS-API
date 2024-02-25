@@ -1,11 +1,10 @@
 package cz.trailsthroughshadows.api.table.schematic.location.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
+import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationPartDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
-import cz.trailsthroughshadows.api.util.ImageLoader;
-import jakarta.persistence.PostLoad;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
@@ -16,21 +15,19 @@ import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Location extends LocationDTO {
 
     private String url;
 
-    @JsonIgnore
-    private List<Part> mappedParts;
-
-    @PostLoad
-    private void postLoad() {
-        mappedParts = this.getMappedParts();
-    }
-
     public Part getStartPart() {
-        return getMappedParts().stream()
+
+        ModelMapper modelMapper = new ModelMapper();
+        List<Part> parts = getParts().stream()
+                .map(LocationPartDTO::getPart)
+                .map(partDTO -> modelMapper.map(partDTO, Part.class))
+                .toList();
+
+        PartDTO tmp = parts.stream()
                 .filter(part -> Objects.equals(
                         part.getId(),
                         this.getStartHexes()
@@ -41,10 +38,7 @@ public class Location extends LocationDTO {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No start part found in location " + this.getId()));
 
-    }
-
-    public String getUrl() {
-        return ImageLoader.getPath(getTag());
+        return Part.fromDTO(tmp);
     }
 
 
@@ -54,7 +48,7 @@ public class Location extends LocationDTO {
         return modelMapper.map(dto, Location.class);
     }
 
-    @Override
+    @JsonIgnore
     public List<Part> getMappedParts() {
         if (parts == null) {
             return new ArrayList<>();
@@ -64,13 +58,10 @@ public class Location extends LocationDTO {
                 .map(locationPart -> Part.fromDTO(
                         locationPart.getPart(),
                         locationPart.getRotation(),
-                        enemies.stream()
-                                .filter(hexEnemy -> hexEnemy.getKey().getIdPart() == locationPart.getPart().getId())
-                                .toList(),
-                        obstacles.stream()
-                                .filter(hexObstacle -> hexObstacle.getKey().getIdPart() == locationPart.getPart().getId())
-                                .toList()
-                )).toList();
+                        this.getEnemies(),
+                        this.getObstacles()))
+                .peek(part -> part.setUnlocked(Objects.equals(getStartPart().getId(), part.getId())))
+                .toList();
     }
 
     public enum Type {

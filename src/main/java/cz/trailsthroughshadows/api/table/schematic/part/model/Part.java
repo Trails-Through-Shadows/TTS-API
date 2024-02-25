@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.api.table.schematic.part.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
@@ -16,7 +15,6 @@ import java.util.Optional;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Part extends PartDTO {
 
     private Integer rotation;
@@ -26,13 +24,14 @@ public class Part extends PartDTO {
     private List<Obstacle> obstacles;
     // TODO: Add doors to part?
 
-    private Boolean unlocked;
+    private boolean unlocked;
 
     private String url;
 
     public String getUrl() {
         return ImageLoader.getPath(getTag());
     }
+
 
     public static Part fromDTO(PartDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
@@ -44,7 +43,6 @@ public class Part extends PartDTO {
         part.setRotation(rotation);
         part.setEnemies(enemies.stream().map(e -> Enemy.fromDTO(e.getEnemy(), part.getHex(e.getKey().getIdHex()).orElse(null))).toList());
         part.setObstacles(obstacles.stream().map(o -> Obstacle.fromDTO(o.getObstacle(), part.getHex(o.getKey().getIdHex()).orElse(null))).toList());
-
         return part;
     }
 

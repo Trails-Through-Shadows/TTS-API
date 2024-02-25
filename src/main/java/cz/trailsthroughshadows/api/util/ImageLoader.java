@@ -61,7 +61,7 @@ public class ImageLoader {
             case 'w' -> "characters";
             case 'e' -> "enemies";
             case 's' -> "summons";
-            default  -> "unknown";
+            default -> "unknown";
         };
 
     }

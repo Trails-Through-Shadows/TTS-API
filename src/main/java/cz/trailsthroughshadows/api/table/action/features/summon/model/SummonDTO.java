@@ -35,10 +35,10 @@ public class SummonDTO extends Validable implements Cloneable {
     @Column(nullable = false, length = 128)
     private String title;
 
-    @Column
+    @Column(nullable = false)
     private Integer duration;
 
-    @Column
+    @Column(nullable = false)
     private Integer health;
 
     @Column(length = 32)

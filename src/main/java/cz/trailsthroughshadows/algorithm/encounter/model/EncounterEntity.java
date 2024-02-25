@@ -1,13 +1,11 @@
 package cz.trailsthroughshadows.algorithm.encounter.model;
 
 import cz.trailsthroughshadows.api.table.effect.model.Effect;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.HashMap;
 
-@Getter
-@Setter
+@Data
 public class EncounterEntity<T> {
 
     // id of the entity in the encounter
@@ -16,6 +14,7 @@ public class EncounterEntity<T> {
     private Integer idType;
 
     private int initiative;
+
     private EntityType type;
 
     private T entity;
@@ -24,6 +23,7 @@ public class EncounterEntity<T> {
 
     private final HashMap<Effect, Integer> activeEffects = new HashMap<>();
     // id of the part the entity is on
+    // redudant enemy has id part in his hex
     private Integer idPart;
 
     public EncounterEntity(Integer idEntity, int initiative, EntityType type, Integer idPart, T entity) {

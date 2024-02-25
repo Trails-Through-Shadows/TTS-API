@@ -11,6 +11,7 @@ import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Data
@@ -44,30 +46,27 @@ public class Encounter {
         startPart = location.getStartPart();
 
         //characters.addAll()
-        var adv = Optional.of(
-                        adventure.getCharacters().stream()
-                                .map(Character::fromDTO)
-                                .peek(c -> c.setIdPart(startPart.getId()))
-                                .map(c -> new EncounterEntity<Character>(c.getId(), c.getInitiative(), EncounterEntity.EntityType.CHARACTER, c.getIdPart(), c)) //TODO get id part in class Character
-                                .toList())
-                .orElse(new ArrayList<>());
-        if (!adv.isEmpty()) {
-            entities.addAll(adv);
-        } else {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "No characters in adventure");
-        }
 
+        entities.addAll(Optional.of(
+                        adventure.getCharacters().stream())
+                .orElseThrow(() -> new RuntimeException("No characters in adventure"))
+                .peek(Initialization::hibernateInitializeAll)
+                .map(Character::fromDTO)
+                .peek(c -> c.setIdPart(startPart.getId()))
+                .map(c -> new EncounterEntity<Character>(c.getId(), c.getInitiative(), EncounterEntity.EntityType.CHARACTER, c.getIdPart(), c)) //TODO get id part in class Character
+                .toList());
 
         //enemies.addAll() just on unlocked parts
         Part[] tmp = new Part[1];
         var enem = Optional.ofNullable(
                         location.getMappedParts().stream()
-                                .filter(Part::getUnlocked)
-                                .peek(part -> tmp[0] = part)
-                                .flatMap(p -> p.getEnemies().stream())
-                                .map(e -> new EncounterEntity<Enemy>(e.getId(), e.getInitiative(), EncounterEntity.EntityType.ENEMY, tmp[0].getId(), e)))
-                .map(s -> s.collect(Collectors.toList()))
-                .orElseGet(ArrayList::new);
+                                .filter(Part::isUnlocked))
+                .orElseGet(Stream::empty)
+                .peek(part -> tmp[0] = part)
+                .flatMap(p -> p.getEnemies().stream())
+                .map(e -> new EncounterEntity<Enemy>(e.getId(), e.getInitiative(), EncounterEntity.EntityType.ENEMY, tmp[0].getId(), e))
+                .toList();
+
 
         if (!enem.isEmpty()) {
             entities.addAll(enem);
@@ -79,12 +78,14 @@ public class Encounter {
         //Sumonny jebat they will not be prespawned
 
         //obstacles.addAll()
-        var obst = Optional.of(
+        var obst = Optional.ofNullable(
                         location.getMappedParts().stream()
-                                .filter(Part::getUnlocked)
-                                .map(p -> new EncounterEntity<Part>(p.getId(), 0, EncounterEntity.EntityType.OBSTACLE, p.getId(), p))
-                                .toList())
-                .orElse(new ArrayList<>());
+                                .filter(Part::isUnlocked))
+                .orElseGet(Stream::empty)
+                .flatMap(p -> p.getObstacles().stream())
+                .map(p -> new EncounterEntity<Obstacle>(p.getId(), 0, EncounterEntity.EntityType.OBSTACLE, p.getId(), p))
+                .toList();
+
         if (!obst.isEmpty()) {
             entities.addAll(obst);
         }
@@ -95,6 +96,7 @@ public class Encounter {
         List<Initiative> initiatives = new ArrayList<>();
 
         initiatives.addAll(getCharacters().stream()
+                .map(EncounterEntity::getEntity)
                 .map(c -> new Initiative(c.getId(), c.getInitiative(), EncounterEntity.EntityType.CHARACTER))
                 .toList());
 
@@ -110,41 +112,42 @@ public class Encounter {
     public void rollInitiative(List<Initiative> initiatives) {
         for (Initiative initiative : initiatives) {
             Character character = getCharacters().stream()
+                    .map(EncounterEntity::getEntity)
                     .filter(c -> c.getId().equals(initiative.getId()))
                     .findFirst()
                     .orElseThrow(() -> RestException.of(HttpStatus.UNAUTHORIZED, "Character not found"));
         }
     }
 
-    private <T> List<T> getEntities(Class<?> c) {
+    private <T> List<EncounterEntity<T>> getEntities(Class<?> c) {
         return entities.stream()
                 .filter(e -> e.getEntity().getClass().equals(c))
-                .map(e -> (T) e.getEntity())
+                .map(e -> (EncounterEntity<T>) e)
                 .collect(Collectors.toList());
     }
 
-    public List<Enemy> getEnemies() {
+    public List<EncounterEntity<Enemy>> getEnemies() {
         return getEntities(Enemy.class);
     }
 
-    public List<Character> getCharacters() {
+    public List<EncounterEntity<Character>> getCharacters() {
         return getEntities(Character.class);
     }
 
-    public List<Summon> getSummons() {
+    public List<EncounterEntity<Summon>> getSummons() {
         return getEntities(Summon.class);
     }
 
-    public List<Obstacle> getObstacles() {
+    public List<EncounterEntity<Obstacle>> getObstacles() {
         return getEntities(Obstacle.class);
     }
 
     public List<Enemy> getEnemyGroups() {
         List<Enemy> groups = new ArrayList<>();
 
-        for (Enemy enemy : getEnemies()) {
-            if (groups.stream().noneMatch(g -> g.getId().equals(enemy.getId()))) {
-                groups.add(enemy);
+        for (EncounterEntity<Enemy> enemy : getEnemies()) {
+            if (groups.stream().noneMatch(g -> g.getId().equals(enemy.getEntity().getId()))) {
+                groups.add(enemy.getEntity());
             }
         }
 

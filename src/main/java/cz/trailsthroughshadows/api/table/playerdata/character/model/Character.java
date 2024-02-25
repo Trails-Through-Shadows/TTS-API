@@ -23,9 +23,11 @@ public class Character extends CharacterDTO {
     }
 
     public String getUrl() {
-        return ImageLoader.getPath(new ArrayList<>(Arrays.asList(getRace().getTag(), getClazz().getTag())));
+        if (url == null) {
+            url = ImageLoader.getPath(new ArrayList<>(Arrays.asList(getRace().getTag(), getClazz().getTag())));
+        }
+        return url;
     }
-
 
     public static Character fromDTO(CharacterDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
