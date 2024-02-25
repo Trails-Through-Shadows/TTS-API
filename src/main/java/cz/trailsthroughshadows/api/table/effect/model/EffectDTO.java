@@ -57,14 +57,12 @@ public class EffectDTO extends Validable implements Serializable {
             errors.add(new ValidationError("Effect", "target", null, "Target must not be null."));
         }
 
-        if (!errors.isEmpty()) return;
-
         // Description has to be valid.
         Description description = new Description(getDescription());
         validateChild(description, validationConfig);
 
         // Duration must be greater than 0 or exactly -1 (infinity).
-        if (duration < 1 && duration != -1) {
+        if (duration != null && duration < 1 && duration != -1) {
             errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be greater than 0 or -1 (infinity)."));
         }
 
