@@ -60,7 +60,6 @@ public class Location extends LocationDTO {
                         locationPart.getRotation(),
                         this.getEnemies(),
                         this.getObstacles()))
-                .peek(part -> part.setUnlocked(Objects.equals(getStartPart().getId(), part.getId())))
                 .toList();
     }
 

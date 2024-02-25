@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Data
@@ -41,8 +42,16 @@ public class Part extends PartDTO {
     public static Part fromDTO(PartDTO dto, int rotation, List<HexEnemyDTO> enemies, List<HexObstacleDTO> obstacles) {
         Part part = fromDTO(dto);
         part.setRotation(rotation);
-        part.setEnemies(enemies.stream().map(e -> Enemy.fromDTO(e.getEnemy(), part.getHex(e.getKey().getIdHex()).orElse(null))).toList());
-        part.setObstacles(obstacles.stream().map(o -> Obstacle.fromDTO(o.getObstacle(), part.getHex(o.getKey().getIdHex()).orElse(null))).toList());
+        part.setEnemies(enemies.stream()
+                .filter(e -> e.getKey().getIdPart() == dto.getId())
+                .map(e -> Enemy.fromDTO(e.getEnemy(), part.getHex(e.getKey().getIdHex())
+                .orElse(null)))
+                .toList());
+        part.setObstacles(obstacles.stream()
+                .filter(o -> Objects.equals(o.getKey().getIdPart(), dto.getId()))
+                .map(o -> Obstacle.fromDTO(o.getObstacle(), part.getHex(o.getKey().getIdHex())
+                .orElse(null)))
+                .toList());
         return part;
     }
 
@@ -56,5 +65,9 @@ public class Part extends PartDTO {
 
     public Optional<Obstacle> getObstacle(Hex hex) {
         return obstacles.stream().filter(o -> o.getHex().equals(hex)).findFirst();
+    }
+
+    public void unlock() {
+        unlocked = true;
     }
 }

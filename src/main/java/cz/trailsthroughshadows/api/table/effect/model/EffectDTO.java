@@ -65,7 +65,7 @@ public class EffectDTO extends Validable implements Serializable {
 
         // Duration must be greater than 0 or exactly -1 (infinity).
         if (duration < 1 && duration != -1) {
-            errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be greater than 0 or -1."));
+            errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be greater than 0 or -1 (infinity)."));
         }
 
         // Strength must be positive. It must be null for types Disarm, Root, Stun, Confusion, Guidance and Incorporeal.

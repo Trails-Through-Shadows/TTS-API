@@ -39,4 +39,9 @@ public class EncounterController {
         encounterHandler.getEncounter(token, id).rollInitiative(initiatives);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/{id}/initiative")
+    public ResponseEntity<List<Initiative>> getInitiative(@RequestParam UUID token, @PathVariable Integer id) {
+        return new ResponseEntity<>(encounterHandler.getEncounter(token, id).getInitiative(), HttpStatus.OK);
+    }
 }

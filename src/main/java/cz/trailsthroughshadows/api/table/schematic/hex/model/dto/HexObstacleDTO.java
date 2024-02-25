@@ -30,15 +30,15 @@ public class HexObstacleDTO {
     public static class HexObstacleId implements Serializable {
 
         @Column(nullable = false)
-        private Integer idObstacle;
+        private int idObstacle;
 
         @Column(nullable = false)
-        private Integer idHex;
+        private int idHex;
 
         @Column(nullable = false)
-        private Integer idPart;
+        private int idPart;
 
         @Column(nullable = false)
-        private Integer idLocation;
+        private int idLocation;
     }
 }

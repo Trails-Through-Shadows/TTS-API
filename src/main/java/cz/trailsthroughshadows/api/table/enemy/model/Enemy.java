@@ -17,8 +17,6 @@ public class Enemy extends EnemyDTO {
 
     private String url;
 
-    private Integer initiative;
-
     public String getUrl() {
         return ImageLoader.getPath(getTag());
     }

@@ -3,9 +3,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
+import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
 import cz.trailsthroughshadows.api.table.effect.model.Effect;
+import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
+import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
+import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
-import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -22,24 +25,18 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         gen.writeNumberField("idLocation", value.getLocation().getId());
 
         //ids of unlocked parts
-        List<Integer> partIds = value.getLocation().getMappedParts().stream()
-                .filter(Part::isUnlocked)
-                .map(Part::getId)
-                .toList();
+        List<Integer> partIds = value.getParts().stream().filter(Part::isUnlocked).map(Part::getId).toList();
         gen.writeFieldName("idParts");
         gen.writeArray(partIds.stream().mapToInt(i -> i).toArray(), 0, partIds.size());
 
         // enemies
         gen.writeFieldName("enemies");
         gen.writeStartArray();
-        value.getEnemies().forEach(e -> {
+        value.getEntities().getEnemies().forEach(e -> {
             try {
-//                gen.writeObject(e);
-
-
-
-            } catch (IOException e1) {
-                log.error("Error writing enemy", e1);
+                serialize(e, gen, serializers);
+            } catch (IOException ex) {
+                log.error("Error writing enemy", ex);
             }
         });
         gen.writeEndArray();
@@ -48,11 +45,11 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         // players
         gen.writeFieldName("characters");
         gen.writeStartArray();
-        value.getCharacters().forEach(e -> {
+        value.getEntities().getCharacters().forEach(c -> {
             try {
-                gen.writeObject(e);
-            } catch (IOException e1) {
-                log.error("Error writing character", e1);
+                serialize(c, gen, serializers);
+            } catch (IOException ex) {
+                log.error("Error writing character", ex);
             }
         });
         gen.writeEndArray();
@@ -60,11 +57,11 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         // summons
         gen.writeFieldName("summons");
         gen.writeStartArray();
-        value.getSummons().forEach(e -> {
+        value.getEntities().getSummons().forEach(s -> {
             try {
-                gen.writeObject(e);
-            } catch (IOException e1) {
-                log.error("Error writing summon", e1);
+                serialize(s, gen, serializers);
+            } catch (IOException ex) {
+                log.error("Error writing summon", ex);
             }
         });
         gen.writeEndArray();
@@ -72,9 +69,9 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         // obstacles
         gen.writeFieldName("obstacles");
         gen.writeStartArray();
-        value.getObstacles().forEach(o -> {
+        value.getEntities().getObstacles().forEach(o -> {
             try {
-                gen.writeObject(o);
+                serialize(o, gen, serializers);
             } catch (IOException e) {
                 log.error("Error writing obstacle", e);
             }
@@ -86,13 +83,38 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         gen.writeEndObject();
     }
 
-    public void serialize(EncounterEntity entity, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(EncounterEntity<?> entity, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
 
         gen.writeNumberField("id", entity.getId());
-        gen.writeNumberField("idGroup", -1);
-        gen.writeNumberField("initiative", entity.getInitiative());
+        if (entity.getType() != EncounterEntity.EntityType.CHARACTER) {
+            gen.writeNumberField("idGroup", entity.getIdGroup());
+        }
+
+        switch (entity.getType()) {
+            case CHARACTER:
+                Character character = (Character) entity.getEntity();
+                gen.writeStringField("title", character.getTitle());
+                gen.writeStringField("player", character.getPlayerName());
+                break;
+            case ENEMY:
+                Enemy enemy = (Enemy) entity.getEntity();
+                gen.writeStringField("title", enemy.getTitle());
+                break;
+            case SUMMON:
+                Summon summon = (Summon) entity.getEntity();
+                gen.writeStringField("title", summon.getTitle());
+                break;
+            case OBSTACLE:
+                Obstacle obstacle = (Obstacle) entity.getEntity();
+                gen.writeStringField("title", obstacle.getTitle());
+                break;
+        }
+
         gen.writeNumberField("health", entity.getHealth());
+        if (entity.getType() == EncounterEntity.EntityType.CHARACTER) {
+            gen.writeNumberField("defence", ((Character) entity.getEntity()).getDefence());
+        }
 
         gen.writeFieldName("activeEffects");
         gen.writeStartArray();
@@ -102,25 +124,33 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
                 gen.writeObjectField("effect", entry.getKey());
                 gen.writeNumberField("duration", entry.getValue());
                 gen.writeEndObject();
-            } catch (IOException e1) {
-                log.error("Error writing active effect", e1);
+            } catch (IOException ex) {
+                log.error("Error writing active effect", ex);
             }
         }
-//        entity.getActiveEffects().for((effect, duration) -> {
-//            try {
-//                gen.writeStartObject();
-//                gen.writeObjectField("effect", effect);
-//                gen.writeNumberField("duration", duration.);
-//                gen.writeEndObject();
-//            } catch (IOException e1) {
-//                log.error("Error writing active effect", e1);
-//            }
-//        });
         gen.writeEndArray();
 //
 //        // todo more fields
-//        gen.writeObjectField("startingHex", entity.getEntity().getHex());
-//        gen.writeStringField("url", entity.getEntity().getUrl());
+        switch (entity.getType()) {
+            case CHARACTER:
+                Character character = (Character) entity.getEntity();
+                gen.writeStringField("url", character.getUrl());
+                break;
+            case ENEMY:
+                Enemy enemy = (Enemy) entity.getEntity();
+                gen.writeStringField("url", enemy.getUrl());
+                gen.writeObjectField("hex", enemy.getHex());
+                break;
+            case SUMMON:
+                Summon summon = (Summon) entity.getEntity();
+                gen.writeStringField("url", summon.getUrl());
+                break;
+            case OBSTACLE:
+                Obstacle obstacle = (Obstacle) entity.getEntity();
+                gen.writeStringField("url", obstacle.getUrl());
+                gen.writeObjectField("hex", obstacle.getHex());
+                break;
+        }
 //
         gen.writeEndObject();
     }

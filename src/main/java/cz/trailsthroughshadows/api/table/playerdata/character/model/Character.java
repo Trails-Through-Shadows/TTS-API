@@ -14,13 +14,6 @@ import java.util.Arrays;
 public class Character extends CharacterDTO {
 
     private String url;
-    private Integer initiative;
-    private Integer idPart;
-
-    //TODO vcalculate initiative form class and race and as afterfetch or how it is called
-    public Integer getInitiative() {
-        return 50;
-    }
 
     public String getUrl() {
         if (url == null) {
@@ -32,5 +25,20 @@ public class Character extends CharacterDTO {
     public static Character fromDTO(CharacterDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Character.class);
+    }
+
+    public Integer getDefence () {
+        // todo add defence from items
+        return getClazz().getBaseDefence();
+    }
+
+    public Integer getHealth () {
+        // todo add health from items
+        return getClazz().getBaseHealth();
+    }
+
+    public Integer getInitiative() {
+        // todo add init from items
+        return getClazz().getBaseInitiative() + getRace().getBaseInitiative();
     }
 }
