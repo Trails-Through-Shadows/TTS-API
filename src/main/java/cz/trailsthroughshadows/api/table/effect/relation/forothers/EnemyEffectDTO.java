@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.effect.relation.forothers;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
@@ -15,17 +17,22 @@ import lombok.NoArgsConstructor;
 @Table(name = "EnemyEffect")
 public class EnemyEffectDTO {
 
-    @Id
-    @Column(nullable = false)
-    private int idEnemy;
-
-    @Id
-    @Column(nullable = false)
-    private int idEffect;
+    @EmbeddedId
+    private EnemyEffect key;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;
 
+    @Embeddable
+    @Data
+    public static class EnemyEffect implements Serializable {
+
+        @Column(nullable = false)
+        private Integer idEnemy;
+
+        @Column(nullable = false)
+        private Integer idEffect;
+    }
 }

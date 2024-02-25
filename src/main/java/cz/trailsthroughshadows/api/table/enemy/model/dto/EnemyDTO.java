@@ -27,7 +27,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Enemy")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class EnemyDTO extends Validable implements Cloneable {
 
     @Id
@@ -55,30 +55,31 @@ public class EnemyDTO extends Validable implements Cloneable {
     @Column
     private Integer usages;
 
-    @OneToMany(mappedBy = "idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyEffectDTO> effects;
 
-    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyActionDTO> actions;
 
     @JsonIgnore
     public List<EffectDTO> getMappedEffects() {
-        if (effects == null) return new ArrayList<>();
+        if (effects == null)
+            return new ArrayList<>();
         return effects.stream().map(EnemyEffectDTO::getEffect).toList();
     }
 
     @JsonIgnore
     public List<ActionDTO> getMappedActions() {
-        if (actions == null) return new ArrayList<>();
+        if (actions == null)
+            return new ArrayList<>();
         return actions.stream().map(EnemyActionDTO::getAction).toList();
     }
 
     public void loadAll() {
         Initialization.hibernateInitializeAll(this);
     }
-
 
     @Override
     public EnemyDTO clone() {
@@ -92,7 +93,7 @@ public class EnemyDTO extends Validable implements Cloneable {
         return enemy;
     }
 
-    //region Validation
+    // region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
         // Health, defence and initiative must not be null.
@@ -114,8 +115,9 @@ public class EnemyDTO extends Validable implements Cloneable {
         validateChild(tag, validationConfig);
 
         // Health must be greater than 0.
-        if (baseHealth != null &&  getBaseHealth() <= 0) {
-            errors.add(new ValidationError("Enemy", "baseHealth", getBaseHealth(), "Base health must be greater than 0!"));
+        if (baseHealth != null && getBaseHealth() <= 0) {
+            errors.add(
+                    new ValidationError("Enemy", "baseHealth", getBaseHealth(), "Base health must be greater than 0!"));
         }
 
         // All actions and effects must be validated.
@@ -129,20 +131,23 @@ public class EnemyDTO extends Validable implements Cloneable {
             validateChild(effect, validationConfig);
         }
 
-        if (!errors.isEmpty()) return;
+        if (!errors.isEmpty())
+            return;
 
         // Enemy can't have multiple of the same action or base effect.
         for (int i = 0; i < actions.size(); i++) {
             for (int j = i + 1; j < actions.size(); j++) {
                 if (actions.get(i).equals(actions.get(j))) {
-                    errors.add(new ValidationError("Enemy", "actions", actions.get(i).getValidableValue(), "Enemy can't have multiple of the same action!"));
+                    errors.add(new ValidationError("Enemy", "actions", actions.get(i).getValidableValue(),
+                            "Enemy can't have multiple of the same action!"));
                 }
             }
         }
         for (int i = 0; i < effects.size(); i++) {
             for (int j = i + 1; j < effects.size(); j++) {
                 if (effects.get(i).equals(effects.get(j))) {
-                    errors.add(new ValidationError("Enemy", "effects", effects.get(i).getValidableValue(), "Enemy can't have multiple of the same base effect!"));
+                    errors.add(new ValidationError("Enemy", "effects", effects.get(i).getValidableValue(),
+                            "Enemy can't have multiple of the same base effect!"));
                 }
             }
         }
@@ -152,5 +157,5 @@ public class EnemyDTO extends Validable implements Cloneable {
     public String getValidableValue() {
         return getTitle();
     }
-    //endregion
+    // endregion
 }

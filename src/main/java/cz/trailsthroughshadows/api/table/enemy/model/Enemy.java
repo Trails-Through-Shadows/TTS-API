@@ -10,7 +10,7 @@ import org.modelmapper.ModelMapper;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+// @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Enemy extends EnemyDTO {
 
     private HexDTO hex;

@@ -41,8 +41,7 @@ public class EnemyController {
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "true") boolean lazy
-    ) {
+            @RequestParam(required = false, defaultValue = "true") boolean lazy) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
@@ -62,17 +61,18 @@ public class EnemyController {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
         }
 
-        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Enemy::fromDTO).toList()), HttpStatus.OK);
+        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit),
+                entries.size(), page, limit);
+        return new ResponseEntity<>(
+                RestPaginatedResult.of(pagination, entriesPage.stream().map(Enemy::fromDTO).toList()), HttpStatus.OK);
     }
 
     @GetMapping("/enemies/{id}")
-    //@Cacheable(value = "enemy", key = "#id")
+    // @Cacheable(value = "enemy", key = "#id")
     public ResponseEntity<Enemy> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "false") boolean lazy
-    ) {
+            @RequestParam(required = false, defaultValue = "false") boolean lazy) {
         EnemyDTO entity = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id '%d' not found!", id));
@@ -94,7 +94,8 @@ public class EnemyController {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
 
         enemyRepo.delete(enemyDTO);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' deleted!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' deleted!", id),
+                HttpStatus.OK);
     }
 
     @PutMapping("/enemies/{id}")
@@ -116,14 +117,15 @@ public class EnemyController {
 
         enemyToUpdate.getEffects().retainAll(enemy.getEffects());
         enemyToUpdate.getActions().addAll(enemy.getActions());
-        enemyToUpdate.getEffects().forEach(effect -> effect.setIdEnemy(enemyToUpdate.getId()));
+        enemyToUpdate.getEffects().forEach(effect -> effect.getKey().setIdEnemy(enemyToUpdate.getId()));
 
         enemyToUpdate.getActions().retainAll(enemy.getActions());
         enemyToUpdate.getEffects().addAll(enemy.getEffects());
         enemyToUpdate.getActions().forEach(action -> action.getKey().setIdEnemy(enemyToUpdate.getId()));
 
         enemyRepo.save(enemyToUpdate);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' updated!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' updated!", id),
+                HttpStatus.OK);
     }
 
     @PostMapping("/enemies")
@@ -140,7 +142,8 @@ public class EnemyController {
         // Remove relations and save them for later
         Map<String, Pair<List<EnemyEffectDTO>, List<EnemyActionDTO>>> enemyRelations = new HashMap<>();
         enemies.forEach(enemy -> {
-            enemyRelations.put(enemy.getTag(), new Pair<>(new ArrayList<>(enemy.getEffects()), new ArrayList<>(enemy.getActions())));
+            enemyRelations.put(enemy.getTag(),
+                    new Pair<>(new ArrayList<>(enemy.getEffects()), new ArrayList<>(enemy.getActions())));
             enemy.setEffects(null);
             enemy.setActions(null);
         });
@@ -153,7 +156,7 @@ public class EnemyController {
             Pair<List<EnemyEffectDTO>, List<EnemyActionDTO>> relations = enemyRelations.get(enemy.getTag());
 
             enemy.setEffects(new ArrayList<>(relations.first()));
-            enemy.getEffects().forEach(effect -> effect.setIdEnemy(enemy.getId()));
+            enemy.getEffects().forEach(effect -> effect.getKey().setIdEnemy(enemy.getId()));
 
             enemy.setActions(new ArrayList<>(relations.second()));
             enemy.getActions().forEach(action -> action.getKey().setIdEnemy(enemy.getId()));
@@ -163,7 +166,8 @@ public class EnemyController {
         enemies = enemyRepo.saveAll(enemies);
 
         String ids = enemies.stream().map((entry) -> String.valueOf(entry.getId())).toList().toString();
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemies with ids '%s' created!", ids), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemies with ids '%s' created!", ids),
+                HttpStatus.OK);
     }
 
     @Autowired
