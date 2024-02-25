@@ -24,14 +24,14 @@ public class RestoreCards extends Validable {
     private Integer id;
 
     @Column(nullable = false)
-    private int numCards;
+    private Integer numCards;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EffectDTO.EffectTarget target;
 
     @Column(nullable = false)
-    private boolean random;
+    private Boolean random;
 
     //region Validation
     @Override
