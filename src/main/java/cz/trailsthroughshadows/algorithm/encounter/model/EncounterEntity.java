@@ -9,9 +9,9 @@ import java.util.HashMap;
 public class EncounterEntity<T> {
 
     // id of the entity in the encounter
-    private Integer idEntity;
+    private Integer id;
     // only used for enemies, summons and obstacles - the actual type from the database
-    private Integer idType;
+    private Integer idGroup;
 
     private int initiative;
 
@@ -26,17 +26,17 @@ public class EncounterEntity<T> {
     // redudant enemy has id part in his hex
     private Integer idPart;
 
-    public EncounterEntity(Integer idEntity, int initiative, EntityType type, Integer idPart, T entity) {
-        this.idEntity = idEntity;
+    public EncounterEntity(Integer id, int initiative, EntityType type, Integer idPart, T entity) {
+        this.id = id;
         this.initiative = initiative;
         this.entity = entity;
         this.type = type;
         this.idPart = idPart;
     }
 
-    public EncounterEntity(Integer idEntity, Integer idType, int initiative, Integer idPart, EntityType type, T entity) {
-        this.idEntity = idEntity;
-        this.idType = idType;
+    public EncounterEntity(Integer idEntity, Integer idGroup, int initiative, Integer idPart, EntityType type, T entity) {
+        this.id = idEntity;
+        this.idGroup = idGroup;
         this.initiative = initiative;
         this.entity = entity;
         this.type = type;

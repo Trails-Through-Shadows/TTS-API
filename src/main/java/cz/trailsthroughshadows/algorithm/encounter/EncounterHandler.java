@@ -32,7 +32,7 @@ public class EncounterHandler {
     private AdventureRepo adventureRepo;
 
     @Getter
-    private List<Encounter> encounters = new ArrayList<>();
+    private final List<Encounter> encounters = new ArrayList<>();
 
     private Integer getNextId() {
         for (int i = 1; i < encounters.size() + 1; i++) {
