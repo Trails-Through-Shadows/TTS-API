@@ -5,7 +5,10 @@ import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
+import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
+import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.forothers.ObstacleEffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.Adventure;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
@@ -19,6 +22,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Data
@@ -51,14 +55,19 @@ public class Encounter {
         }
 
         for (Character character : adventure.getCharacters().stream().map(Character::fromDTO).toList()) {
-            log.info("Adding character {}", character);
-            entities.addCharacter(character);
-
-            List<EncounterEffect> effects = character.getRace().getEffects().stream().map(RaceEffect::getEffect).map(EncounterEffect::fromEffect).toList();
-            entities.getCharacter(character.getId()).addEffects(effects);
+            List<EncounterEffect> effects = character.getRace().getEffects().stream()
+                    .map(RaceEffect::getEffect)
+                    .map(EncounterEffect::fromEffect)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            effects.addAll(character.getClazz().getEffects().stream()
+                    .map(ClazzEffect::getEffect)
+                    .map(EncounterEffect::fromEffect)
+                    .toList());
+            entities.addCharacter(character, effects);
         }
 
         discoverPart(startPart.getId());
+        discoverPart(2);
     }
 
     private void discoverPart(Integer idPart) {
@@ -78,13 +87,17 @@ public class Encounter {
         List<Enemy> enemies = part.getEnemies();
         log.info("Adding enemies: {}", enemies.size());
         for (Enemy enemy : enemies) {
-            entities.addEnemy(enemy);
+            List<EncounterEffect> effects = enemy.getMappedEffects().stream()
+                    .map(EncounterEffect::fromEffect).toList();
+            entities.addEnemy(enemy, effects);
         }
 
         // add obstacles
         List<Obstacle> obstacles = part.getObstacles();
         log.info("Adding obstacles: {}", obstacles.size());
         for (Obstacle obstacle : obstacles) {
+            List<EncounterEffect> effects = obstacle.getMappedEffects().stream()
+                    .map(EncounterEffect::fromEffect).toList();
             entities.addObstacle(obstacle);
         }
     }

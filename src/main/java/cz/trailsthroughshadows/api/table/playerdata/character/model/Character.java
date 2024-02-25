@@ -41,4 +41,9 @@ public class Character extends CharacterDTO {
         // todo add init from items
         return getClazz().getBaseInitiative() + getRace().getBaseInitiative();
     }
+
+    @Override
+    public String toString() {
+        return "%s (%s %s): %s".formatted(getTitle(), getRace().getTitle(), getClazz().getTitle(), getPlayerName());
+    }
 }

@@ -32,4 +32,9 @@ public class Enemy extends EnemyDTO {
 
         return enemy;
     }
+
+    @Override
+    public String toString() {
+        return getTitle();
+    }
 }

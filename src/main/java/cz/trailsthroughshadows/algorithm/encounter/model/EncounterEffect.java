@@ -27,4 +27,9 @@ public class EncounterEffect {
     public static EncounterEffect fromEffect(EffectDTO effect) {
         return fromEffect(Effect.fromDTO(effect));
     }
+
+    @Override
+    public String toString() {
+        return "%s %d for %d rounds".formatted(type, strength, duration);
+    }
 }

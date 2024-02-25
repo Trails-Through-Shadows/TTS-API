@@ -19,4 +19,9 @@ public class Summon extends SummonDTO {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Summon.class);
     }
+
+    @Override
+    public String toString() {
+        return getTitle();
+    }
 }

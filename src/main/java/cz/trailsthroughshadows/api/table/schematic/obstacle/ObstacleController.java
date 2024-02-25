@@ -114,7 +114,7 @@ public class ObstacleController {
 
         obstacleToUpdate.getEffects().retainAll(obstacle.getEffects());
         obstacleToUpdate.getEffects().addAll(obstacle.getEffects());
-        obstacleToUpdate.getEffects().forEach((effect) -> effect.setIdObstacle(obstacleToUpdate.getId()));
+        obstacleToUpdate.getEffects().forEach((effect) -> effect.getKey().setIdObstacle(obstacleToUpdate.getId()));
 
         obstacleRepo.save(obstacleToUpdate);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' updated!", id), HttpStatus.OK);
@@ -145,7 +145,7 @@ public class ObstacleController {
             List<ObstacleEffectDTO> relations = obstacleRelations.get(obstacle.getTag());
 
             obstacle.setEffects(new ArrayList<>(relations));
-            obstacle.getEffects().forEach(effect -> effect.setIdObstacle(obstacle.getId()));
+            obstacle.getEffects().forEach(effect -> effect.getKey().setIdObstacle(obstacle.getId()));
         });
 
         // Save obstacles relations

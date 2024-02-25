@@ -36,4 +36,9 @@ public class Obstacle extends ObstacleDTO {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(obstacle, ObstacleDTO.class);
     }
+
+    @Override
+    public String toString() {
+        return getTitle();
+    }
 }
