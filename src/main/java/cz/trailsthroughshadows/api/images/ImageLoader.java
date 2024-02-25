@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.util;
+package cz.trailsthroughshadows.api.images;
 
 import cz.trailsthroughshadows.api.configuration.ImageLoaderConfig;
 import lombok.extern.slf4j.Slf4j;

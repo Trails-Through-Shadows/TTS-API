@@ -5,7 +5,7 @@ import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
-import cz.trailsthroughshadows.api.util.ImageLoader;
+import cz.trailsthroughshadows.api.images.ImageLoader;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
@@ -45,12 +45,12 @@ public class Part extends PartDTO {
         part.setEnemies(enemies.stream()
                 .filter(e -> e.getKey().getIdPart() == dto.getId())
                 .map(e -> Enemy.fromDTO(e.getEnemy(), part.getHex(e.getKey().getIdHex())
-                .orElse(null)))
+                        .orElse(null)))
                 .toList());
         part.setObstacles(obstacles.stream()
                 .filter(o -> Objects.equals(o.getKey().getIdPart(), dto.getId()))
                 .map(o -> Obstacle.fromDTO(o.getObstacle(), part.getHex(o.getKey().getIdHex())
-                .orElse(null)))
+                        .orElse(null)))
                 .toList());
         return part;
     }

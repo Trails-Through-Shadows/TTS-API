@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.action.features.summon.model;
 
-import cz.trailsthroughshadows.api.util.ImageLoader;
+import cz.trailsthroughshadows.api.images.ImageLoader;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;

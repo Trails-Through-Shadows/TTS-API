@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.market.item.model;
 
-import cz.trailsthroughshadows.api.util.ImageLoader;
+import cz.trailsthroughshadows.api.images.ImageLoader;
 import org.modelmapper.ModelMapper;
 
 public class Item extends ItemDTO {

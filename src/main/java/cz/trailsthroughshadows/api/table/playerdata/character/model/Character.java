@@ -1,6 +1,6 @@
 package cz.trailsthroughshadows.api.table.playerdata.character.model;
 
-import cz.trailsthroughshadows.api.util.ImageLoader;
+import cz.trailsthroughshadows.api.images.ImageLoader;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
@@ -27,12 +27,12 @@ public class Character extends CharacterDTO {
         return modelMapper.map(dto, Character.class);
     }
 
-    public Integer getDefence () {
+    public Integer getDefence() {
         // todo add defence from items
         return getClazz().getBaseDefence();
     }
 
-    public Integer getHealth () {
+    public Integer getHealth() {
         // todo add health from items
         return getClazz().getBaseHealth();
     }
