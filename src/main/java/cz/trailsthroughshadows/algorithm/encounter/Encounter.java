@@ -59,7 +59,6 @@ public class Encounter {
         }
 
         discoverPart(startPart.getId());
-        discoverPart(2);
     }
 
     private void discoverPart(Integer idPart) {

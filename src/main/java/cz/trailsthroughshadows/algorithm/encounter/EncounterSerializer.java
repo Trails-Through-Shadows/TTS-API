@@ -94,7 +94,7 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
             case CHARACTER:
                 Character character = (Character) entity.getEntity();
                 gen.writeStringField("title", character.getTitle());
-                gen.writeStringField("player", character.getPlayerName());
+                gen.writeStringField("playerName", character.getPlayerName());
                 break;
             case ENEMY:
                 Enemy enemy = (Enemy) entity.getEntity();
@@ -112,7 +112,9 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
 
         gen.writeNumberField("health", entity.getHealth());
         if (entity.getType() == EncounterEntity.EntityType.CHARACTER) {
-            gen.writeNumberField("defence", ((Character) entity.getEntity()).getDefence());
+            Character character = (Character) entity.getEntity();
+            gen.writeNumberField("defence", character.getDefence());
+            gen.writeNumberField("baseInitiative", character.getInitiative());
         }
 
         gen.writeFieldName("activeEffects");

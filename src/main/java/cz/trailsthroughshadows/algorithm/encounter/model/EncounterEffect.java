@@ -19,6 +19,7 @@ public class EncounterEffect {
         encounterEffect.setType(effect.getType());
         encounterEffect.setStrength(effect.getStrength());
         encounterEffect.setDescription(effect.getDescription());
+        encounterEffect.setDuration(effect.getDuration());
 
         return encounterEffect;
     }
