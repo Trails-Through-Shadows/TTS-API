@@ -72,7 +72,10 @@ public class EffectDTO extends Validable implements Serializable {
         List<EffectDTO.EffectType> noStrength = List.of(EffectType.DISARM, EffectType.ROOT, EffectType.STUN, EffectType.CONFUSION, EffectType.GUIDANCE, EffectType.INVINCIBILITY, EffectType.SHIELD);
         if (noStrength.contains(type) && strength != null) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be null for this type of effect."));
-        } else if (strength != null && strength < 1) {
+        } else if (strength == null) {
+            errors.add(new ValidationError("Effect", "strength", null, "Strength must not be null for this type of effect."));
+        }
+        else if (strength < 1) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than 0."));
         }
     }

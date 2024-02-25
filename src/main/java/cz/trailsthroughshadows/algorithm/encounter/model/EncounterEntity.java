@@ -47,6 +47,9 @@ public class EncounterEntity<T> {
     public void addEffect(EncounterEffect effect) {
         effects.add(effect);
     }
+    public void addEffects(List<EncounterEffect> effects) {
+        this.effects.addAll(effects);
+    }
     public void applyEffect(EncounterEffect effect) {
         // TODO logic for applying the effect goes here
     }

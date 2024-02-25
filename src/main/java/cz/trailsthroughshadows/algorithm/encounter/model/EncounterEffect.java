@@ -22,4 +22,8 @@ public class EncounterEffect {
 
         return encounterEffect;
     }
+
+    public static EncounterEffect fromEffect(EffectDTO effect) {
+        return fromEffect(Effect.fromDTO(effect));
+    }
 }

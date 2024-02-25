@@ -87,9 +87,6 @@ public class EncounterHandler {
                     return RestException.of(HttpStatus.NOT_FOUND, response);
                 });
 
-        // todo add entities to constructor
-
-
         Encounter encounter = new Encounter(getNextId(), adventure.getIdLicense(), Adventure.fromDTO(adventure), Location.fromDTO(location));
         encounters.add(encounter);
         log.info("Encounter added: {}", encounter.getId());

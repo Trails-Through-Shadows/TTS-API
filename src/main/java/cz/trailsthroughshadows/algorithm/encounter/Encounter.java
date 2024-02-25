@@ -1,9 +1,11 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
+import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.Adventure;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
@@ -39,6 +41,8 @@ public class Encounter {
         this.adventure = adventure;
         this.location = location;
 
+        log.info("Creating encounter {}", id);
+
         parts = location.getMappedParts();
         startPart = location.getStartPart();
 
@@ -47,8 +51,11 @@ public class Encounter {
         }
 
         for (Character character : adventure.getCharacters().stream().map(Character::fromDTO).toList()) {
-            // add effects from class and race to character
+            log.info("Adding character {}", character);
             entities.addCharacter(character);
+
+            List<EncounterEffect> effects = character.getRace().getEffects().stream().map(RaceEffect::getEffect).map(EncounterEffect::fromEffect).toList();
+            entities.getCharacter(character.getId()).addEffects(effects);
         }
 
         discoverPart(startPart.getId());
