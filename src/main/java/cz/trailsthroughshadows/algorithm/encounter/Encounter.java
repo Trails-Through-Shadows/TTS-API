@@ -2,7 +2,6 @@ package cz.trailsthroughshadows.algorithm.encounter;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
-import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntityHandler;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
@@ -48,6 +47,7 @@ public class Encounter {
         }
 
         for (Character character : adventure.getCharacters().stream().map(Character::fromDTO).toList()) {
+            // add effects from class and race to character
             entities.addCharacter(character);
         }
 

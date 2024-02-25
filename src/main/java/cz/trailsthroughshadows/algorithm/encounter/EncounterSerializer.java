@@ -2,9 +2,9 @@ package cz.trailsthroughshadows.algorithm.encounter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
-import cz.trailsthroughshadows.api.table.effect.model.Effect;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 public class EncounterSerializer extends JsonSerializer<Encounter> {
@@ -118,19 +117,16 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
 
         gen.writeFieldName("activeEffects");
         gen.writeStartArray();
-        for (Map.Entry<Effect, Integer> entry : entity.getActiveEffects().entrySet()) {
+        for (EncounterEffect effect : entity.getEffects()) {
             try {
-                gen.writeStartObject();
-                gen.writeObjectField("effect", entry.getKey());
-                gen.writeNumberField("duration", entry.getValue());
-                gen.writeEndObject();
+                gen.writeObject(effect);
             } catch (IOException ex) {
                 log.error("Error writing active effect", ex);
             }
         }
         gen.writeEndArray();
-//
-//        // todo more fields
+
+        // todo more fields
         switch (entity.getType()) {
             case CHARACTER:
                 Character character = (Character) entity.getEntity();
@@ -139,7 +135,7 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
             case ENEMY:
                 Enemy enemy = (Enemy) entity.getEntity();
                 gen.writeStringField("url", enemy.getUrl());
-                gen.writeObjectField("hex", enemy.getHex());
+                gen.writeObjectField("startingHex", enemy.getHex());
                 break;
             case SUMMON:
                 Summon summon = (Summon) entity.getEntity();
@@ -148,10 +144,10 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
             case OBSTACLE:
                 Obstacle obstacle = (Obstacle) entity.getEntity();
                 gen.writeStringField("url", obstacle.getUrl());
-                gen.writeObjectField("hex", obstacle.getHex());
+                gen.writeObjectField("startingHex", obstacle.getHex());
                 break;
         }
-//
+
         gen.writeEndObject();
     }
 }

@@ -1,5 +1,6 @@
-package cz.trailsthroughshadows.algorithm.encounter.model;
+package cz.trailsthroughshadows.algorithm.encounter;
 
+import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
