@@ -7,13 +7,12 @@ import lombok.Setter;
 @Setter
 public class Initiative {
 
+    private EncounterEntity.EntityType type;
     private Integer id;
     private Integer initiative;
 
 //    @JsonIgnore
 //    private List<Integer> summons = new ArrayList<>();
-
-    private EncounterEntity.EntityType type;
 
 //    public Initiative(Integer id, Integer initiative, List<Integer> summons, EncounterEntity.EntityType type) {
 //        this.id = id;
