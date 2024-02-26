@@ -29,6 +29,7 @@ import java.util.List;
 public class ObstacleDTO extends Validable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
     @Column(nullable = false, length = 128)

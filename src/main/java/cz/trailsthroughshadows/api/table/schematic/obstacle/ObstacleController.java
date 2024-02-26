@@ -39,8 +39,7 @@ public class ObstacleController {
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "true") boolean lazy
-    ) {
+            @RequestParam(required = false, defaultValue = "true") boolean lazy) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
@@ -60,17 +59,19 @@ public class ObstacleController {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
         }
 
-        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Obstacle::fromDTO).toList()), HttpStatus.OK);
+        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit),
+                entries.size(), page, limit);
+        return new ResponseEntity<>(
+                RestPaginatedResult.of(pagination, entriesPage.stream().map(Obstacle::fromDTO).toList()),
+                HttpStatus.OK);
     }
 
     @GetMapping("/obstacles/{id}")
-//    @Cacheable(value = "obstacle", key = "#id")
+    // @Cacheable(value = "obstacle", key = "#id")
     public ResponseEntity<Obstacle> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "false") boolean lazy
-    ) {
+            @RequestParam(required = false, defaultValue = "false") boolean lazy) {
         ObstacleDTO entity = obstacleRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found! " + id));
@@ -92,7 +93,8 @@ public class ObstacleController {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
 
         obstacleRepo.delete(obstacleDTO);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' deleted!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' deleted!", id),
+                HttpStatus.OK);
     }
 
     @PutMapping("/obstacles/{id}")
@@ -117,11 +119,12 @@ public class ObstacleController {
         obstacleToUpdate.getEffects().forEach((effect) -> effect.getKey().setIdObstacle(obstacleToUpdate.getId()));
 
         obstacleRepo.save(obstacleToUpdate);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' updated!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' updated!", id),
+                HttpStatus.OK);
     }
 
     @PostMapping("/obstacles")
-    public ResponseEntity<MessageResponse> createObstacle(@RequestBody List<Obstacle> obstacles) {
+    public ResponseEntity<MessageResponse> createObstacle(@RequestBody List<ObstacleDTO> obstacles) {
         log.debug("Creating new obstacles: " + obstacles);
 
         // Validate obstacle
@@ -152,7 +155,8 @@ public class ObstacleController {
         obstacles = obstacleRepo.saveAll(obstacles);
 
         String ids = obstacles.stream().map((entry) -> String.valueOf(entry.getId())).toList().toString();
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacles with ids '%s' created!", ids), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacles with ids '%s' created!", ids),
+                HttpStatus.OK);
     }
 
     /**
