@@ -137,8 +137,8 @@ public class Encounter {
             initiatives.add(new Initiative(character.getId(), character.getInitiative(), EncounterEntity.EntityType.CHARACTER));
         }
 
-        for (Enemy enemy : entities.getEnemyGroups()) {
-            initiatives.add(new Initiative(enemy.getId(), enemy.getBaseInitiative(), EncounterEntity.EntityType.ENEMY));
+        for (EncounterEntity<Enemy> enemy : entities.getEnemyGroups()) {
+            initiatives.add(new Initiative(enemy.getId(), enemy.getInitiative(), EncounterEntity.EntityType.ENEMY));
         }
 
         // sort initiatives by initiative, players go before enemies if there is a tie

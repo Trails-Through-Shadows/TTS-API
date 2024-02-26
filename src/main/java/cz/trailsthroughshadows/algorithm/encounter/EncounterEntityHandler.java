@@ -79,12 +79,12 @@ public class EncounterEntityHandler {
     public List<EncounterEntity<Enemy>> getEnemies() {
         return getEntities(Enemy.class);
     }
-    public List<Enemy> getEnemyGroups() {
-        List<Enemy> groups = new ArrayList<>();
+    public List<EncounterEntity<Enemy>> getEnemyGroups() {
+        List<EncounterEntity<Enemy>> groups = new ArrayList<>();
 
         for (EncounterEntity<Enemy> enemy : getEnemies()) {
             if (groups.stream().noneMatch(g -> g.getId().equals(enemy.getEntity().getId()))) {
-                groups.add(enemy.getEntity());
+                groups.add(enemy);
             }
         }
 
