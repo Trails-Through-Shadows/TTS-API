@@ -4,6 +4,7 @@ import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
@@ -27,6 +28,7 @@ public class LocationController {
 
     private ValidationService validation;
     private LocationRepo locationRepo;
+    private CampaignRepo campaignRepo;
 
     @GetMapping("/locations")
     public ResponseEntity<RestPaginatedResult<Location>> getLocations(
@@ -50,13 +52,22 @@ public class LocationController {
                 .limit(limit)
                 .toList();
 
+        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
+
         if (!lazy && !include.isEmpty()) {
             entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
+            if (include.contains("stories")) {
+                List<Location> loc = entriesPage.stream().map(Location::fromDTO).toList();
+                loc.forEach(l -> l.findStories(campaignRepo));
+                return new ResponseEntity<>(RestPaginatedResult.of(pagination, loc), HttpStatus.OK);
+            }
         } else if (!lazy) {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
+            List<Location> loc = entriesPage.stream().map(Location::fromDTO).toList();
+            loc.forEach(l -> l.findStories(campaignRepo));
+            return new ResponseEntity<>(RestPaginatedResult.of(pagination, loc), HttpStatus.OK);
         }
 
-        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Location::fromDTO).toList()), HttpStatus.OK);
     }
 
@@ -72,9 +83,18 @@ public class LocationController {
 
         if (!lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
+            if (include.contains("stories")) {
+                Location loc = Location.fromDTO(entity);
+                loc.findStories(campaignRepo);
+                return new ResponseEntity<>(loc, HttpStatus.OK);
+            }
         } else if (!lazy) {
             Initialization.hibernateInitializeAll(entity);
+            Location loc = Location.fromDTO(entity);
+            loc.findStories(campaignRepo);
+            return new ResponseEntity<>(loc, HttpStatus.OK);
         }
+
 
         return new ResponseEntity<>(Location.fromDTO(entity), HttpStatus.OK);
     }
@@ -105,5 +125,10 @@ public class LocationController {
     @Autowired
     public void setValidation(ValidationService validation) {
         this.validation = validation;
+    }
+
+    @Autowired
+    public void setCampaignRepo(CampaignRepo campaignRepo) {
+        this.campaignRepo = campaignRepo;
     }
 }

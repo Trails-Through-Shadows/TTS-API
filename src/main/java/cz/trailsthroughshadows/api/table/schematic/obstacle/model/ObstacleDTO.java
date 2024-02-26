@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.obstacle.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
@@ -26,6 +27,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "Obstacle")
 @EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ObstacleDTO extends Validable {
 
     @Id

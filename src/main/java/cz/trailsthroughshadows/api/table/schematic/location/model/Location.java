@@ -1,6 +1,10 @@
 package cz.trailsthroughshadows.api.table.schematic.location.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.trailsthroughshadows.api.images.ImageLoader;
+import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
+import cz.trailsthroughshadows.api.table.campaign.model.Story;
+import cz.trailsthroughshadows.api.table.schematic.location.LocationController;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationPartDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
@@ -8,6 +12,7 @@ import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +23,21 @@ import java.util.Objects;
 public class Location extends LocationDTO {
 
     private String url;
+
+    private List<Story> stories;
+
+    public String getUrl() {
+        if(url == null)
+            url = ImageLoader.getPath(this.getTag());
+        return ImageLoader.getPath(this.getTag());
+    }
+
+    public List<Story> findStories(CampaignRepo campaignRepo) {
+        if (stories == null) {
+            stories = campaignRepo.findAllStoriesByCampaignId(this.getId());
+        }
+        return stories;
+    }
 
     public Part getStartPart() {
 
@@ -40,6 +60,8 @@ public class Location extends LocationDTO {
 
         return Part.fromDTO(tmp);
     }
+
+
 
 
     // TODO: Map locations only by specific campaign frrom database @rcMarty
