@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
 import cz.trailsthroughshadows.api.table.campaign.model.Story;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationPartDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
@@ -59,7 +60,16 @@ public class Location extends LocationDTO {
         return Part.fromDTO(tmp);
     }
 
-
+    /**
+     * Get all mapped Hexes from LocationStartDTO
+     * @return list of mapped hexes
+     */
+    public List<Hex> getStartingHexes(){
+        List<Hex> hexes = startHexes.stream()
+                .map(s -> Hex.fromDTO( s.getHex()))
+                .toList();
+        return hexes;
+    }
 
 
     // TODO: Map locations only by specific campaign frrom database @rcMarty

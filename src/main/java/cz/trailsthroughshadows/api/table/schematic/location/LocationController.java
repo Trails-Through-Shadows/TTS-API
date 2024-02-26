@@ -8,6 +8,7 @@ import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -107,10 +108,15 @@ public class LocationController {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found!", idLocation));
         Location location = Location.fromDTO(locationDTO);
 
-        Part part = location.getMappedParts().stream().filter(p -> p.getId() == idPart).findFirst()
+        PartDTO part = location.getMappedParts().stream()
+                .filter(p -> p.getId() == idPart)
+                .findFirst()
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", idPart));
 
-        return new ResponseEntity<>(part, HttpStatus.OK);
+        Part retPart = Part.fromDTO(part, location.getObstacles(),location.getDoors());
+        retPart.setStartingHexes(location.getStartingHexes());
+
+        return new ResponseEntity<>(retPart, HttpStatus.OK);
     }
 
     /**

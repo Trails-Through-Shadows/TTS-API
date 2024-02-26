@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.schematic.hex.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
@@ -17,6 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Table(name = "Hex")
 @EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class HexDTO extends Validable {
 
     @EmbeddedId

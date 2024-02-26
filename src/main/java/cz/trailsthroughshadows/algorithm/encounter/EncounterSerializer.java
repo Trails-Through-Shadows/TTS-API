@@ -24,7 +24,7 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         gen.writeNumberField("idLocation", value.getLocation().getId());
 
         //ids of unlocked parts
-        List<Integer> partIds = value.getParts().stream().filter(Part::isUnlocked).map(Part::getId).toList();
+        List<Integer> partIds = value.getParts().stream().filter(Part::getUnlocked).map(Part::getId).toList();
         gen.writeFieldName("idParts");
         gen.writeArray(partIds.stream().mapToInt(i -> i).toArray(), 0, partIds.size());
 

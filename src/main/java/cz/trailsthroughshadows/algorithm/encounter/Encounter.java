@@ -74,7 +74,7 @@ public class Encounter {
                 .findFirst()
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part {} not found", idPart));
 
-        if (part.isUnlocked()) {
+        if (part.getUnlocked()) {
             throw RestException.of(HttpStatus.NOT_FOUND, "Part {} already unlocked", idPart);
         }
 
