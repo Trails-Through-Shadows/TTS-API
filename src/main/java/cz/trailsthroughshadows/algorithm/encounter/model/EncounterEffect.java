@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.algorithm.encounter.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.table.effect.model.Effect;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import lombok.Data;
@@ -45,13 +46,16 @@ public class EncounterEffect {
         };
     }
 
+    @JsonIgnore
     public boolean isInfinite() {
         return getDuration() == -1;
     }
+    @JsonIgnore
     public boolean isExpired() {
         return getDuration() == 0;
     }
 
+    @JsonIgnore
     public boolean isApplicableAtStartTurn() {
         // all in: poison, fire, bleed, regeneration
         return switch (getType()) {
@@ -60,6 +64,7 @@ public class EncounterEffect {
         };
     }
 
+    @JsonIgnore
     public boolean hasResistance() {
         return getResistanceType(this) != null;
     }

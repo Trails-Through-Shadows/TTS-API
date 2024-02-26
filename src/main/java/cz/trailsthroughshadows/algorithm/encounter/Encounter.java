@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
+import cz.trailsthroughshadows.algorithm.encounter.model.Interaction;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
@@ -238,6 +239,31 @@ public class Encounter {
     public void endEnemyTurn(Integer id) {
         endTurn(EncounterEntity.EntityType.ENEMY, id);
     }
+
+    private void entityInteraction(EncounterEntity<?> entity, int damage, List<EncounterEffect> effects) {
+        log.info("Interacting with entity '{}'", entity);
+
+        if (state != EncounterState.ONGOING) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+        }
+
+        entity.damage(damage);
+        entity.addEffects(effects);
+    }
+
+    public void characterInteraction(Integer id, Interaction interaction) {
+        entityInteraction(entities.getCharacter(id), interaction.getDamage(), interaction.getEffects());
+    }
+    public void enemyInteraction(Integer id, Integer idGroup, Interaction interaction) {
+        entityInteraction(entities.getEnemy(id, idGroup), interaction.getDamage(), interaction.getEffects());
+    }
+    public void obstacleInteraction(Integer id, Integer idGroup, Interaction interaction) {
+        entityInteraction(entities.getObstacle(id, idGroup), interaction.getDamage(), interaction.getEffects());
+    }
+    public void summonInteraction(Integer id, Integer idGroup, Interaction interaction) {
+        entityInteraction(entities.getSummon(id, idGroup), interaction.getDamage(), interaction.getEffects());
+    }
+
 
     public LinkedHashMap<String, Object> endRound() {
         log.info("Ending round");

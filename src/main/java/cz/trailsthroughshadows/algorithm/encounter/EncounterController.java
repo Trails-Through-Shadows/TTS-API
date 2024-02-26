@@ -1,6 +1,8 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
+import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
+import cz.trailsthroughshadows.algorithm.encounter.model.Interaction;
 import cz.trailsthroughshadows.api.rest.model.response.IdResponse;
 import cz.trailsthroughshadows.api.rest.model.response.ObjectResponse;
 import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
@@ -75,5 +77,29 @@ public class EncounterController {
     @PostMapping("/{id}/endRound")
     public ResponseEntity<RestResponse> endRound(@RequestParam UUID token, @PathVariable Integer id) {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).endRound()), HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/interaction/character/{idCharacter}")
+    public ResponseEntity<RestResponse> characterInteraction(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idCharacter, @RequestBody Interaction interaction) {
+        encounterHandler.getEncounter(token, id).characterInteraction(idCharacter, interaction);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/interaction/enemy/{idEnemyGroup}/{idEnemy}")
+    public ResponseEntity<RestResponse> enemyInteraction(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idEnemyGroup, @PathVariable Integer idEnemy, @RequestBody Interaction interaction) {
+        encounterHandler.getEncounter(token, id).enemyInteraction(idEnemy, idEnemyGroup, interaction);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/interaction/summon/{idSummonGroup}/{idSummon}")
+    public ResponseEntity<RestResponse> summonInteraction(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idSummonGroup, @PathVariable Integer idSummon, @RequestBody Interaction interaction) {
+        encounterHandler.getEncounter(token, id).summonInteraction(idSummon, idSummonGroup, interaction);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/interaction/obstacle/{idObstacleGroup}/{idObstacle}")
+    public ResponseEntity<RestResponse> obstacleInteraction(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idObstacleGroup, @PathVariable Integer idObstacle, @RequestBody Interaction interaction) {
+        encounterHandler.getEncounter(token, id).obstacleInteraction(idObstacle, idObstacleGroup, interaction);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

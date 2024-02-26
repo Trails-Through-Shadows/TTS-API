@@ -55,6 +55,10 @@ public class EncounterEntity<T> {
         log.trace("Adding effects {}", effects);
         this.effects.addAll(effects);
     }
+    public void damage(int damage) {
+        log.trace("Dealing {} damage to entity '{}'", damage, this);
+        health -= damage;
+    }
     public void applyEffect(EncounterEffect effect) {
         // TODO logic for applying the effect goes here
         if (!effect.isApplicableAtStartTurn())
