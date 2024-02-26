@@ -11,6 +11,7 @@ import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.Adventure;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
+import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDoorDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +42,7 @@ public class Encounter {
 
     private Part startPart;
     private List<Part> parts;
+    private List<LocationDoorDTO> doorsToOpen = new ArrayList<>();
 
     public Encounter(Integer id, Integer idLicense, Adventure adventure, Location location) {
         this.id = id;
@@ -138,7 +141,7 @@ public class Encounter {
         }
 
         for (EncounterEntity<Enemy> enemy : entities.getEnemyGroups()) {
-            initiatives.add(new Initiative(enemy.getId(), enemy.getInitiative(), EncounterEntity.EntityType.ENEMY));
+            initiatives.add(new Initiative(enemy.getIdGroup(), enemy.getInitiative(), EncounterEntity.EntityType.ENEMY));
         }
 
         // sort initiatives by initiative, players go before enemies if there is a tie
@@ -234,6 +237,51 @@ public class Encounter {
     }
     public void endEnemyTurn(Integer id) {
         endTurn(EncounterEntity.EntityType.ENEMY, id);
+    }
+
+    public LinkedHashMap<String, Object> endRound() {
+        log.info("Ending round");
+
+        LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
+
+        if (state != EncounterState.ONGOING) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+        }
+
+        if (entities.isEntityActive()) {
+            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Can't end round - an entity is still active.");
+        }
+
+        // check opened doors
+        List<Integer> unlockedParts = new ArrayList<>();
+        for (LocationDoorDTO door : doorsToOpen) {
+            log.trace("Checking door {}", door);
+            Part partTo = parts.stream()
+                            .filter(p -> p.getId().equals(door.getIdPartTo()))
+                            .findFirst()
+                            .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part {} not found", door.getIdPartTo()));
+
+            if (partTo.getUnlocked()) {
+                log.trace("Part {} already unlocked", partTo.getId());
+                continue;
+            }
+
+            log.trace("Unlocking part {}", partTo.getId());
+            partTo.unlock();
+            unlockedParts.add(partTo.getId());
+        }
+        doorsToOpen.clear();
+
+        // add unlocked parts to ret as json array
+        ret.put("unlockedParts", unlockedParts);
+
+        // check win condition
+        // todo
+
+        // status
+        ret.put("status", state);
+
+        return ret;
     }
 
     enum EncounterState {

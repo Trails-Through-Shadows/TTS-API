@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
+import cz.trailsthroughshadows.algorithm.dice.Dice;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,7 @@ public class EncounterEntityHandler {
     private final List<EncounterEntity<?>> entities = new ArrayList<>();
 
     private Initiative activeEntity = null;
+    private final HashMap<Integer, Integer> enemyRandomInitiative = new HashMap<>();
 
     //region Basic
     public void removeEntity(EncounterEntity<?> entity) {
@@ -73,6 +76,14 @@ public class EncounterEntityHandler {
         log.trace("Adding enemy '{}' with {} effects", enemy, effects.size());
         EncounterEntity<Enemy> entity = new EncounterEntity<Enemy>(getNextId(EncounterEntity.EntityType.ENEMY, enemy.getId()), enemy.getId(), enemy.getBaseInitiative(), enemy.getBaseHealth(),
                 EncounterEntity.EntityType.ENEMY, enemy);
+
+        if (!enemyRandomInitiative.containsKey(enemy.getId())) {
+            int roll = Dice.enemy.roll().getValue();
+            enemyRandomInitiative.put(enemy.getId(), roll);
+            log.trace("Rolling new initiative for enemy '{}': {}", enemy, roll);
+        }
+
+        entity.setInitiative(enemyRandomInitiative.get(enemy.getId()) + enemy.getBaseInitiative());
         entity.addEffects(effects);
         entities.add(entity);
     }
@@ -83,7 +94,7 @@ public class EncounterEntityHandler {
         List<EncounterEntity<Enemy>> groups = new ArrayList<>();
 
         for (EncounterEntity<Enemy> enemy : getEnemies()) {
-            if (groups.stream().noneMatch(g -> g.getId().equals(enemy.getEntity().getId()))) {
+            if (groups.stream().noneMatch(g -> g.getIdGroup().equals(enemy.getEntity().getId()))) {
                 groups.add(enemy);
             }
         }
@@ -104,6 +115,11 @@ public class EncounterEntityHandler {
     public void removeEnemy(int id, int idGroup) {
         log.trace("Removing enemy with id {} and idGroup {}", id, idGroup);
         entities.removeIf(e -> e.getType().equals(EncounterEntity.EntityType.ENEMY) && e.getId().equals(id) && e.getIdGroup().equals(idGroup));
+
+        if (getEnemyGroup(id).isEmpty()) {
+            log.trace("Removing initiative for enemy with id {}", idGroup);
+            enemyRandomInitiative.remove(idGroup);
+        }
     }
     //endregion
 
