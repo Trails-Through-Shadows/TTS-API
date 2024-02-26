@@ -27,7 +27,7 @@ public class SessionHandler {
     AdventureRepo adventureRepo;
 
     @Getter
-    private List<Session> sessions = new ArrayList<>();
+    private final List<Session> sessions = new ArrayList<>();
 
     private void responseFail(HttpStatus status, String message, Object... args) {
         log.warn(message, args);
@@ -87,7 +87,8 @@ public class SessionHandler {
         if (sessions.stream().noneMatch(s -> s.getToken().equals(token))) {
             responseFail(HttpStatus.UNAUTHORIZED, "Invalid session token!");
         }
-        sessions.removeIf(s -> s.getToken().equals(token));
+        Session session = getSession(token);
+        sessions.remove(session);
         return new MessageResponse(HttpStatus.OK, "Logged out!");
     }
 

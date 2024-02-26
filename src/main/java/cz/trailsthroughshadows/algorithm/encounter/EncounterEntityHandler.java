@@ -2,6 +2,7 @@ package cz.trailsthroughshadows.algorithm.encounter;
 
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
+import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
@@ -15,11 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
 @Slf4j
+@Getter
 public class EncounterEntityHandler {
     private final List<EncounterEntity<?>> entities = new ArrayList<>();
 
+    private Initiative activeEntity = null;
+
+    //region Basic
     public void removeEntity(EncounterEntity<?> entity) {
         entities.remove(entity);
     }
@@ -33,8 +37,9 @@ public class EncounterEntityHandler {
                 .map(e -> (EncounterEntity<T>) e)
                 .collect(Collectors.toList());
     }
+    //endregion
 
-    // Character
+    //region Character
     public void addCharacter(Character character) {
         addCharacter(character, new ArrayList<>());
     }
@@ -58,8 +63,9 @@ public class EncounterEntityHandler {
         log.trace("Removing character with id {}", id);
         entities.removeIf(e -> e.getType().equals(EncounterEntity.EntityType.CHARACTER) && e.getId().equals(id));
     }
+    //endregion
 
-    // Enemy
+    //region Enemy
     public void addEnemy(Enemy enemy) {
         addEnemy(enemy, new ArrayList<>());
     }
@@ -84,6 +90,11 @@ public class EncounterEntityHandler {
 
         return groups;
     }
+    public List<EncounterEntity<Enemy>> getEnemyGroup(int id) {
+        return getEnemies().stream()
+                .filter(e -> e.getEntity().getId().equals(id))
+                .collect(Collectors.toList());
+    }
     public EncounterEntity<Enemy> getEnemy(int id, int idGroup) {
         return getEnemies().stream()
                 .filter(e -> e.getId().equals(id) && e.getIdGroup().equals(idGroup))
@@ -94,8 +105,9 @@ public class EncounterEntityHandler {
         log.trace("Removing enemy with id {} and idGroup {}", id, idGroup);
         entities.removeIf(e -> e.getType().equals(EncounterEntity.EntityType.ENEMY) && e.getId().equals(id) && e.getIdGroup().equals(idGroup));
     }
+    //endregion
 
-    // Summon
+    //region Summon
     public void addSummon(Summon summon) {
         addSummon(summon, new ArrayList<>());
     }
@@ -119,8 +131,9 @@ public class EncounterEntityHandler {
         log.trace("Removing summon with id {} and idGroup {}", id, idGroup);
         entities.removeIf(e -> e.getType().equals(EncounterEntity.EntityType.SUMMON) && e.getId().equals(id) && e.getIdGroup().equals(idGroup));
     }
+    //endregion
 
-    // Obstacle
+    //region Obstacle
     public void addObstacle(Obstacle obstacle) {
         addObstacle(obstacle, new ArrayList<>());
     }
@@ -144,6 +157,26 @@ public class EncounterEntityHandler {
         log.trace("Removing obstacle with id {} and idGroup {}", id, idGroup);
         entities.removeIf(e -> e.getType().equals(EncounterEntity.EntityType.OBSTACLE) && e.getId().equals(id) && e.getIdGroup().equals(idGroup));
     }
+    //endregion
+
+    //region Active Entity
+    public void setActiveEntity(EncounterEntity.EntityType type, Integer id) {
+        activeEntity = new Initiative(id, null, type);
+    }
+    public void resetActiveEntity() {
+        activeEntity = null;
+    }
+    public boolean isEntityActive() {
+        return activeEntity != null;
+    }
+    public boolean isEntityActive(EncounterEntity.EntityType type, Integer id) {
+        return activeEntity != null && activeEntity.getType().equals(type) && activeEntity.getId().equals(id);
+    }
+    public boolean canHaveTurn(EncounterEntity.EntityType type) {
+        return type.equals(EncounterEntity.EntityType.CHARACTER) || type.equals(EncounterEntity.EntityType.ENEMY);
+    }
+    //endregion
+
 
     private int getNextId(EncounterEntity.EntityType type, Integer idGroup) {
         for (int i = 1; i < entities.size() + 1; i++) {

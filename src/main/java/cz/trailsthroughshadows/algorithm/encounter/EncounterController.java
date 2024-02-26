@@ -47,4 +47,28 @@ public class EncounterController {
     public ResponseEntity<RestResponse> getInitiative(@RequestParam UUID token, @PathVariable Integer id) {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).getInitiative()), HttpStatus.OK);
     }
+
+    @PostMapping("/{id}/turn/character/{idCharacter}/start")
+    public ResponseEntity<RestResponse> startCharacterTurn(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idCharacter) {
+        encounterHandler.getEncounter(token, id).startCharacterTurn(idCharacter);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/turn/character/{idCharacter}/end")
+    public ResponseEntity<RestResponse> endCharacterTurn(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idCharacter) {
+        encounterHandler.getEncounter(token, id).endCharacterTurn(idCharacter);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/turn/enemy/{idEnemy}/start")
+    public ResponseEntity<RestResponse> startEnemyTurn(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idEnemy) {
+        encounterHandler.getEncounter(token, id).startEnemyTurn(idEnemy);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/turn/enemy/{idEnemy}/end")
+    public ResponseEntity<RestResponse> endEnemyTurn(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idEnemy) {
+        encounterHandler.getEncounter(token, id).endEnemyTurn(idEnemy);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
