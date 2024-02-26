@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
 import cz.trailsthroughshadows.api.table.campaign.model.Story;
-import cz.trailsthroughshadows.api.table.schematic.location.LocationController;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationPartDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
@@ -12,7 +11,6 @@ import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,8 +7,6 @@ import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
-import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffectDTO;
-import cz.trailsthroughshadows.api.table.effect.relation.forothers.ObstacleEffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.Adventure;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;

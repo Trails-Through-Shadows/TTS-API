@@ -1,7 +1,5 @@
 package cz.trailsthroughshadows.api.table.effect.relation.forothers;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
@@ -9,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Entity
 @Data

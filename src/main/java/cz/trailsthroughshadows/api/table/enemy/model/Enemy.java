@@ -1,9 +1,8 @@
 package cz.trailsthroughshadows.api.table.enemy.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
-import cz.trailsthroughshadows.api.images.ImageLoader;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;

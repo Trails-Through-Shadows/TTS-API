@@ -1,11 +1,11 @@
 package cz.trailsthroughshadows.api.table.schematic.part.model;
 
+import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
-import cz.trailsthroughshadows.api.images.ImageLoader;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;

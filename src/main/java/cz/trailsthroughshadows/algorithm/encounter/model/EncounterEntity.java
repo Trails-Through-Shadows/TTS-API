@@ -1,12 +1,10 @@
 package cz.trailsthroughshadows.algorithm.encounter.model;
 
 import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
-import cz.trailsthroughshadows.api.table.effect.model.Effect;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Data

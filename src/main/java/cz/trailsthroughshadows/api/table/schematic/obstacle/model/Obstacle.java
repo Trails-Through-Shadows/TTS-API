@@ -1,7 +1,7 @@
 package cz.trailsthroughshadows.api.table.schematic.obstacle.model;
 
-import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.images.ImageLoader;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
