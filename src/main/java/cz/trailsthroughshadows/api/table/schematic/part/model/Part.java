@@ -29,7 +29,7 @@ public class Part extends PartDTO {
 
     private List<Hex> startingHexes;
 
-    private Boolean unlocked;
+    private Boolean unlocked = false;
 
     private String url;
 
