@@ -45,7 +45,7 @@ public class EncounterEntity<T> {
     }
 
     public void addEffect(EncounterEffect effect) {
-        log.trace("Adding effect {}", effect);
+        log.trace("Adding effect '{}'", effect);
         effects.add(effect);
     }
     public void addEffects(List<EncounterEffect> effects) {
@@ -57,20 +57,36 @@ public class EncounterEntity<T> {
     }
     public void applyEffect(EncounterEffect effect) {
         // TODO logic for applying the effect goes here
-        log.trace("Applying effect {}", effect);
+        if (!effect.isApplicableAtStartTurn())
+            return;
+
+        log.trace("Applying effect '{}' for entity '{}'", effect, this);
     }
     public void decreaseEffectDuration(EncounterEffect effect) {
-        log.trace("Decreasing effect duration {}", effect);
-        effect.setDuration(effect.getDuration() - 1);
+        if (effect.isInfinite())
+            return;
+
+        log.trace("Decreasing effect duration '{}'", effect);
+        if (effect.getDuration() > 0)
+            effect.setDuration(effect.getDuration() - 1);
+
+        if (effect.getDuration() == 0) {
+            log.trace("Removing effect");
+            effects.remove(effect);
+        }
     }
 
     public void startTurn() {
-        log.trace("Starting turn for entity {}", entity);
+        log.trace("Starting turn for entity '{}'", entity);
         effects.forEach(this::applyEffect);
+
+        // todo add summons
     }
     public void endTurn() {
-        log.trace("Ending turn for entity {}", entity);
+        log.trace("Ending turn for entity '{}'", entity);
         effects.forEach(this::decreaseEffectDuration);
+
+        // todo add summons
     }
 
     @Override

@@ -112,6 +112,7 @@ public class LocationController {
                 .filter(p -> p.getId() == idPart)
                 .findFirst()
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", idPart));
+        // TODO zoze add doors here
 
         Part retPart = Part.fromDTO(part, location.getObstacles(),location.getDoors());
         retPart.setStartingHexes(location.getStartingHexes());

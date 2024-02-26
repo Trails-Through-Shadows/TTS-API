@@ -30,11 +30,15 @@ public class Encounter {
 
     private Integer id;
     private Integer idLicense;
+
     private Adventure adventure;
     private Location location;
-    private Part startPart;
+
     private EncounterState state = EncounterState.NEW;
+
     private EncounterEntityHandler entities = new EncounterEntityHandler();
+
+    private Part startPart;
     private List<Part> parts;
 
     public Encounter(Integer id, Integer idLicense, Adventure adventure, Location location) {
@@ -65,7 +69,6 @@ public class Encounter {
         }
 
         discoverPart(startPart.getId());
-        discoverPart(2);
     }
 
     private void discoverPart(Integer idPart) {
@@ -106,11 +109,11 @@ public class Encounter {
         }
 
         if (initiatives.size() != entities.getCharacters().size()) {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Initiative size does not match number of characters.");
+            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Initiative size does not match number of characters.");
         }
 
         if (initiatives.stream().map(Initiative::getId).distinct().count() != initiatives.size()) {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Initiative contains duplicate ids.");
+            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Initiative contains duplicate ids.");
         }
 
         for (Initiative initiative : initiatives) {
@@ -155,6 +158,83 @@ public class Encounter {
         return initiatives;
     }
 
+    private void startTurn(EncounterEntity.EntityType type, Integer id) {
+        log.info("Starting turn for {} {}", type, id);
+
+        if (state != EncounterState.ONGOING) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+        }
+
+        if (!entities.canHaveTurn(type)) {
+            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "This type of entity can't have a turn.");
+        }
+
+        if (entities.isEntityActive()) {
+            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Another entity is already active.");
+        }
+
+        entities.setActiveEntity(type, id);
+
+        if (type.equals(EncounterEntity.EntityType.CHARACTER)) {
+            EncounterEntity<Character> character = entities.getCharacter(id);
+            character.startTurn();
+        }
+
+        if (type.equals(EncounterEntity.EntityType.ENEMY)) {
+            List<EncounterEntity<Enemy>> enemies = entities.getEnemyGroup(id);
+            for (EncounterEntity<Enemy> enemy : enemies) {
+                enemy.startTurn();
+            }
+        }
+    }
+    public void startCharacterTurn(Integer id) {
+        startTurn(EncounterEntity.EntityType.CHARACTER, id);
+    }
+    public void startEnemyTurn(Integer id) {
+        startTurn(EncounterEntity.EntityType.ENEMY, id);
+    }
+
+    private void endTurn(EncounterEntity.EntityType type, Integer id) {
+        log.info("Ending turn for {} {}", type, id);
+
+        if (state != EncounterState.ONGOING) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+        }
+
+        if (!entities.canHaveTurn(type)) {
+            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "This type of entity can't have a turn.");
+        }
+
+        if (!entities.isEntityActive()) {
+            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Can't end turn - no active entity.");
+        }
+
+        if (!(entities.getActiveEntity().getType().equals(type) && entities.getActiveEntity().getId().equals(id))) {
+            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Can't end turn - another entity is active.");
+        }
+
+        Initiative activeEntity = entities.getActiveEntity();
+
+        if (type.equals(EncounterEntity.EntityType.CHARACTER)) {
+            EncounterEntity<Character> character = entities.getCharacter(id);
+            character.endTurn();
+        }
+
+        if (type.equals(EncounterEntity.EntityType.ENEMY)) {
+            List<EncounterEntity<Enemy>> enemies = entities.getEnemyGroup(id);
+            for (EncounterEntity<Enemy> enemy : enemies) {
+                enemy.endTurn();
+            }
+        }
+
+        entities.resetActiveEntity();
+    }
+    public void endCharacterTurn(Integer id) {
+        endTurn(EncounterEntity.EntityType.CHARACTER, id);
+    }
+    public void endEnemyTurn(Integer id) {
+        endTurn(EncounterEntity.EntityType.ENEMY, id);
+    }
 
     enum EncounterState {
         NEW,

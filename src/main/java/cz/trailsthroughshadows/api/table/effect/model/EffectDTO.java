@@ -67,13 +67,12 @@ public class EffectDTO extends Validable implements Serializable {
         }
 
         // Strength must be positive. It must be null for types Disarm, Root, Stun, Confusion, Guidance and Incorporeal.
-        List<EffectDTO.EffectType> noStrength = List.of(EffectType.DISARM, EffectType.ROOT, EffectType.STUN, EffectType.CONFUSION, EffectType.GUIDANCE, EffectType.INVINCIBILITY, EffectType.SHIELD);
+        List<EffectDTO.EffectType> noStrength = List.of(EffectType.DISARM, EffectType.ROOT, EffectType.STUN, EffectType.CONFUSION, EffectType.GUIDANCE, EffectType.INCORPOREAL);
         if (noStrength.contains(type) && strength != null) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be null for this type of effect."));
         } else if (strength == null) {
             errors.add(new ValidationError("Effect", "strength", null, "Strength must not be null for this type of effect."));
-        }
-        else if (strength < 1) {
+        } else if (strength < 1) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than 0."));
         }
     }
@@ -103,16 +102,19 @@ public class EffectDTO extends Validable implements Serializable {
         CONFUSION,
         CONFUSION_RESISTANCE,
         GUIDANCE,
-        INVINCIBILITY,
+        ENFEEBLE,
+        ENFEEBLE_RESISTANCE,
+        EMPOWER,
+        SLOW,
+        SLOW_RESISTANCE,
+        SPEED,
+        CONSTRAIN,
+        CONSTRAIN_RESISTANCE,
+        REACH,
+        INCORPOREAL,
         SHIELD,
         HEAL,
         REGENERATION,
-        EMPOWER,
-        ENFEEBLE,
-        ENFEEBLE_RESISTANCE,
-        SPEED,
-        SLOW,
-        REACH,
     }
 
     public enum EffectTarget implements Serializable {
