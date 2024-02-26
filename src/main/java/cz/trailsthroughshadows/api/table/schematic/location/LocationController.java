@@ -89,6 +89,7 @@ public class LocationController {
 
         Part part = location.getMappedParts().stream().filter(p -> p.getId() == idPart).findFirst()
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", idPart));
+        // TODO zoze add doors here
 
         return new ResponseEntity<>(part, HttpStatus.OK);
     }
