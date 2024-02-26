@@ -71,4 +71,9 @@ public class EncounterController {
         encounterHandler.getEncounter(token, id).endEnemyTurn(idEnemy);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/{id}/endRound")
+    public ResponseEntity<RestResponse> endRound(@RequestParam UUID token, @PathVariable Integer id) {
+        return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).endRound()), HttpStatus.OK);
+    }
 }

@@ -16,6 +16,14 @@ public class Roll {
         this.value = 0;
     }
 
+    public int getValue() {
+        return switch (type) {
+            case NUMBER -> value;
+            case CRIT -> 10;
+            case MISS -> -10;
+        };
+    }
+
     @Getter
     public enum Type {
         CRIT,
