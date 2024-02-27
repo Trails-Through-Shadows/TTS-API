@@ -34,7 +34,7 @@ public class CampaignController {
     ) {
         Collection<CampaignDTO> entities = campaignRepo.findAll();
 
-        if (!lazy && !include.isEmpty()) {
+        if (lazy && !include.isEmpty()) {
             entities.forEach(e -> Initialization.hibernateInitializeAll(e, include));
         } else if (!lazy) {
             entities.forEach(Initialization::hibernateInitializeAll);
