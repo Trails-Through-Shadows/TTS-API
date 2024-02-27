@@ -111,9 +111,11 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         }
 
         gen.writeNumberField("health", entity.getHealth());
+        if (entity.getType() == EncounterEntity.EntityType.CHARACTER || entity.getType() == EncounterEntity.EntityType.ENEMY) {
+            gen.writeNumberField("defence", entity.getDefence());
+        }
         if (entity.getType() == EncounterEntity.EntityType.CHARACTER) {
             Character character = (Character) entity.getEntity();
-            gen.writeNumberField("defence", character.getDefence());
             gen.writeNumberField("baseInitiative", character.getInitiative());
         }
 

@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.table.effect.model.Effect;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
+@Slf4j
 public class EncounterEffect {
 
-    private Integer id;
     private EffectDTO.EffectType type;
     private Integer strength;
     private Integer duration;
@@ -16,13 +17,23 @@ public class EncounterEffect {
 
     public static EncounterEffect fromEffect(Effect effect) {
         EncounterEffect encounterEffect = new EncounterEffect();
-        encounterEffect.setId(effect.getId());
         encounterEffect.setType(effect.getType());
         encounterEffect.setStrength(effect.getStrength());
         encounterEffect.setDescription(effect.getDescription());
         encounterEffect.setDuration(effect.getDuration());
 
         return encounterEffect;
+    }
+
+    public Effect toEffect() {
+        Effect effect = new Effect();
+        effect.setTarget(EffectDTO.EffectTarget.SELF);
+        effect.setType(type);
+        effect.setStrength(strength);
+        effect.setDescription(description);
+        effect.setDuration(duration);
+
+        return effect;
     }
 
     public static EncounterEffect fromEffect(EffectDTO effect) {
@@ -42,6 +53,7 @@ public class EncounterEffect {
             case ENFEEBLE -> EffectDTO.EffectType.ENFEEBLE_RESISTANCE;
             case SLOW -> EffectDTO.EffectType.SLOW_RESISTANCE;
             case CONSTRAIN -> EffectDTO.EffectType.CONSTRAIN_RESISTANCE;
+            case WEAKNESS -> EffectDTO.EffectType.WEAKNESS_RESISTANCE;
             default -> null;
         };
     }
@@ -67,6 +79,20 @@ public class EncounterEffect {
     @JsonIgnore
     public boolean hasResistance() {
         return getResistanceType(this) != null;
+    }
+
+    @JsonIgnore
+    public void decreaseDuration() {
+        if (isInfinite())
+            return;
+
+        log.trace("Decreasing effect duration '{}'", this);
+        duration = Math.max(0, duration - 1);
+    }
+
+    @JsonIgnore
+    public void decreaseStrength(int resistance) {
+        strength = Math.max(0, strength - resistance);
     }
 
     @Override

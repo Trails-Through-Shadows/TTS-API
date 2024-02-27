@@ -5,6 +5,7 @@ import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
 import cz.trailsthroughshadows.algorithm.encounter.model.Interaction;
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
@@ -15,9 +16,12 @@ import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDoorDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import jakarta.validation.Validation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -44,6 +48,9 @@ public class Encounter {
     private Part startPart;
     private List<Part> parts;
     private List<LocationDoorDTO> doorsToOpen = new ArrayList<>();
+
+    @Setter
+    private ValidationService validation;
 
     public Encounter(Integer id, Integer idLicense, Adventure adventure, Location location) {
         this.id = id;
@@ -240,28 +247,46 @@ public class Encounter {
         endTurn(EncounterEntity.EntityType.ENEMY, id);
     }
 
-    private void entityInteraction(EncounterEntity<?> entity, int damage, List<EncounterEffect> effects) {
+    private LinkedHashMap<String, Object> entityInteraction(EncounterEntity<?> entity, int damage, List<EncounterEffect> effects) {
         log.info("Interacting with entity '{}'", entity);
+        LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
 
         if (state != EncounterState.ONGOING) {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
         }
 
+        for (EncounterEffect effect : effects) {
+            validation.validate(effect.toEffect());
+        }
+
         entity.damage(damage);
         entity.addEffects(effects);
+
+        ret.put("health", entity.getHealth());
+        ret.put("effects", entity.getEffects());
+        ret.put("state", "ALIVE");
+
+        // remove entity if dead
+        if (entity.getHealth() == 0) {
+            log.info("Entity '{}' is dead", entity);
+            entities.removeEntity(entity);
+            ret.put("state", "DEAD");
+        }
+
+        return ret;
     }
 
-    public void characterInteraction(Integer id, Interaction interaction) {
-        entityInteraction(entities.getCharacter(id), interaction.getDamage(), interaction.getEffects());
+    public LinkedHashMap<String, Object> characterInteraction(Integer id, Interaction interaction) {
+        return entityInteraction(entities.getCharacter(id), interaction.getDamage(), interaction.getEffects());
     }
-    public void enemyInteraction(Integer id, Integer idGroup, Interaction interaction) {
-        entityInteraction(entities.getEnemy(id, idGroup), interaction.getDamage(), interaction.getEffects());
+    public LinkedHashMap<String, Object> enemyInteraction(Integer id, Integer idGroup, Interaction interaction) {
+        return entityInteraction(entities.getEnemy(id, idGroup), interaction.getDamage(), interaction.getEffects());
     }
-    public void obstacleInteraction(Integer id, Integer idGroup, Interaction interaction) {
-        entityInteraction(entities.getObstacle(id, idGroup), interaction.getDamage(), interaction.getEffects());
+    public LinkedHashMap<String, Object> obstacleInteraction(Integer id, Integer idGroup, Interaction interaction) {
+        return entityInteraction(entities.getObstacle(id, idGroup), interaction.getDamage(), interaction.getEffects());
     }
-    public void summonInteraction(Integer id, Integer idGroup, Interaction interaction) {
-        entityInteraction(entities.getSummon(id, idGroup), interaction.getDamage(), interaction.getEffects());
+    public LinkedHashMap<String, Object> summonInteraction(Integer id, Integer idGroup, Interaction interaction) {
+        return entityInteraction(entities.getSummon(id, idGroup), interaction.getDamage(), interaction.getEffects());
     }
 
 

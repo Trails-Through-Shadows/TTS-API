@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
 import cz.trailsthroughshadows.algorithm.session.SessionHandler;
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.Adventure;
@@ -30,6 +31,9 @@ public class EncounterHandler {
 
     @Autowired
     private AdventureRepo adventureRepo;
+
+    @Autowired
+    ValidationService validation;
 
     @Getter
     private final List<Encounter> encounters = new ArrayList<>();
@@ -88,6 +92,7 @@ public class EncounterHandler {
                 });
 
         Encounter encounter = new Encounter(getNextId(), adventure.getIdLicense(), Adventure.fromDTO(adventure), Location.fromDTO(location));
+        encounter.setValidation(validation);
         encounters.add(encounter);
         log.info("Encounter added: {}", encounter.getId());
 

@@ -4,14 +4,18 @@ import cz.trailsthroughshadows.algorithm.dice.Dice;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
+import jakarta.validation.Validation;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +52,7 @@ public class EncounterEntityHandler {
     }
     public void addCharacter(Character character, List<EncounterEffect> effects) {
         log.trace("Adding character '{}' with {} effects", character, effects.size());
-        EncounterEntity<Character> entity = new EncounterEntity<Character>(character.getId(), character.getInitiative(), character.getHealth(),
+        EncounterEntity<Character> entity = new EncounterEntity<Character>(character.getId(), character.getInitiative(), character.getHealth(), character.getDefence(),
                 EncounterEntity.EntityType.CHARACTER, character);
         entity.addEffects(effects);
         entities.add(entity);
@@ -74,7 +78,8 @@ public class EncounterEntityHandler {
     }
     public void addEnemy(Enemy enemy, List<EncounterEffect> effects) {
         log.trace("Adding enemy '{}' with {} effects", enemy, effects.size());
-        EncounterEntity<Enemy> entity = new EncounterEntity<Enemy>(getNextId(EncounterEntity.EntityType.ENEMY, enemy.getId()), enemy.getId(), enemy.getBaseInitiative(), enemy.getBaseHealth(),
+        EncounterEntity<Enemy> entity = new EncounterEntity<Enemy>(getNextId(EncounterEntity.EntityType.ENEMY, enemy.getId()), enemy.getId(),
+                enemy.getBaseInitiative(), enemy.getBaseHealth(), enemy.getBaseDefence(),
                 EncounterEntity.EntityType.ENEMY, enemy);
 
         if (!enemyRandomInitiative.containsKey(enemy.getId())) {
@@ -129,7 +134,8 @@ public class EncounterEntityHandler {
     }
     public void addSummon(Summon summon, List<EncounterEffect> effects) {
         log.trace("Adding summon '{}' with {} effects", summon, effects.size());
-        EncounterEntity<Summon> entity = new EncounterEntity<Summon>(getNextId(EncounterEntity.EntityType.SUMMON, summon.getId()), summon.getId(), -1, summon.getHealth(),
+        EncounterEntity<Summon> entity = new EncounterEntity<Summon>(getNextId(EncounterEntity.EntityType.SUMMON, summon.getId()), summon.getId(),
+                -1, summon.getHealth(), 0,
                 EncounterEntity.EntityType.SUMMON, summon);
         entity.addEffects(effects);
         entities.add(entity);
@@ -155,7 +161,8 @@ public class EncounterEntityHandler {
     }
     public void addObstacle(Obstacle obstacle, List<EncounterEffect> effects) {
         log.trace("Adding obstacle '{}' with {} effects", obstacle, effects.size());
-        EncounterEntity<Obstacle> entity = new EncounterEntity<Obstacle>(getNextId(EncounterEntity.EntityType.OBSTACLE, obstacle.getId()), obstacle.getId(), -1, obstacle.getBaseHealth(),
+        EncounterEntity<Obstacle> entity = new EncounterEntity<Obstacle>(getNextId(EncounterEntity.EntityType.OBSTACLE, obstacle.getId()), obstacle.getId(),
+                -1, obstacle.getBaseHealth(), 0,
                 EncounterEntity.EntityType.OBSTACLE, obstacle);
         entity.addEffects(effects);
         entities.add(entity);
