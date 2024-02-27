@@ -15,12 +15,8 @@ import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -102,8 +98,6 @@ public class EnemyController {
 
     @PutMapping("/enemies/{id}")
     //@CacheEvict(value = "enemy", key = "#id")
-    @Modifying
-    @Transactional
     public ResponseEntity<MessageResponse> updateEnemyById(@PathVariable int id, @RequestBody EnemyDTO enemy) {
 
         // Validate enemy
@@ -123,10 +117,7 @@ public class EnemyController {
         enemyToUpdate.setBaseInitiative(enemy.getBaseInitiative());
 
         enemyToUpdate.setEffects(enemy.getEffects());
-        enemyToUpdate.getEffects().forEach(effect -> effect.getKey().setIdEnemy(enemyToUpdate.getId()));
-
         enemyToUpdate.setActions(enemy.getActions());
-        enemyToUpdate.getActions().forEach(action -> action.getKey().setIdEnemy(enemyToUpdate.getId()));
 
         log.trace("enemy effects:{}", enemyToUpdate.getEffects().toString());
 

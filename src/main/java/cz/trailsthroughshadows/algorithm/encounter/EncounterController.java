@@ -1,6 +1,5 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
-import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
 import cz.trailsthroughshadows.algorithm.encounter.model.Interaction;
 import cz.trailsthroughshadows.api.rest.model.response.IdResponse;

@@ -13,7 +13,6 @@ import cz.trailsthroughshadows.api.table.action.features.movement.Movement;
 import cz.trailsthroughshadows.api.table.action.features.restorecards.RestoreCards;
 import cz.trailsthroughshadows.api.table.action.features.skill.Skill;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.SummonAction;
-import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyActionDTO;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -69,7 +68,7 @@ public class ActionDTO extends Validable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private RestoreCards restoreCards;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "idAction")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<SummonAction> summonActions = new ArrayList<>();
@@ -78,6 +77,7 @@ public class ActionDTO extends Validable {
         this.summonActions.clear();
         if (actions != null) {
             this.summonActions.addAll(actions);
+            this.summonActions.forEach(a -> a.getKey().setIdAction(this.getId()));
         }
     }
 

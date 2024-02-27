@@ -68,6 +68,7 @@ public class EnemyDTO extends Validable implements Cloneable {
         this.effects.clear();
         if (effects != null) {
             this.effects.addAll(effects);
+            this.effects.forEach(effect -> effect.getKey().setIdEnemy(this.getId()));
         }
 
     }
@@ -76,6 +77,7 @@ public class EnemyDTO extends Validable implements Cloneable {
         this.actions.clear();
         if (actions != null) {
             this.actions.addAll(actions);
+            this.actions.forEach(action -> action.getKey().setIdEnemy(this.getId()));
         }
     }
 
