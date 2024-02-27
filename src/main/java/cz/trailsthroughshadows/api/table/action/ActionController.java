@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController(value = "Action")
@@ -103,6 +104,32 @@ public class ActionController {
         actionRepo.save(entityToUPdate);
 
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' updated!", id),
+                HttpStatus.OK);
+    }
+
+    @DeleteMapping("/actions/{id}")
+    public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
+        ActionDTO entity = actionRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
+
+        actionRepo.delete(entity);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' deleted!", id),
+                HttpStatus.OK);
+    }
+
+    @PostMapping("/actions")
+    public ResponseEntity<MessageResponse> create(@RequestBody List<ActionDTO> actions) {
+        actions.forEach(validation::validate);
+        actions.forEach(e -> e.setId(null));
+
+        //remove relations and save them for later
+        //todo summons
+
+        actions = actionRepo.saveAll(actions);
+
+        String ids = actions.stream().map(ActionDTO::getId).map(String::valueOf).toList().toString();
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Actions with ids '%d' created!", ids),
                 HttpStatus.OK);
     }
 

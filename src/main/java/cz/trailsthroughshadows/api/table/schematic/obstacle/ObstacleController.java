@@ -32,7 +32,7 @@ public class ObstacleController {
     private ObstacleRepo obstacleRepo;
 
     @GetMapping("/obstacles")
-    @Cacheable(value = "obstacle")
+    //@Cacheable(value = "obstacle")
     public ResponseEntity<RestPaginatedResult<Obstacle>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -98,7 +98,7 @@ public class ObstacleController {
     }
 
     @PutMapping("/obstacles/{id}")
-    @CacheEvict(value = "obstacle", key = "#id")
+    //@CacheEvict(value = "obstacle", key = "#id")
     public ResponseEntity<MessageResponse> updateObstacleById(@PathVariable int id, @RequestBody ObstacleDTO obstacle) {
         ObstacleDTO obstacleToUpdate = obstacleRepo
                 .findById(id)
