@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -79,6 +76,24 @@ public class ActionController {
         }
 
         return new ResponseEntity<>(Action.fromDTO(entity), HttpStatus.OK);
+    }
+
+    @PutMapping("/actions/{id}")
+    public ResponseEntity<Action> update(@PathVariable int Id, @RequestBody ActionDTO action) {
+        validation.validate(action);
+
+        ActionDTO entityToUPdate = actionRepo
+                .findById(Id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", Id));
+
+        entityToUPdate.setTitle(action.getTitle());
+        entityToUPdate.setDescription(action.getDescription());
+        entityToUPdate.setDiscard(action.getDiscard());
+        entityToUPdate.setLevelReq(action.getLevelReq());
+
+        //entityToUPdate.
+
+        return new ResponseEntity<>(Action.fromDTO(actionRepo.save(action)), HttpStatus.OK);
     }
 
     @Autowired

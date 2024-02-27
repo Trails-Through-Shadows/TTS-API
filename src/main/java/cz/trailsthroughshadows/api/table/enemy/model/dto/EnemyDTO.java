@@ -27,7 +27,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Enemy")
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EnemyDTO extends Validable implements Cloneable {
 
     @Id
@@ -62,6 +62,36 @@ public class EnemyDTO extends Validable implements Cloneable {
     @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyActionDTO> actions;
+
+
+    public void setEffects(List<EnemyEffectDTO> effects) {
+        if (this.effects == null) {
+            this.effects = new ArrayList<>();
+        }
+        if (effects == null) {
+            this.effects = new ArrayList<>();
+        }
+        this.effects.clear();
+        if (effects != null) {
+            this.effects.addAll(effects);
+        }
+
+    }
+
+    public void setActions(List<EnemyActionDTO> actions) {
+        if (this.actions == null) {
+            this.actions = new ArrayList<>();
+        }
+        if (actions == null) {
+            this.actions = new ArrayList<>();
+        }
+        this.actions.clear();
+
+        if (actions != null) {
+            this.actions.addAll(actions);
+        }
+
+    }
 
     @JsonIgnore
     public List<EffectDTO> getMappedEffects() {
