@@ -1,8 +1,11 @@
 package cz.trailsthroughshadows.api.table.market.market.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
+import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -25,7 +28,10 @@ public class MarketDTO extends Validable {
     @Column
     private Integer defPrice;
 
-    // TODO getter for items in this market
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idItem", insertable = false, updatable = false)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
+    private ItemDTO item;
 
     //region Validation
 

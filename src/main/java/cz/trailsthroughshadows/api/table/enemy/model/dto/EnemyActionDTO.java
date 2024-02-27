@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.enemy.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
@@ -15,6 +16,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "EnemyAction")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EnemyActionDTO {
 
     @EmbeddedId

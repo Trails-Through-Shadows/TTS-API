@@ -90,7 +90,6 @@ public class EnemyDTO extends Validable implements Cloneable {
         if (actions != null) {
             this.actions.addAll(actions);
         }
-
     }
 
     @JsonIgnore
