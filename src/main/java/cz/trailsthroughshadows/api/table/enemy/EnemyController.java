@@ -17,8 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -100,6 +102,8 @@ public class EnemyController {
 
     @PutMapping("/enemies/{id}")
     //@CacheEvict(value = "enemy", key = "#id")
+    @Modifying
+    @Transactional
     public ResponseEntity<MessageResponse> updateEnemyById(@PathVariable int id, @RequestBody EnemyDTO enemy) {
 
         // Validate enemy
@@ -108,6 +112,8 @@ public class EnemyController {
         EnemyDTO enemyToUpdate = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
+
+        log.trace("enemy effects:{}", enemyToUpdate.getEffects().toString());
 
         enemyToUpdate.setTag(enemy.getTag());
         enemyToUpdate.setTitle(enemy.getTitle());
@@ -122,7 +128,9 @@ public class EnemyController {
         enemyToUpdate.setActions(enemy.getActions());
         enemyToUpdate.getActions().forEach(action -> action.getKey().setIdEnemy(enemyToUpdate.getId()));
 
-        enemyRepo.save(enemyToUpdate);
+        log.trace("enemy effects:{}", enemyToUpdate.getEffects().toString());
+
+        enemyRepo.saveAndFlush(enemyToUpdate);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' updated!", id),
                 HttpStatus.OK);
     }

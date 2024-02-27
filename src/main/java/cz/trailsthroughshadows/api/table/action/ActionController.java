@@ -28,7 +28,7 @@ public class ActionController {
     private ActionRepo actionRepo;
 
     @GetMapping("/actions")
-    @Cacheable(value = "action")
+    //@Cacheable(value = "action")
     public ResponseEntity<RestPaginatedResult<Action>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,

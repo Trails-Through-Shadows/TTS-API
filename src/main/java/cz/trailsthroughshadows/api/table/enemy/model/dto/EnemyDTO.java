@@ -55,22 +55,16 @@ public class EnemyDTO extends Validable implements Cloneable {
     @Column
     private Integer usages;
 
-    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private List<EnemyEffectDTO> effects;
+    private List<EnemyEffectDTO> effects = new ArrayList<>();
 
-    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private List<EnemyActionDTO> actions;
+    private List<EnemyActionDTO> actions = new ArrayList<>();
 
 
     public void setEffects(List<EnemyEffectDTO> effects) {
-        if (this.effects == null) {
-            this.effects = new ArrayList<>();
-        }
-        if (effects == null) {
-            this.effects = new ArrayList<>();
-        }
         this.effects.clear();
         if (effects != null) {
             this.effects.addAll(effects);
@@ -79,14 +73,7 @@ public class EnemyDTO extends Validable implements Cloneable {
     }
 
     public void setActions(List<EnemyActionDTO> actions) {
-        if (this.actions == null) {
-            this.actions = new ArrayList<>();
-        }
-        if (actions == null) {
-            this.actions = new ArrayList<>();
-        }
         this.actions.clear();
-
         if (actions != null) {
             this.actions.addAll(actions);
         }
