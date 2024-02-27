@@ -5,6 +5,7 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,15 @@ public class ValidationService {
 
     private ValidationConfig validationConfig;
 
-    public String validate(Optional<? extends Validable> validable) {
+    /**
+     * Validates an object that implements the Validable interface.
+     *
+     * @param validable Optional containing the object to validate.
+     *
+     * @return A string with the result of the validation.
+     * @throws RestException Structured response with the error, if the object is not valid.
+     */
+    public String validate(Optional<? extends Validable> validable) throws RestException {
         if (validable.isEmpty()) {
             String response = "Validable object is null!";
             log.debug(response);
@@ -50,7 +59,15 @@ public class ValidationService {
         return response;
     }
 
-    public String validate(Validable validable) {
+    /**
+     * Validates an object that implements the Validable interface.
+     *
+     * @param validable The object to validate.
+     *
+     * @return A string with the result of the validation.
+     * @throws RestException Structured response with the error, if the object is not valid.
+     */
+    public String validate(Validable validable) throws RestException {
         return validate(Optional.of(validable));
     }
 

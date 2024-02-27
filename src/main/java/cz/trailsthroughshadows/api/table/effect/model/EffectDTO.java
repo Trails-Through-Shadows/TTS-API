@@ -62,7 +62,11 @@ public class EffectDTO extends Validable implements Serializable {
         validateChild(description, validationConfig);
 
         // Duration must be greater than 0 or exactly -1 (infinity).
-        if (duration != null && duration < 1 && duration != -1) {
+        List<EffectDTO.EffectType> instant = List.of(EffectType.PUSH, EffectType.PULL, EffectType.HEAL);
+        if (duration != null && instant.contains(type) && duration != 0) {
+            errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be 0 for this type of effect."));
+        }
+        if (duration != null && !instant.contains(type) && duration < 1 && duration != -1) {
             errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be greater than 0 or -1 (infinity)."));
         }
 
