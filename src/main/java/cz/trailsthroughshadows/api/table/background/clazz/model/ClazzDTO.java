@@ -96,7 +96,6 @@ public class ClazzDTO extends Validable {
         }
 
         // BaseInitiative must be greater than 0.
-        // TODO fix base init when you figure it out
         if (baseInitiative != null && baseInitiative <= 0) {
             errors.add(new ValidationError("Class", "baseInitiative", getBaseInitiative(), "Base initiative must be greater than 0."));
         }

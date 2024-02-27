@@ -34,7 +34,7 @@ public class EnemyController {
     private EnemyRepo enemyRepo;
 
     @GetMapping("/enemies")
-    @Cacheable(value = "enemy")
+    //@Cacheable(value = "enemy")
     public ResponseEntity<RestPaginatedResult<Enemy>> getEnemies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -87,7 +87,7 @@ public class EnemyController {
     }
 
     @DeleteMapping("/enemies/{id}")
-    @CacheEvict(value = "enemy", key = "#id")
+    //@CacheEvict(value = "enemy", key = "#id")
     public ResponseEntity<MessageResponse> deleteEnemy(@PathVariable int id) {
         EnemyDTO enemyDTO = enemyRepo
                 .findById(id)
@@ -99,14 +99,15 @@ public class EnemyController {
     }
 
     @PutMapping("/enemies/{id}")
-    @CacheEvict(value = "enemy", key = "#id")
+    //@CacheEvict(value = "enemy", key = "#id")
     public ResponseEntity<MessageResponse> updateEnemyById(@PathVariable int id, @RequestBody EnemyDTO enemy) {
-        EnemyDTO enemyToUpdate = enemyRepo
-                .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
 
         // Validate enemy
         validation.validate(enemy);
+
+        EnemyDTO enemyToUpdate = enemyRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
 
         enemyToUpdate.setTag(enemy.getTag());
         enemyToUpdate.setTitle(enemy.getTitle());
@@ -115,12 +116,10 @@ public class EnemyController {
         enemyToUpdate.setBaseHealth(enemy.getBaseHealth());
         enemyToUpdate.setBaseInitiative(enemy.getBaseInitiative());
 
-        enemyToUpdate.getEffects().retainAll(enemy.getEffects());
-        enemyToUpdate.getActions().addAll(enemy.getActions());
+        enemyToUpdate.setEffects(enemy.getEffects());
         enemyToUpdate.getEffects().forEach(effect -> effect.getKey().setIdEnemy(enemyToUpdate.getId()));
 
-        enemyToUpdate.getActions().retainAll(enemy.getActions());
-        enemyToUpdate.getEffects().addAll(enemy.getEffects());
+        enemyToUpdate.setActions(enemy.getActions());
         enemyToUpdate.getActions().forEach(action -> action.getKey().setIdEnemy(enemyToUpdate.getId()));
 
         enemyRepo.save(enemyToUpdate);
@@ -129,7 +128,7 @@ public class EnemyController {
     }
 
     @PostMapping("/enemies")
-    @CacheEvict(value = "enemy", allEntries = true)
+    //@CacheEvict(value = "enemy", allEntries = true)
     public ResponseEntity<MessageResponse> createEnemies(@RequestBody List<EnemyDTO> enemies) {
         log.debug("Creating enemies: " + enemies);
 

@@ -76,7 +76,6 @@ public class RaceDTO extends Validable {
         validateChild(new Description(description), validationConfig);
 
         // BaseInitiative must be greater than 0.
-        // TODO fix base init when you figure it out
         if (baseInitiative != null && baseInitiative <= 0) {
             errors.add(new ValidationError("Race", "baseInitiative", baseInitiative, "Base initiative must be greater than 0."));
         }
