@@ -84,7 +84,7 @@ public class AdventureController {
                 .limit(limit)
                 .toList();
 
-        if (!lazy && !include.isEmpty()) {
+        if (lazy && !include.isEmpty()) {
             entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
         } else if (!lazy) {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
@@ -137,7 +137,7 @@ public class AdventureController {
                 .limit(limit)
                 .toList();
 
-        if (!lazy && !include.isEmpty()) {
+        if (lazy && !include.isEmpty()) {
             entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
         } else if (!lazy) {
             entriesPage.forEach(Initialization::hibernateInitializeAll);

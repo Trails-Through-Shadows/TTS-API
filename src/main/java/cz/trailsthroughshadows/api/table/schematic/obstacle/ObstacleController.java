@@ -53,7 +53,7 @@ public class ObstacleController {
                 .limit(limit)
                 .toList();
 
-        if (!lazy && !include.isEmpty()) {
+        if (lazy && !include.isEmpty()) {
             entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
         } else if (!lazy) {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
@@ -76,7 +76,7 @@ public class ObstacleController {
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found! " + id));
 
-        if (!lazy && !include.isEmpty()) {
+        if (lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
         } else if (!lazy) {
             Initialization.hibernateInitializeAll(entity);

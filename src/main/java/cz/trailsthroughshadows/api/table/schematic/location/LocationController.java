@@ -55,7 +55,7 @@ public class LocationController {
 
         Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
 
-        if (!lazy && !include.isEmpty()) {
+        if (lazy && !include.isEmpty()) {
             entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
             if (include.contains("stories")) {
                 List<Location> loc = entriesPage.stream().map(Location::fromDTO).toList();
@@ -82,7 +82,7 @@ public class LocationController {
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found! " + id));
 
-        if (!lazy && !include.isEmpty()) {
+        if (lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
             if (include.contains("stories")) {
                 Location loc = Location.fromDTO(entity);
