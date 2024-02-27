@@ -74,7 +74,9 @@ public class ObstacleDTO extends Validable {
 
         // BaseDamage must be greater than or equal to 0. If it is not crossable, it
         // must be 0.
-        if (!crossable && baseDamage != 0) {
+        if (baseDamage == null) {
+            errors.add(new ValidationError("Obstacle", "baseDamage", null, "Base damage must not be null."));
+        } else if (!crossable && baseDamage != 0) {
             errors.add(new ValidationError("Obstacle", "baseDamage", getBaseDamage(),
                     "Base damage must be 0 if obstacle is not crossable."));
         } else if (baseDamage < 0) {
@@ -83,7 +85,9 @@ public class ObstacleDTO extends Validable {
         }
 
         // BaseHealth must be greater than 0 or -1 (invincible).
-        if (baseHealth != -1 && baseHealth <= 0) {
+        if (baseHealth == null) {
+            errors.add(new ValidationError("Obstacle", "baseHealth", null, "Base health must not be null."));
+        } else if (baseHealth != -1 && baseHealth <= 0) {
             errors.add(new ValidationError("Obstacle", "baseHealth", getBaseHealth(),
                     "Base health must be greater than 0 or -1 (invincible)."));
         }
