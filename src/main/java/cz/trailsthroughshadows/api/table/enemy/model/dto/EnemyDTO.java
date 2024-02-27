@@ -68,9 +68,6 @@ public class EnemyDTO extends Validable implements Cloneable {
         if (this.effects == null) {
             this.effects = new ArrayList<>();
         }
-        if (effects == null) {
-            this.effects = new ArrayList<>();
-        }
         this.effects.clear();
         if (effects != null) {
             this.effects.addAll(effects);
@@ -82,9 +79,7 @@ public class EnemyDTO extends Validable implements Cloneable {
         if (this.actions == null) {
             this.actions = new ArrayList<>();
         }
-        if (actions == null) {
-            this.actions = new ArrayList<>();
-        }
+        
         this.actions.clear();
 
         if (actions != null) {
