@@ -72,17 +72,10 @@ public class ActionDTO extends Validable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "idAction")
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private List<SummonAction> summonActions = List.of();
+    private List<SummonAction> summonActions = new ArrayList<>();
 
     public void setSummonActions(List<SummonAction> actions) {
-        if (this.summonActions == null) {
-            this.summonActions = new ArrayList<>();
-        }
-        if (actions == null) {
-            this.summonActions = new ArrayList<>();
-        }
         this.summonActions.clear();
-
         if (actions != null) {
             this.summonActions.addAll(actions);
         }
