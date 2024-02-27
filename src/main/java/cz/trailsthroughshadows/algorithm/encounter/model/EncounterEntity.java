@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Data
@@ -49,7 +50,7 @@ public class EncounterEntity<T> {
     }
 
     public void addEffect(EncounterEffect effect) {
-        log.trace("Adding effect '{}'", effect);
+        log.debug("Adding effect '{}' to entity '{}'", effect, this);
 
         List<EncounterEffect> resistances = effects.stream()
                 .filter(e -> e.getType().equals(EncounterEffect.getResistanceType(effect)))
@@ -68,6 +69,8 @@ public class EncounterEntity<T> {
                 log.trace("Effect has been resisted");
                 return;
             }
+
+            log.trace("Effect has been reduced by resistance to '{}'", effect);
         }
 
         effects.add(effect);
@@ -75,41 +78,49 @@ public class EncounterEntity<T> {
     public void addEffects(List<EncounterEffect> effects) {
         effects.forEach(this::addEffect);
     }
-    public void damage(int damage) {
-        log.trace("Dealing {} damage to entity '{}'", damage, this);
-        health -= damage;
-    }
     public void applyEffect(EncounterEffect effect) {
-        // TODO logic for applying the effect goes here
         if (!effect.isApplicableAtStartTurn())
             return;
 
         for (var e : effects.stream().filter(EncounterEffect::isApplicableAtStartTurn).toList()) {
             log.trace("Applying effect '{}' for entity '{}'", e, this);
             switch (e.getType()) {
-                case POISON, FIRE, BLEED -> damage(e.getStrength());
+                case POISON, FIRE, BLEED -> damage(e.getStrength(), DamageSource.EFFECT);
                 case REGENERATION -> health += e.getStrength();
             }
         }
     }
     public void decreaseEffectDuration(EncounterEffect effect) {
         effect.decreaseDuration();
+    }
 
-        if (effect.isExpired()) {
-            log.trace("Removing effect");
-            effects.remove(effect);
+    public void damage(int damage, DamageSource source) {
+        if (damage <= 0)
+            return;
+
+        log.debug("Dealing {} damage from {} to entity '{}'", damage, source, this);
+        if (source == DamageSource.ATTACK && getDefence() > 0) {
+            damage = Math.max(0, damage - getDefence());
+            log.trace("Damage reduced by defence to {}", damage);
         }
+        health =  Math.max(0, health - damage);
+        log.trace("Entity health is now {}", health);
     }
 
     public void startTurn() {
-        log.trace("Starting turn for entity '{}'", entity);
+        log.debug("Starting turn for entity '{}'", entity);
         effects.forEach(this::applyEffect);
 
         // todo add summons
     }
     public void endTurn() {
-        log.trace("Ending turn for entity '{}'", entity);
+        log.debug("Ending turn for entity '{}'", entity);
         effects.forEach(this::decreaseEffectDuration);
+
+        for (var e : effects.stream().filter(EncounterEffect::isExpired).toList()) {
+            log.trace("Removing expired effect '{}'", e);
+            effects.remove(e);
+        }
 
         // todo add summons
     }
@@ -149,10 +160,19 @@ public class EncounterEntity<T> {
         return "%s %s: %s".formatted(type, id, entity.toString());
     }
 
+    public EntityStatusUpdate getStatusUpdate() {
+        return new EntityStatusUpdate(getId(), getHealth(), getEffects(), getHealth() != 0 ? EntityStatusUpdate.Status.ALIVE : EntityStatusUpdate.Status.DEAD);
+    }
+
     public enum EntityType {
         CHARACTER,
         ENEMY,
         SUMMON,
-        OBSTACLE
+        OBSTACLE,
+    }
+
+    public enum DamageSource {
+        ATTACK,
+        EFFECT,
     }
 }

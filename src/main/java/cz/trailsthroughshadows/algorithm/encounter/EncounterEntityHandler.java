@@ -4,18 +4,14 @@ import cz.trailsthroughshadows.algorithm.dice.Dice;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
 import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
 import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
-import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
-import jakarta.validation.Validation;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +60,7 @@ public class EncounterEntityHandler {
         return getCharacters().stream()
                 .filter(e -> e.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Character with id " + id + " not found"));
+                .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Character with id {} not found", id));
     }
     public void removeCharacter(int id) {
         log.trace("Removing character with id {}", id);
@@ -115,7 +111,7 @@ public class EncounterEntityHandler {
         return getEnemies().stream()
                 .filter(e -> e.getId().equals(id) && e.getIdGroup().equals(idGroup))
                 .findFirst()
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id " + id + " and idGroup " + idGroup + " not found"));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id {} and idGroup {} not found", id, idGroup));
     }
     public void removeEnemy(int id, int idGroup) {
         log.trace("Removing enemy with id {} and idGroup {}", id, idGroup);
@@ -147,7 +143,7 @@ public class EncounterEntityHandler {
         return getSummons().stream()
                 .filter(e -> e.getId().equals(id) && e.getIdGroup().equals(idGroup))
                 .findFirst()
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Summon with id " + id + " and idGroup " + idGroup + " not found"));
+                .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Summon with id {} and idGroup {} not found", id, idGroup));
     }
     public void removeSummon(int id, int idGroup) {
         log.trace("Removing summon with id {} and idGroup {}", id, idGroup);
@@ -174,7 +170,7 @@ public class EncounterEntityHandler {
         return getObstacles().stream()
                 .filter(e -> e.getId().equals(id) && e.getIdGroup().equals(idGroup))
                 .findFirst()
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id " + id + " and idGroup " + idGroup + " not found"));
+                .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Obstacle with id {} and idGroup {} not found", id, idGroup));
     }
     public void removeObstacle(int id, int idGroup) {
         log.trace("Removing obstacle with id {} and idGroup {}", id, idGroup);
@@ -184,9 +180,11 @@ public class EncounterEntityHandler {
 
     //region Active Entity
     public void setActiveEntity(EncounterEntity.EntityType type, Integer id) {
+        log.debug("Setting active entity to {} with id {}", type, id);
         activeEntity = new Initiative(id, null, type);
     }
     public void resetActiveEntity() {
+        log.debug("Resetting active entity");
         activeEntity = null;
     }
     public boolean isEntityActive() {
@@ -209,5 +207,14 @@ public class EncounterEntityHandler {
             }
         }
         return entities.size() + 1;
+    }
+
+    private void logError(HttpStatus status, String message, Object... args) {
+        throw logErrorReturn(status, message, args);
+    }
+
+    private RestException logErrorReturn(HttpStatus status, String message, Object... args) {
+        log.error(message, args);
+        return RestException.of(status, message, args);
     }
 }

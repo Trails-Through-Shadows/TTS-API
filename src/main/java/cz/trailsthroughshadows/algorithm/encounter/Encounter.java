@@ -1,10 +1,7 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEffect;
-import cz.trailsthroughshadows.algorithm.encounter.model.EncounterEntity;
-import cz.trailsthroughshadows.algorithm.encounter.model.Initiative;
-import cz.trailsthroughshadows.algorithm.encounter.model.Interaction;
+import cz.trailsthroughshadows.algorithm.encounter.model.*;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
@@ -16,12 +13,10 @@ import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDoorDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
-import jakarta.validation.Validation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -89,7 +84,7 @@ public class Encounter {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part {} not found", idPart));
 
         if (part.getUnlocked()) {
-            throw RestException.of(HttpStatus.NOT_FOUND, "Part {} already unlocked", idPart);
+            logError(HttpStatus.NOT_FOUND, "Part %s already unlocked".formatted(idPart));
         }
 
         part.unlock();
@@ -115,23 +110,25 @@ public class Encounter {
     }
 
     public void rollInitiative(List<Initiative> initiatives) {
+        log.info("Rolling initiative");
+
         if (state != EncounterState.NEW) {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Initiative already rolled.");
+            logError(HttpStatus.BAD_REQUEST, "Initiative already rolled.");
         }
 
         if (initiatives.size() != entities.getCharacters().size()) {
-            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Initiative size does not match number of characters.");
+            logError(HttpStatus.NOT_ACCEPTABLE, "Initiative size does not match number of characters.");
         }
 
         if (initiatives.stream().map(Initiative::getId).distinct().count() != initiatives.size()) {
-            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Initiative contains duplicate ids.");
+            logError(HttpStatus.NOT_ACCEPTABLE, "Initiative contains duplicate ids.");
         }
 
         for (Initiative initiative : initiatives) {
-            log.info("Setting initiative for id {} to {}", initiative.getId(), initiative.getInitiative());
             EncounterEntity<Character> character = entities.getCharacter(initiative.getId());
+            log.debug("Setting initiative for Character #{}", initiative.getId());
             character.setInitiative(character.getEntity().getInitiative() + initiative.getInitiative());
-            log.debug("Initiative set to {}", character.getInitiative());
+            log.trace("Initiative set to {} {}{} = {}", character.getEntity().getInitiative(), initiative.getInitiative() >= 0 ? "+" : "", initiative.getInitiative(), character.getInitiative());
         }
 
         state = EncounterState.ONGOING;
@@ -139,7 +136,7 @@ public class Encounter {
 
     public List<Initiative> getInitiative() {
         if (state != EncounterState.ONGOING) {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Roll initiative first.");
+            logError(HttpStatus.BAD_REQUEST, "Roll initiative first.");
         }
 
         List<Initiative> initiatives = new ArrayList<>();
@@ -169,124 +166,153 @@ public class Encounter {
         return initiatives;
     }
 
-    private void startTurn(EncounterEntity.EntityType type, Integer id) {
+    private List<EntityStatusUpdate> startTurn(EncounterEntity.EntityType type, Integer id) {
         log.info("Starting turn for {} {}", type, id);
 
         if (state != EncounterState.ONGOING) {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+            logError(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
         }
 
         if (!entities.canHaveTurn(type)) {
-            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "This type of entity can't have a turn.");
+            logError(HttpStatus.NOT_ACCEPTABLE, "This type of entity can't have a turn.");
         }
 
         if (entities.isEntityActive()) {
-            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Another entity is already active.");
+            logError(HttpStatus.NOT_ACCEPTABLE, "Another entity is already active.");
         }
 
         entities.setActiveEntity(type, id);
 
+        List<EntityStatusUpdate> ret = new ArrayList<>();
+
         if (type.equals(EncounterEntity.EntityType.CHARACTER)) {
             EncounterEntity<Character> character = entities.getCharacter(id);
             character.startTurn();
+            ret.add(character.getStatusUpdate());
+            checkEntityDead(character);
         }
 
         if (type.equals(EncounterEntity.EntityType.ENEMY)) {
             List<EncounterEntity<Enemy>> enemies = entities.getEnemyGroup(id);
             for (EncounterEntity<Enemy> enemy : enemies) {
                 enemy.startTurn();
+                ret.add(enemy.getStatusUpdate());
+                checkEntityDead(enemy);
             }
         }
+
+        return ret;
     }
-    public void startCharacterTurn(Integer id) {
-        startTurn(EncounterEntity.EntityType.CHARACTER, id);
+    public EntityStatusUpdate startCharacterTurn(Integer id) {
+        return startTurn(EncounterEntity.EntityType.CHARACTER, id).stream().findFirst()
+                .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Couldn't find character #{}", id));
     }
-    public void startEnemyTurn(Integer id) {
-        startTurn(EncounterEntity.EntityType.ENEMY, id);
+    public List<EntityStatusUpdate> startEnemyTurn(Integer id) {
+        return startTurn(EncounterEntity.EntityType.ENEMY, id);
     }
 
-    private void endTurn(EncounterEntity.EntityType type, Integer id) {
+    private List<EntityStatusUpdate> endTurn(EncounterEntity.EntityType type, Integer id) {
         log.info("Ending turn for {} {}", type, id);
 
         if (state != EncounterState.ONGOING) {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+            logError(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
         }
 
         if (!entities.canHaveTurn(type)) {
-            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "This type of entity can't have a turn.");
+            logError(HttpStatus.NOT_ACCEPTABLE, "This type of entity can't have a turn.");
         }
 
         if (!entities.isEntityActive()) {
-            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Can't end turn - no active entity.");
+
+            logError(HttpStatus.NOT_ACCEPTABLE, "Can't end turn - no active entity.");
         }
 
         if (!(entities.getActiveEntity().getType().equals(type) && entities.getActiveEntity().getId().equals(id))) {
-            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Can't end turn - another entity is active.");
+            logError(HttpStatus.NOT_ACCEPTABLE, "Can't end turn - another entity is active.");
         }
 
-        Initiative activeEntity = entities.getActiveEntity();
+        List<EntityStatusUpdate> ret = new ArrayList<>();
 
         if (type.equals(EncounterEntity.EntityType.CHARACTER)) {
             EncounterEntity<Character> character = entities.getCharacter(id);
             character.endTurn();
+            ret.add(character.getStatusUpdate());
+            checkEntityDead(character);
         }
 
         if (type.equals(EncounterEntity.EntityType.ENEMY)) {
             List<EncounterEntity<Enemy>> enemies = entities.getEnemyGroup(id);
             for (EncounterEntity<Enemy> enemy : enemies) {
                 enemy.endTurn();
+                ret.add(enemy.getStatusUpdate());
+                checkEntityDead(enemy);
             }
         }
 
         entities.resetActiveEntity();
+
+        return ret;
     }
-    public void endCharacterTurn(Integer id) {
-        endTurn(EncounterEntity.EntityType.CHARACTER, id);
+    public EntityStatusUpdate endCharacterTurn(Integer id) {
+        return endTurn(EncounterEntity.EntityType.CHARACTER, id).stream().findFirst()
+                .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Couldn't find character #{}", id));
     }
-    public void endEnemyTurn(Integer id) {
-        endTurn(EncounterEntity.EntityType.ENEMY, id);
+    public List<EntityStatusUpdate> endEnemyTurn(Integer id) {
+        return endTurn(EncounterEntity.EntityType.ENEMY, id);
     }
 
-    private LinkedHashMap<String, Object> entityInteraction(EncounterEntity<?> entity, int damage, List<EncounterEffect> effects) {
+    private EntityStatusUpdate entityInteraction(EncounterEntity<?> entity, int damage, List<EncounterEffect> effects) {
         log.info("Interacting with entity '{}'", entity);
-        LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
 
         if (state != EncounterState.ONGOING) {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+            logError(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
         }
 
         for (EncounterEffect effect : effects) {
             validation.validate(effect.toEffect());
         }
 
-        entity.damage(damage);
+        entity.damage(damage, EncounterEntity.DamageSource.ATTACK);
         entity.addEffects(effects);
 
-        ret.put("health", entity.getHealth());
-        ret.put("effects", entity.getEffects());
-        ret.put("state", "ALIVE");
+        EntityStatusUpdate ret = entity.getStatusUpdate();
 
-        // remove entity if dead
-        if (entity.getHealth() == 0) {
-            log.info("Entity '{}' is dead", entity);
-            entities.removeEntity(entity);
-            ret.put("state", "DEAD");
-        }
-
+        checkEntityDead(entity);
         return ret;
     }
 
-    public LinkedHashMap<String, Object> characterInteraction(Integer id, Interaction interaction) {
+    private void checkEntityDead(EncounterEntity<?> entity) {
+        if (entity.getHealth() == 0) {
+            log.info("Entity '{}' is dead", entity);
+            entities.removeEntity(entity);
+        }
+    }
+
+    public EntityStatusUpdate characterInteraction(Integer id, Interaction interaction) {
         return entityInteraction(entities.getCharacter(id), interaction.getDamage(), interaction.getEffects());
     }
-    public LinkedHashMap<String, Object> enemyInteraction(Integer id, Integer idGroup, Interaction interaction) {
+    public EntityStatusUpdate enemyInteraction(Integer id, Integer idGroup, Interaction interaction) {
         return entityInteraction(entities.getEnemy(id, idGroup), interaction.getDamage(), interaction.getEffects());
     }
-    public LinkedHashMap<String, Object> obstacleInteraction(Integer id, Integer idGroup, Interaction interaction) {
+    public EntityStatusUpdate obstacleInteraction(Integer id, Integer idGroup, Interaction interaction) {
         return entityInteraction(entities.getObstacle(id, idGroup), interaction.getDamage(), interaction.getEffects());
     }
-    public LinkedHashMap<String, Object> summonInteraction(Integer id, Integer idGroup, Interaction interaction) {
+    public EntityStatusUpdate summonInteraction(Integer id, Integer idGroup, Interaction interaction) {
         return entityInteraction(entities.getSummon(id, idGroup), interaction.getDamage(), interaction.getEffects());
+    }
+
+    public void openDoor(LocationDoorDTO door) {
+        log.info("Opening door {}", door);
+        // todo more sophisticated door opening
+
+        if (state != EncounterState.ONGOING) {
+            logError(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+        }
+        if (doorsToOpen.contains(door)) {
+            logError(HttpStatus.NOT_ACCEPTABLE, "Door already opened.");
+        }
+
+        doorsToOpen.add(door);
     }
 
 
@@ -296,11 +322,11 @@ public class Encounter {
         LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
 
         if (state != EncounterState.ONGOING) {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+            logError(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
         }
 
         if (entities.isEntityActive()) {
-            throw RestException.of(HttpStatus.NOT_ACCEPTABLE, "Can't end round - an entity is still active.");
+            logError(HttpStatus.NOT_ACCEPTABLE, "Can't end round - an entity is still active.");
         }
 
         // check opened doors
@@ -312,13 +338,7 @@ public class Encounter {
                             .findFirst()
                             .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part {} not found", door.getIdPartTo()));
 
-            if (partTo.getUnlocked()) {
-                log.trace("Part {} already unlocked", partTo.getId());
-                continue;
-            }
-
-            log.trace("Unlocking part {}", partTo.getId());
-            partTo.unlock();
+            discoverPart(partTo.getId());
             unlockedParts.add(partTo.getId());
         }
         doorsToOpen.clear();
@@ -333,6 +353,15 @@ public class Encounter {
         ret.put("status", state);
 
         return ret;
+    }
+
+    private void logError(HttpStatus status, String message, Object... args) {
+        throw logErrorReturn(status, message, args);
+    }
+
+    private RestException logErrorReturn(HttpStatus status, String message, Object... args) {
+        log.error(message, args);
+        return RestException.of(status, message, args);
     }
 
     enum EncounterState {

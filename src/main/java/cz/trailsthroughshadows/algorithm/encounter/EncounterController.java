@@ -6,6 +6,7 @@ import cz.trailsthroughshadows.algorithm.encounter.model.Interaction;
 import cz.trailsthroughshadows.api.rest.model.response.IdResponse;
 import cz.trailsthroughshadows.api.rest.model.response.ObjectResponse;
 import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
+import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDoorDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,26 +53,22 @@ public class EncounterController {
 
     @PostMapping("/{id}/turn/character/{idCharacter}/start")
     public ResponseEntity<RestResponse> startCharacterTurn(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idCharacter) {
-        encounterHandler.getEncounter(token, id).startCharacterTurn(idCharacter);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).startCharacterTurn(idCharacter)), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/turn/character/{idCharacter}/end")
     public ResponseEntity<RestResponse> endCharacterTurn(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idCharacter) {
-        encounterHandler.getEncounter(token, id).endCharacterTurn(idCharacter);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).endCharacterTurn(idCharacter)), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/turn/enemy/{idEnemy}/start")
     public ResponseEntity<RestResponse> startEnemyTurn(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idEnemy) {
-        encounterHandler.getEncounter(token, id).startEnemyTurn(idEnemy);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).startEnemyTurn(idEnemy)), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/turn/enemy/{idEnemy}/end")
     public ResponseEntity<RestResponse> endEnemyTurn(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idEnemy) {
-        encounterHandler.getEncounter(token, id).endEnemyTurn(idEnemy);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).endEnemyTurn(idEnemy)), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/endRound")
@@ -97,5 +94,11 @@ public class EncounterController {
     @PostMapping("/{id}/interaction/obstacle/{idObstacleGroup}/{idObstacle}")
     public ResponseEntity<RestResponse> obstacleInteraction(@RequestParam UUID token, @PathVariable Integer id, @PathVariable Integer idObstacleGroup, @PathVariable Integer idObstacle, @RequestBody Interaction interaction) {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).obstacleInteraction(idObstacle, idObstacleGroup, interaction)), HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/openDoor")
+    public ResponseEntity<RestResponse> openDoor(@RequestParam UUID token, @PathVariable Integer id, @RequestBody LocationDoorDTO door) {
+        encounterHandler.getEncounter(token, id).openDoor(door);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
