@@ -13,6 +13,7 @@ import cz.trailsthroughshadows.api.table.action.features.movement.Movement;
 import cz.trailsthroughshadows.api.table.action.features.restorecards.RestoreCards;
 import cz.trailsthroughshadows.api.table.action.features.skill.Skill;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.SummonAction;
+import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyActionDTO;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -20,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -71,6 +73,20 @@ public class ActionDTO extends Validable {
     @JoinColumn(name = "idAction")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<SummonAction> summonActions = List.of();
+
+    public void setSummonActions(List<SummonAction> actions) {
+        if (this.summonActions == null) {
+            this.summonActions = new ArrayList<>();
+        }
+        if (actions == null) {
+            this.summonActions = new ArrayList<>();
+        }
+        this.summonActions.clear();
+
+        if (actions != null) {
+            this.summonActions.addAll(actions);
+        }
+    }
 
     //region Validation
     @Override

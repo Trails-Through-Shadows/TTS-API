@@ -4,6 +4,7 @@ import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.action.model.Action;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -79,21 +80,30 @@ public class ActionController {
     }
 
     @PutMapping("/actions/{id}")
-    public ResponseEntity<Action> update(@PathVariable int Id, @RequestBody ActionDTO action) {
+    public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody ActionDTO action) {
         validation.validate(action);
 
         ActionDTO entityToUPdate = actionRepo
-                .findById(Id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", Id));
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
 
         entityToUPdate.setTitle(action.getTitle());
         entityToUPdate.setDescription(action.getDescription());
         entityToUPdate.setDiscard(action.getDiscard());
         entityToUPdate.setLevelReq(action.getLevelReq());
 
-        //entityToUPdate.
+        entityToUPdate.setAttack(action.getAttack());
+        entityToUPdate.setMovement(action.getMovement());
+        entityToUPdate.setSkill(action.getSkill());
+        entityToUPdate.setRestoreCards(action.getRestoreCards());
 
-        return new ResponseEntity<>(Action.fromDTO(actionRepo.save(action)), HttpStatus.OK);
+        entityToUPdate.setSummonActions(action.getSummonActions());
+        entityToUPdate.getSummonActions().forEach(a -> a.getKey().setIdAction(entityToUPdate.getId()));
+
+        actionRepo.save(entityToUPdate);
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' updated!", id),
+                HttpStatus.OK);
     }
 
     @Autowired
