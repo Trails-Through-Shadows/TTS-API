@@ -19,7 +19,7 @@ public class TtsApiApplication {
 
     public static void main(String[] args) {
 
-        //jdbc:mariadb://49.13.93.112:3306/tts_api
+        // jdbc:mariadb://49.13.93.112:3306/tts_api
 
         SpringApplication app = new SpringApplication(TtsApiApplication.class);
 

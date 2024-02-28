@@ -128,7 +128,8 @@ public class Encounter {
             EncounterEntity<Character> character = entities.getCharacter(initiative.getId());
             log.debug("Setting initiative for Character #{}", initiative.getId());
             character.setInitiative(character.getEntity().getInitiative() + initiative.getInitiative());
-            log.trace("Initiative set to {} {}{} = {}", character.getEntity().getInitiative(), initiative.getInitiative() >= 0 ? "+" : "", initiative.getInitiative(), character.getInitiative());
+            log.trace("Initiative set to {} {}{} = {}", character.getEntity().getInitiative(),
+                    initiative.getInitiative() >= 0 ? "+" : "", initiative.getInitiative(), character.getInitiative());
         }
 
         state = EncounterState.ONGOING;
@@ -142,11 +143,13 @@ public class Encounter {
         List<Initiative> initiatives = new ArrayList<>();
 
         for (EncounterEntity<Character> character : entities.getCharacters()) {
-            initiatives.add(new Initiative(character.getId(), character.getInitiative(), EncounterEntity.EntityType.CHARACTER));
+            initiatives.add(
+                    new Initiative(character.getId(), character.getInitiative(), EncounterEntity.EntityType.CHARACTER));
         }
 
         for (EncounterEntity<Enemy> enemy : entities.getEnemyGroups()) {
-            initiatives.add(new Initiative(enemy.getIdGroup(), enemy.getInitiative(), EncounterEntity.EntityType.ENEMY));
+            initiatives
+                    .add(new Initiative(enemy.getIdGroup(), enemy.getInitiative(), EncounterEntity.EntityType.ENEMY));
         }
 
         // sort initiatives by initiative, players go before enemies if there is a tie
@@ -208,6 +211,7 @@ public class Encounter {
 
         return ret;
     }
+
     public EntityStatusUpdate startCharacterTurn(Integer id) {
         return startTurn(EncounterEntity.EntityType.CHARACTER, id).stream().findFirst()
                 .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Couldn't find character #{}", id));
@@ -261,10 +265,12 @@ public class Encounter {
 
         return ret;
     }
+
     public EntityStatusUpdate endCharacterTurn(Integer id) {
         return endTurn(EncounterEntity.EntityType.CHARACTER, id).stream().findFirst()
                 .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Couldn't find character #{}", id));
     }
+
     public List<EntityStatusUpdate> endEnemyTurn(Integer id) {
         return endTurn(EncounterEntity.EntityType.ENEMY, id);
     }
@@ -308,12 +314,15 @@ public class Encounter {
     public EntityStatusUpdate characterInteraction(Integer id, Interaction interaction) {
         return entityInteraction(entities.getCharacter(id), interaction.getDamage(), interaction.getEffects());
     }
+
     public EntityStatusUpdate enemyInteraction(Integer id, Integer idGroup, Interaction interaction) {
         return entityInteraction(entities.getEnemy(id, idGroup), interaction.getDamage(), interaction.getEffects());
     }
+
     public EntityStatusUpdate obstacleInteraction(Integer id, Integer idGroup, Interaction interaction) {
         return entityInteraction(entities.getObstacle(id, idGroup), interaction.getDamage(), interaction.getEffects());
     }
+
     public EntityStatusUpdate summonInteraction(Integer id, Integer idGroup, Interaction interaction) {
         return entityInteraction(entities.getSummon(id, idGroup), interaction.getDamage(), interaction.getEffects());
     }
@@ -331,7 +340,6 @@ public class Encounter {
 
         doorsToOpen.add(door);
     }
-
 
     public LinkedHashMap<String, Object> endRound() {
         log.info("Ending round");
@@ -351,9 +359,10 @@ public class Encounter {
         for (LocationDoorDTO door : doorsToOpen) {
             log.trace("Checking door {}", door);
             Part partTo = parts.stream()
-                            .filter(p -> p.getId().equals(door.getIdPartTo()))
-                            .findFirst()
-                            .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part {} not found", door.getIdPartTo()));
+                    .filter(p -> p.getId().equals(door.getKey().getIdPartTo()))
+                    .findFirst()
+                    .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part {} not found",
+                            door.getKey().getIdPartTo()));
 
             discoverPart(partTo.getId());
             unlockedParts.add(partTo.getId());
