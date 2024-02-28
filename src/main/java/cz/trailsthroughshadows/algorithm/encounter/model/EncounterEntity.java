@@ -58,10 +58,17 @@ public class EncounterEntity<T> {
 
         if (!resistances.isEmpty()) {
             log.trace("Entity has resistance: {}", resistances);
-            int resistance = resistances.stream()
-                    .mapToInt(EncounterEffect::getStrength)
-                    .max()
-                    .orElse(0);
+            int resistance = 0;
+
+            for (var r : resistances) {
+                if (r.getStrength() == -1) {
+                    log.trace("Entity has immunity for this type of effect");
+                    effect.setStrength(0);
+                    break;
+                }
+
+                effect.decreaseStrength(r.getStrength());
+            }
 
             effect.decreaseStrength(resistance);
 
@@ -70,7 +77,7 @@ public class EncounterEntity<T> {
                 return;
             }
 
-            log.trace("Effect has been reduced by resistance to '{}'", effect);
+            log.trace("Effect strength has been reduced to '{}'", effect);
         }
 
         effects.add(effect);

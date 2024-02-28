@@ -47,14 +47,15 @@ public class EffectDTO extends Validable implements Serializable {
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
         // Type, duration and target cant be null.
-        if (type == null) {
-            errors.add(new ValidationError("Effect", "type", null, "Type must not be null."));
-        }
         if (duration == null) {
             errors.add(new ValidationError("Effect", "duration", null, "Duration must not be null."));
         }
         if (target == null) {
             errors.add(new ValidationError("Effect", "target", null, "Target must not be null."));
+        }
+        if (type == null) {
+            errors.add(new ValidationError("Effect", "type", null, "Type must not be null."));
+            return;
         }
 
         // Description has to be valid.
@@ -65,18 +66,21 @@ public class EffectDTO extends Validable implements Serializable {
         List<EffectDTO.EffectType> instant = List.of(EffectType.PUSH, EffectType.PULL, EffectType.HEAL);
         if (duration != null && instant.contains(type) && duration != 0) {
             errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be 0 for this type of effect."));
-        }
-        if (duration != null && !instant.contains(type) && duration < 1 && duration != -1) {
+        } else if (duration != null && !instant.contains(type) && duration < 1 && duration != -1) {
             errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be greater than 0 or -1 (infinity)."));
         }
 
-        // Strength must be positive. It must be null for types Disarm, Root, Stun, Confusion, Guidance and Incorporeal.
+        // Strength must be positive. It must be null for types Disarm, Root, Stun, Confusion, Guidance and Incorporeal. It can be null for resistances.
         List<EffectDTO.EffectType> noStrength = List.of(EffectType.DISARM, EffectType.ROOT, EffectType.STUN, EffectType.CONFUSION, EffectType.GUIDANCE, EffectType.INCORPOREAL);
-        if (type != null && noStrength.contains(type) && strength != null) {
+        List<EffectDTO.EffectType> resistances = List.of(EffectType.FORCED_MOVEMENT_RESISTANCE, EffectType.POISON_RESISTANCE, EffectType.FIRE_RESISTANCE, EffectType.BLEED_RESISTANCE, EffectType.DISARM_RESISTANCE, EffectType.ROOT_RESISTANCE, EffectType.STUN_RESISTANCE, EffectType.CONFUSION_RESISTANCE, EffectType.WEAKNESS_RESISTANCE, EffectType.ENFEEBLE_RESISTANCE, EffectType.SLOW_RESISTANCE, EffectType.CONSTRAIN_RESISTANCE);
+        if (noStrength.contains(type) && strength != null) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be null for this type of effect."));
         } else if (strength == null) {
             errors.add(new ValidationError("Effect", "strength", null, "Strength must not be null for this type of effect."));
-        } else if (strength < 1) {
+        } else if (resistances.contains(type) && strength < 0 && strength != -1) {
+            errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than or equal to 0 for this type of effect."));
+        }
+        else if (strength < 1) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than 0."));
         }
     }
