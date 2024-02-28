@@ -10,11 +10,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "License")
 @Entity
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class License {
     @Id
     private Integer id;

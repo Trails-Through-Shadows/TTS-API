@@ -2,6 +2,7 @@ package cz.trailsthroughshadows.api.table.playerdata.character.inventory;
 
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import jakarta.annotation.Nullable;
@@ -10,25 +11,30 @@ import lombok.*;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 @Entity
 @Table(name = "Inventory")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class InventoryDTO extends Validable {
 
     @EmbeddedId
     @Setter(AccessLevel.NONE)
     private InventoryId key;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idItem", insertable = false, updatable = false)
     private ItemDTO item;
 
     @Column(nullable = false)
     private int amount;
 
-    //region Validation
+    // region Validation
 
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
@@ -37,7 +43,8 @@ public class InventoryDTO extends Validable {
             errors.add(new ValidationError("Inventory", "amount", amount, "Amount must be positive."));
         }
         if (amount > validationConfig.getInventory().getMaxItems()) {
-            errors.add(new ValidationError("Inventory", "amount", amount, "Amount must be less than " + validationConfig.getInventory().getMaxItems() + "."));
+            errors.add(new ValidationError("Inventory", "amount", amount,
+                    "Amount must be less than " + validationConfig.getInventory().getMaxItems() + "."));
         }
 
         // Item must be validated.
@@ -49,7 +56,7 @@ public class InventoryDTO extends Validable {
         return key.getIdCharacter() + ": " + amount + "x " + item.getTitle();
     }
 
-    //endregion
+    // endregion
 
     @Embeddable
     @Data
@@ -61,4 +68,3 @@ public class InventoryDTO extends Validable {
         private int idItem;
     }
 }
-

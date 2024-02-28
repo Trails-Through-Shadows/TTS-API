@@ -40,7 +40,6 @@ public class Location extends LocationDTO {
 
     @JsonIgnore
     public Part getStartPart() {
-
         ModelMapper modelMapper = new ModelMapper();
         List<Part> parts = getParts().stream()
                 .map(LocationPartDTO::getPart)
@@ -64,7 +63,7 @@ public class Location extends LocationDTO {
 
     /**
      * Get all mapped Hexes from LocationStartDTO
-     * 
+     *
      * @return list of mapped hexes
      */
     @JsonIgnore

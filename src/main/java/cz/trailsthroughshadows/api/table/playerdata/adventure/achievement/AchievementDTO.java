@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.achievement;
+package cz.trailsthroughshadows.api.table.playerdata.adventure.achievement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -9,12 +9,11 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "Achievement")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Achievement {
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+public class AchievementDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private Integer id;
 
     @Column(nullable = false, length = 128)
@@ -25,5 +24,4 @@ public class Achievement {
 
     @Column(nullable = false)
     private int xpReward;
-
 }

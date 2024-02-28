@@ -1,4 +1,4 @@
-package cz.trailsthroughshadows.api.table.achievement;
+package cz.trailsthroughshadows.api.table.playerdata.adventure.achievement;
 
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
@@ -15,18 +15,17 @@ public class AchievementController {
     private AchievementRepo achievementRepo;
 
     @GetMapping("/{id}")
-    public Achievement findById(@PathVariable int id) {
+    public AchievementDTO findById(@PathVariable int id) {
         return achievementRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid achievement Id:" + id));
     }
 
     @GetMapping("")
-    public ResponseEntity<RestPaginatedResult<Achievement>> findAllEntities(
+    public ResponseEntity<RestPaginatedResult<AchievementDTO>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
-            @RequestParam(defaultValue = "") String sort
-    ) {
+            @RequestParam(defaultValue = "") String sort) {
         var entities = achievementRepo.getAll();
         Pagination pagination = new Pagination(entities.size(), false, entities.size(), page, limit);
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entities), HttpStatus.OK);
