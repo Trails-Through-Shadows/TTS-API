@@ -79,8 +79,7 @@ public class EffectDTO extends Validable implements Serializable {
             errors.add(new ValidationError("Effect", "strength", null, "Strength must not be null for this type of effect."));
         } else if (resistances.contains(type) && strength < 0 && strength != -1) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than or equal to 0 for this type of effect."));
-        }
-        else if (strength < 1) {
+        } else if (strength < 1) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than 0."));
         }
     }
