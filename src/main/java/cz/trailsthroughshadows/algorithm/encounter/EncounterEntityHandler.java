@@ -121,7 +121,7 @@ public class EncounterEntityHandler {
         return getEnemies().stream()
                 .filter(e -> e.getId().equals(id) && e.getIdGroup().equals(idGroup))
                 .findFirst()
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id {} and idGroup {} not found", id, idGroup));
+                .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Enemy with id {} and idGroup {} not found", id, idGroup));
     }
 
     public void removeEnemy(int id, int idGroup) {

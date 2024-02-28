@@ -194,6 +194,11 @@ public class Encounter {
 
         if (type.equals(EncounterEntity.EntityType.ENEMY)) {
             List<EncounterEntity<Enemy>> enemies = entities.getEnemyGroup(id);
+
+            if (enemies.isEmpty()) {
+                logError(HttpStatus.NOT_FOUND, "No enemy in group {}, something went wrong.", id);
+            }
+
             for (EncounterEntity<Enemy> enemy : enemies) {
                 enemy.startTurn();
                 ret.add(enemy.getStatusUpdate());
@@ -207,8 +212,11 @@ public class Encounter {
         return startTurn(EncounterEntity.EntityType.CHARACTER, id).stream().findFirst()
                 .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Couldn't find character #{}", id));
     }
-    public List<EntityStatusUpdate> startEnemyTurn(Integer id) {
-        return startTurn(EncounterEntity.EntityType.ENEMY, id);
+    public LinkedHashMap<String, Object> startEnemyTurn(Integer id) {
+        LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
+        ret.put("entities", startTurn(EncounterEntity.EntityType.ENEMY, id));
+        ret.put("action", entities.getEnemyGroup(id).getFirst().getEntity().drawCard());
+        return ret;
     }
 
     private List<EntityStatusUpdate> endTurn(EncounterEntity.EntityType type, Integer id) {
@@ -284,6 +292,15 @@ public class Encounter {
     private void checkEntityDead(EncounterEntity<?> entity) {
         if (entity.getHealth() == 0) {
             log.info("Entity '{}' is dead", entity);
+
+            // to make sure the entity doesn't stay active after it's dead
+            if (entities.getActiveEntity().getType() == entity.getType() && entities.getActiveEntity().getId().equals(entity.getIdGroup())) {
+                if (entity.getType().equals(EncounterEntity.EntityType.CHARACTER) || entity.getType().equals(EncounterEntity.EntityType.ENEMY) && entities.getEnemyGroup(entity.getIdGroup()).stream().allMatch(e -> e.getHealth() == 0)) {
+                    log.trace("Resetting active entity - they died during their turn");
+                    entities.resetActiveEntity();
+                }
+            }
+
             entities.removeEntity(entity);
         }
     }
