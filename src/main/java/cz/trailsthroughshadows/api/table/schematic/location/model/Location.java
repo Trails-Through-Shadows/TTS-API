@@ -26,7 +26,7 @@ public class Location extends LocationDTO {
     private List<Story> stories;
 
     public String getUrl() {
-        if(url == null)
+        if (url == null)
             url = ImageLoader.getPath(this.getTag());
         return ImageLoader.getPath(this.getTag());
     }
@@ -38,6 +38,7 @@ public class Location extends LocationDTO {
         return stories;
     }
 
+    @JsonIgnore
     public Part getStartPart() {
 
         ModelMapper modelMapper = new ModelMapper();
@@ -52,7 +53,8 @@ public class Location extends LocationDTO {
                         this.getStartHexes()
                                 .stream()
                                 .findFirst()
-                                .orElseThrow(() -> new RuntimeException("No start part found in location " + this.getId()))
+                                .orElseThrow(
+                                        () -> new RuntimeException("No start part found in location " + this.getId()))
                                 .getIdPart())) // hoping there will be only one starting part
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No start part found in location " + this.getId()));
@@ -62,15 +64,16 @@ public class Location extends LocationDTO {
 
     /**
      * Get all mapped Hexes from LocationStartDTO
+     * 
      * @return list of mapped hexes
      */
-    public List<Hex> getStartingHexes(){
+    @JsonIgnore
+    public List<Hex> getStartingHexes() {
         List<Hex> hexes = startHexes.stream()
-                .map(s -> Hex.fromDTO( s.getHex()))
+                .map(s -> Hex.fromDTO(s.getHex()))
                 .toList();
         return hexes;
     }
-
 
     // TODO: Map locations only by specific campaign frrom database @rcMarty
     public static Location fromDTO(LocationDTO dto) {

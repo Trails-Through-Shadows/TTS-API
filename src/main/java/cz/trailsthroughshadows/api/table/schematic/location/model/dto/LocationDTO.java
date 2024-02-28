@@ -23,7 +23,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Location")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class LocationDTO {
 
     @Id
@@ -47,7 +47,7 @@ public class LocationDTO {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     protected List<LocationPartDTO> parts;
 
-    @OneToMany(mappedBy = "idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     protected List<LocationDoorDTO> doors;
 
@@ -69,7 +69,8 @@ public class LocationDTO {
 
     @JsonIgnore
     public List<Part> getMappedParts() {
-        if (parts == null) return new ArrayList<>();
+        if (parts == null)
+            return new ArrayList<>();
         ModelMapper modelMapper = new ModelMapper();
         return parts.stream()
                 .map(LocationPartDTO::getPart)
@@ -79,7 +80,8 @@ public class LocationDTO {
 
     @JsonIgnore
     public List<Enemy> getMappedEnemies() {
-        if (enemies == null) return new ArrayList<>();
+        if (enemies == null)
+            return new ArrayList<>();
         ModelMapper modelMapper = new ModelMapper();
         return enemies.stream()
                 .map(HexEnemyDTO::getEnemy)
@@ -89,7 +91,8 @@ public class LocationDTO {
 
     @JsonIgnore
     public List<Obstacle> getMappedObstacles() {
-        if (obstacles == null) return new ArrayList<>();
+        if (obstacles == null)
+            return new ArrayList<>();
         ModelMapper modelMapper = new ModelMapper();
         return obstacles.stream()
                 .map(HexObstacleDTO::getObstacle)
@@ -97,11 +100,9 @@ public class LocationDTO {
                 .toList();
     }
 
-
     @JsonIgnore
     public void loadAll() {
         Initialization.hibernateInitializeAll(this);
     }
 
 }
-

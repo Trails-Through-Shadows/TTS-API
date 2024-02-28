@@ -10,18 +10,10 @@ import java.io.Serializable;
 @Entity
 @NoArgsConstructor
 @Table(name = "LocationDoor")
-@IdClass(LocationDoorDTO.class)
 public class LocationDoorDTO implements Serializable {
 
-    @Id
-    private int idLocation;
-
-    @Id
-    private int idPartFrom;
-
-    @Id
-    private int idPartTo;
-
+    @EmbeddedId
+    private LocationDoorId key;
 
     @Column(nullable = false)
     private Integer qCoord;
@@ -31,5 +23,16 @@ public class LocationDoorDTO implements Serializable {
 
     @Column(nullable = false)
     private Integer sCoord;
+
+    @Data
+    @Embeddable
+    public static class LocationDoorId implements Serializable {
+        @Column(nullable = false)
+        private int idLocation;
+        @Column(nullable = false)
+        private int idPartFrom;
+        @Column(nullable = false)
+        private int idPartTo;
+    }
 
 }

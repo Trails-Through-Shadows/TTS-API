@@ -4,6 +4,7 @@ import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.effect.model.Effect;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -14,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,8 +34,7 @@ public class EffectController {
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "true") boolean lazy
-    ) {
+            @RequestParam(required = false, defaultValue = "true") boolean lazy) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
@@ -57,17 +54,18 @@ public class EffectController {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
         }
 
-        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit), entries.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Effect::fromDTO).toList()), HttpStatus.OK);
+        Pagination pagination = new Pagination(entriesPage.size(), (entries.size() > (Math.max(page, 0) + 1) * limit),
+                entries.size(), page, limit);
+        return new ResponseEntity<>(
+                RestPaginatedResult.of(pagination, entriesPage.stream().map(Effect::fromDTO).toList()), HttpStatus.OK);
     }
 
     @GetMapping("/effects/{id}")
-//    @Cacheable(value = "effect", key = "#id")
+    // @Cacheable(value = "effect", key = "#id")
     public ResponseEntity<Effect> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "false") boolean lazy
-    ) {
+            @RequestParam(required = false, defaultValue = "false") boolean lazy) {
         EffectDTO entity = effectRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '%d' not found!", id));
@@ -79,6 +77,45 @@ public class EffectController {
         }
 
         return new ResponseEntity<>(Effect.fromDTO(entity), HttpStatus.OK);
+    }
+
+    @PutMapping("/effects/{id}")
+    public ResponseEntity<MessageResponse> updateEffect(@PathVariable int id, @RequestBody EffectDTO effect) {
+        validation.validate(effect);
+        EffectDTO existing = effectRepo.findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '%d' not found!", id));
+
+        existing.setDescription(effect.getDescription());
+        existing.setDuration(effect.getDuration());
+        existing.setType(effect.getType());
+        existing.setTarget(effect.getTarget());
+        existing.setDuration(effect.getDuration());
+        existing.setDescription(effect.getDescription());
+
+        effectRepo.save(effect);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Effect updated successfully!"), HttpStatus.OK);
+
+    }
+
+    @PostMapping("/effects")
+    public ResponseEntity<MessageResponse> createEffect(@RequestBody List<EffectDTO> effect) {
+        effect.forEach(validation::validate);
+        effect.forEach(e -> e.setId(null));
+        effectRepo.saveAll(effect);
+
+        String ids = effect.stream().map(e -> String.valueOf(e.getId())).toList().toString();
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Effects with ids '%s'", ids), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/effects/{id}")
+    public ResponseEntity<MessageResponse> deleteEffect(@PathVariable int id) {
+        EffectDTO effect = effectRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '%d' not found!", id));
+
+        effectRepo.delete(effect);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Effect with id '%d' deleted!", id),
+                HttpStatus.OK);
     }
 
     @Autowired

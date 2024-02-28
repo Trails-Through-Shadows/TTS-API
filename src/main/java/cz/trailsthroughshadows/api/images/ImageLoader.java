@@ -30,7 +30,8 @@ public class ImageLoader {
 
     /**
      * @param tag
-     * @return parsed url to image based on tag, if tag is unknown, returns unknown.png
+     * @return parsed url to image based on tag, if tag is unknown, returns
+     *         unknown.png
      */
     public static String getPath(String tag) {
         return parsePath(tag);
@@ -39,10 +40,10 @@ public class ImageLoader {
     private static String parsePath(String tag) {
         String folder = parseFolder(tag);
         if (folder.equals("unknown")) {
-            return String.format("%s%s/unknown.png", config.getUrl(), config.getPath());
+            return String.format("%s/%s/unknown.png", config.getUrl(), config.getPath());
         }
         tag = tag.substring(2);
-        return String.format("%s%s/%s/%s.png", config.getUrl(), config.getPath(), folder, tag);
+        return String.format("%s/%s/%s/%s.png", config.getUrl(), config.getPath(), folder, tag);
     }
 
     private static String parseFolder(String tag) {
@@ -65,7 +66,6 @@ public class ImageLoader {
         };
 
     }
-
 
     @Autowired
     public void setValidationConfig(ImageLoaderConfig validationConfig) {
