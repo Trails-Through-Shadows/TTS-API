@@ -15,14 +15,14 @@ public class LocationDoorDTO implements Serializable {
     @EmbeddedId
     private LocationDoorId key;
 
-    @Column(nullable = false)
-    private Integer qCoord;
+    @Column(nullable = false, name = "qCoord")
+    private Integer q;
 
-    @Column(nullable = false)
-    private Integer rCoord;
+    @Column(nullable = false, name = "rCoord")
+    private Integer r;
 
-    @Column(nullable = false)
-    private Integer sCoord;
+    @Column(nullable = false, name = "sCoord")
+    private Integer s;
 
     @Data
     @Embeddable
