@@ -10,7 +10,10 @@ public abstract class Text extends Validable {
     protected String text;
 
     public void validateText(int minLen, int maxLen, String allowedChars) {
-        String name = getValidableClass();
+
+        String className = getValidableClass();
+
+        String title = getTitle();
 
         if (minLen == 0 && (text == null || text.isBlank())) {
             return;
@@ -18,20 +21,23 @@ public abstract class Text extends Validable {
 
         // check min and max length
         if (minLen != 0 && (text == null || text.isBlank())) {
-            errors.add(new ValidationError(name, "text", text, "%s is required!".formatted(name)));
+            errors.add(new ValidationError(className, "text", text, "%s is required!".formatted(title)));
             return;
         }
 
         if (minLen != 0 && text.length() < minLen) {
-            errors.add(new ValidationError(name, "text", text, "%s has to be at least %d characters long!".formatted(name, minLen)));
+            errors.add(new ValidationError(className, "text", text,
+                    "%s has to be at least %d characters long!".formatted(title, minLen)));
         }
         if (maxLen != 0 && text.length() > maxLen) {
-            errors.add(new ValidationError(name, "text", text, "%s has to be at most %d characters long!".formatted(name, maxLen)));
+            errors.add(new ValidationError(className, "text", text,
+                    "%s has to be at most %d characters long!".formatted(title, maxLen)));
         }
 
         // check allowed regex
         if (allowedChars != null && !text.matches(allowedChars)) {
-            errors.add(new ValidationError(name, "text", text, "%s contains disallowed characters!".formatted(name)));
+            errors.add(new ValidationError(className, "text", text,
+                    "%s contains disallowed characters!".formatted(title)));
         }
     }
 
