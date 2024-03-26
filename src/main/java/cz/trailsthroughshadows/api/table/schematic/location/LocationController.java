@@ -5,6 +5,7 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
@@ -115,7 +116,10 @@ public class LocationController {
         // TODO zoze add doors here
 
         Part retPart = Part.fromDTO(part, location.getObstacles(),location.getDoors());
-        retPart.setStartingHexes(location.getStartingHexes());
+        List<Hex> startingHexes = location.getStartingHexes().stream()
+                .filter(hex -> hex.getKey().getIdPart() == idPart)
+                .toList();
+        retPart.setStartingHexes(startingHexes);
 
         return new ResponseEntity<>(retPart, HttpStatus.OK);
     }
