@@ -78,7 +78,7 @@ public class PartDTO extends Validable {
             errors.add(new ValidationError(getValidableClass(), "hexes", getHexes().size(), "Part must have at most %d hexes!".formatted(hexGrid.getMaxHexes())));
         }
 
-        // every hex has to have correct coordinates
+        // every startingHex has to have correct coordinates
         for (HexDTO hex : getHexes()) {
             hex.validate(validationConfig).ifPresent(restError -> errors.addAll(restError.getErrors()));
         }
@@ -127,10 +127,10 @@ public class PartDTO extends Validable {
         if (duplicates > 0)
             errors.add(new ValidationError(getValidableClass(), "hexes", duplicates, "Part must not have any duplicate hexes!"));
 
-        // must include center hex
+        // must include center startingHex
         Optional<HexDTO> centerHex = getHexes().stream().filter(hex -> hex.getQ() == 0 && hex.getR() == 0 && hex.getS() == 0).findFirst();
         if (centerHex.isEmpty()) {
-            errors.add(new ValidationError(getValidableClass(), "hexes", null, "Part must include center hex!"));
+            errors.add(new ValidationError(getValidableClass(), "hexes", null, "Part must include center startingHex!"));
             return;
         }
 

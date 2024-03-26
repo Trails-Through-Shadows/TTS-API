@@ -33,17 +33,17 @@ public class TestApp {
 //        Dungeon dungeon = new Dungeon(loc);
 //
 //        Character character = characterRepo.findById(1).get();
-//        character.setHex(loc.getLocationParts().get(0).getHexes().get(32 - 1));
+//        character.setStartingHex(loc.getLocationParts().get(0).getHexes().get(32 - 1));
 //        dungeon.getCharacters().add(character);
 //
 //        Enemy enemy = enemyRepo.findById(1).get();
 //
 //        Enemy e1 = enemy.clone();
-//        e1.setHex(loc.getLocationParts().get(0).getHexes().get(21 - 1));
+//        e1.setStartingHex(loc.getLocationParts().get(0).getHexes().get(21 - 1));
 //        dungeon.getEnemies().add(e1);
 //
 //        Enemy e2 = enemy.clone();
-//        e2.setHex(loc.getLocationParts().get(0).getHexes().get(61 - 1));
+//        e2.setStartingHex(loc.getLocationParts().get(0).getHexes().get(61 - 1));
 //        dungeon.getEnemies().add(e2);
 //
 //        var x = dungeon.calculateTarget(character, 3, Effect.EffectTarget.ONE);

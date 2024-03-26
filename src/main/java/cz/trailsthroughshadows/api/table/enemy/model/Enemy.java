@@ -16,7 +16,7 @@ import java.util.List;
 // @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Enemy extends EnemyDTO {
 
-    private HexDTO hex;
+    private HexDTO startingHex;
 
     private String url;
 
@@ -34,7 +34,7 @@ public class Enemy extends EnemyDTO {
 
     public static Enemy fromDTO(EnemyDTO dto, HexDTO hex) {
         Enemy enemy = fromDTO(dto);
-        enemy.setHex(hex);
+        enemy.setStartingHex(hex);
         enemy.setDeck(new ArrayList<>(dto.getMappedActions().stream().map(Action::fromDTO).toList()));
 
         if (enemy.getDeck().isEmpty())
