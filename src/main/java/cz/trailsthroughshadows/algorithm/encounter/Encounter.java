@@ -300,7 +300,8 @@ public class Encounter {
             log.info("Entity '{}' is dead", entity);
 
             // to make sure the entity doesn't stay active after it's dead
-            if (entities.getActiveEntity().getType() == entity.getType() && entities.getActiveEntity().getId().equals(entity.getIdGroup())) {
+            int entityId = entity.getType() == EncounterEntity.EntityType.CHARACTER ? entity.getId() : entity.getIdGroup();
+            if (entities.isEntityActive() && entities.getActiveEntity().getType() == entity.getType() && entities.getActiveEntity().getId() == entityId) {
                 if (entity.getType().equals(EncounterEntity.EntityType.CHARACTER) || entity.getType().equals(EncounterEntity.EntityType.ENEMY) && entities.getEnemyGroup(entity.getIdGroup()).stream().allMatch(e -> e.getHealth() == 0)) {
                     log.trace("Resetting active entity - they died during their turn");
                     entities.resetActiveEntity();
