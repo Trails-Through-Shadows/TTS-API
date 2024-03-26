@@ -13,7 +13,7 @@
 //import cz.trailsthroughshadows.api.table.effect.model.Effect;
 //import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 //import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
-//import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
+//import cz.trailsthroughshadows.api.table.schematic.startingHex.model.Hex;
 //import lombok.AllArgsConstructor;
 //import lombok.Getter;
 //import lombok.extern.slf4j.Slf4j;
@@ -38,10 +38,10 @@
 //        if (entity instanceof Character character)
 //            res.append(" (%s)".formatted(character.getPlayerName()));
 //
-//        Hex hex = entity.getHex();
-//        if (hex != null)
-//            res.append(" [%d]".formatted(entity.getHex().getKey().getId()));
-//        else res.append(" [no hex]");
+//        Hex startingHex = entity.getStartingHex();
+//        if (startingHex != null)
+//            res.append(" [%d]".formatted(entity.getStartingHex().getKey().getId()));
+//        else res.append(" [no startingHex]");
 //
 //        return res.toString();
 //    }
@@ -84,12 +84,12 @@
 //        }
 //    }
 //
-//    public void moveCharacter(Character character, Hex hex) {
-//        character.setHex(hex);
+//    public void moveCharacter(Character character, Hex startingHex) {
+//        character.setStartingHex(startingHex);
 //    }
 //
-//    public void moveEnemy(Enemy enemy, Hex hex) {
-//        enemy.setHex(hex);
+//    public void moveEnemy(Enemy enemy, Hex startingHex) {
+//        enemy.setStartingHex(startingHex);
 //    }
 //
 //    public java.util.List<Entity> calculateTarget(Entity entity, Effect.EffectTarget target) {
@@ -98,9 +98,9 @@
 //
 //    public java.util.List<Entity> calculateTarget(Entity entity, Effect.EffectTarget target, int range) {
 //        java.util.List<Entity> targets = new ArrayList<>();
-//        Hex hex = entity.getHex();
+//        Hex startingHex = entity.getStartingHex();
 //
-//        log.info("Calculating target for " + entity + " at " + hex + " with range " + range + " and target " + target);
+//        log.info("Calculating target for " + entity + " at " + startingHex + " with range " + range + " and target " + target);
 //
 //        switch (target) {
 //            case SELF:
@@ -115,20 +115,20 @@
 //                break;
 //            case ALL:
 //                targets.addAll(List.union(characters, enemies, summons).stream()
-//                        .filter(ent -> location.getDistance(hex, ent.getHex()) <= range)
+//                        .filter(ent -> location.getDistance(startingHex, ent.getStartingHex()) <= range)
 //                        .toList());
 //                break;
 //            case ONE:
 //                List.union(characters, enemies, summons).stream()
-//                        .filter(ent -> location.getDistance(hex, ent.getHex()) <= range)
-//                        .min((ent1, ent2) -> location.getDistance(hex, ent1.getHex()) - location.getDistance(hex, ent2.getHex()))
+//                        .filter(ent -> location.getDistance(startingHex, ent.getStartingHex()) <= range)
+//                        .min((ent1, ent2) -> location.getDistance(startingHex, ent1.getStartingHex()) - location.getDistance(startingHex, ent2.getStartingHex()))
 //                        .ifPresent(targets::add);
 //                break;
 //            default:
 //                throw new IllegalStateException("Unexpected value: " + target);
 //        }
 //
-//        return targets.stream().sorted((ent1, ent2) -> location.getDistance(hex, ent1.getHex()) - location.getDistance(hex, ent2.getHex())).toList();
+//        return targets.stream().sorted((ent1, ent2) -> location.getDistance(startingHex, ent1.getStartingHex()) - location.getDistance(startingHex, ent2.getStartingHex())).toList();
 //    }
 //
 //    public void evaluateMovement(Entity entity, Movement movement) {

@@ -145,7 +145,7 @@ public class Part extends PartDTO {
     }
 
     public Optional<Enemy> getEnemy(Hex hex) {
-        return enemies.stream().filter(e -> e.getHex().equals(hex)).findFirst();
+        return enemies.stream().filter(e -> e.getStartingHex().equals(hex)).findFirst();
     }
 
     public Optional<Obstacle> getObstacle(Hex hex) {

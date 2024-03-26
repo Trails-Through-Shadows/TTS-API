@@ -36,7 +36,7 @@ public class HexDTO extends Validable {
     //region Validation
     @Override
     public void validateInner(ValidationConfig validationConfig) {
-        // hex has to have correct coordinates
+        // startingHex has to have correct coordinates
         int sum = getQ() + getR() + getS();
         if (sum != 0) {
             errors.add(new ValidationError("Hex", "coords", sum, "Sum of coords q + r + s has to be 0!"));

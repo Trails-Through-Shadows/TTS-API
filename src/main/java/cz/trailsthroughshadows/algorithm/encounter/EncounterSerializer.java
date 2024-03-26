@@ -139,7 +139,7 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
             case ENEMY:
                 Enemy enemy = (Enemy) entity.getEntity();
                 gen.writeStringField("url", enemy.getUrl());
-                gen.writeObjectField("startingHex", enemy.getHex());
+                gen.writeObjectField("startingHex", enemy.getStartingHex());
                 break;
             case SUMMON:
                 Summon summon = (Summon) entity.getEntity();
