@@ -135,11 +135,12 @@ public class Encounter {
         state = EncounterState.ONGOING;
     }
 
-    public List<Initiative> getInitiative() {
+    public LinkedHashMap<String, Object> getInitiative() {
         if (state != EncounterState.ONGOING) {
             logError(HttpStatus.BAD_REQUEST, "Roll initiative first.");
         }
 
+        LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
         List<Initiative> initiatives = new ArrayList<>();
 
         for (EncounterEntity<Character> character : entities.getCharacters()) {
@@ -166,7 +167,18 @@ public class Encounter {
             return 1;
         });
 
-        return initiatives;
+        ret.put("initiatives", initiatives);
+
+        if (entities.isEntityActive()) {
+            LinkedHashMap<String, Object> active = new LinkedHashMap<>();
+            active.put("type", entities.getActiveEntity().getType());
+            active.put("id", entities.getActiveEntity().getId());
+            ret.put("active", active);
+        } else {
+            ret.put("active", null);
+        }
+
+        return ret;
     }
 
     private List<EntityStatusUpdate> startTurn(EncounterEntity.EntityType type, Integer id) {
