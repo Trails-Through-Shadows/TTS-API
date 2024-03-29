@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -58,6 +59,12 @@ public class CharacterService {
     }
 
     public RestResponse add(CharacterDTO character, Integer adventureId, Session session) {
+        if (character == null) {
+            RestError error = RestError.of(HttpStatus.BAD_REQUEST, "Character cannot be null!");
+            log.warn(error.toString());
+            throw new RestException(error);
+        }
+
         AdventureDTO adventure = adventureRepo.findById(adventureId)
                 .orElseThrow(() -> {
                     RestError error = RestError.of(HttpStatus.NOT_FOUND, "Adventure not found!");
@@ -65,7 +72,7 @@ public class CharacterService {
                     return new RestException(error);
                 });
         character.setIdAdventure(adventureId);
-        character.setInventory(List.of());
+        character.setInventory(new LinkedList<>());
 
         int limit = validationConfig.getAdventure().getMaxPlayers();
         int current = characterRepo.getCountByAdventureId(adventure.getId());

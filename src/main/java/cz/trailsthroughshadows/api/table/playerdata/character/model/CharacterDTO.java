@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
@@ -24,7 +25,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Table(name = "`Character`")
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class CharacterDTO extends Validable implements Cloneable {
 
     @Id
@@ -53,7 +54,7 @@ public class CharacterDTO extends Validable implements Cloneable {
     @Column(nullable = false, length = 128)
     protected String title;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     protected String playerName;
 
     @OneToMany(mappedBy = "key.idCharacter", fetch = FetchType.LAZY)
@@ -73,13 +74,13 @@ public class CharacterDTO extends Validable implements Cloneable {
         return character;
     }
 
-    //region Validation
+    // region Validation
 
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
         // Title and playerName have to be valid using Title standards.
-        validateChild(new Title(title), validationConfig);
-        validateChild(new Title(playerName), validationConfig);
+        validateChild(new Title(title), validationConfig, "ůlaskjdfůlk");
+        validateChild(new Description(playerName), validationConfig, "Player name");
 
         // Race and class must be validated.
         validateChild(clazz, validationConfig);
@@ -94,5 +95,5 @@ public class CharacterDTO extends Validable implements Cloneable {
         return getTitle() + " (" + getPlayerName() + ")";
     }
 
-    //endregion
+    // endregion
 }

@@ -20,13 +20,17 @@ public abstract class Validable {
      */
     protected List<RestSubError> errors = new ArrayList<>();
 
+    protected String customText;
+
     /**
      * Validates the object using the provided validation configuration.
      *
      * @param validationConfig The validation configuration to use.
-     * @return An optional containing a RestError if the object is not valid, empty otherwise.
+     * @return An optional containing a RestError if the object is not valid, empty
+     *         otherwise.
      */
     public Optional<RestError> validate(@Nullable ValidationConfig validationConfig) {
+
         log.trace("Validating {} '{}'", getValidableClass(), getValidableValue());
 
         errors = new ArrayList<>();
@@ -36,7 +40,41 @@ public abstract class Validable {
             return Optional.empty();
         }
 
-        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "{} '{}' is not valid!", getValidableClass(), getValidableValue());
+        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "{} '{}' is not valid!",
+                getValidableClass(),
+                getValidableValue());
+
+        for (var e : errors) {
+            error.addSubError(e);
+        }
+
+        return Optional.of(error);
+    }
+
+    /**
+     * Validates the object using the provided validation configuration.
+     *
+     * @param validationConfig The validation configuration to use.
+     * @param customText       Custom text to use in the error message.
+     * @return An optional containing a RestError if the object is not valid, empty
+     *         otherwise.
+     */
+    public Optional<RestError> validate(@Nullable ValidationConfig validationConfig, String customText) {
+
+        this.customText = customText;
+
+        log.trace("Validating {} '{}'", getValidableClass(), getValidableValue());
+
+        errors = new ArrayList<>();
+        validateInner(validationConfig);
+
+        if (errors.isEmpty()) {
+            return Optional.empty();
+        }
+
+        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "{} '{}' is not valid!",
+                (customText == null) ? getValidableClass() : this.customText,
+                getValidableValue());
 
         for (var e : errors) {
             error.addSubError(e);
@@ -67,7 +105,29 @@ public abstract class Validable {
 
         if (error.isPresent()) {
             RestError restError = error.get();
-            RestSubError composite = new CompositeError(child.getValidableClass(), restError.getErrors(), restError.getMessage());
+            RestSubError composite = new CompositeError(child.getValidableClass(), restError.getErrors(),
+                    restError.getMessage());
+            errors.add(composite);
+        }
+    }
+
+    /**
+     * Validates a child object using the provided validation configuration.
+     *
+     * @param child            The child object to validate.
+     * @param validationConfig The validation configuration to use.
+     * @param customText       Custom text to use in the error message.
+     */
+    protected void validateChild(Validable child, @Nullable ValidationConfig validationConfig, String customText) {
+        if (child == null)
+            return;
+
+        Optional<RestError> error = child.validate(validationConfig, customText);
+
+        if (error.isPresent()) {
+            RestError restError = error.get();
+            RestSubError composite = new CompositeError(child.getValidableClass(), restError.getErrors(),
+                    restError.getMessage());
             errors.add(composite);
         }
     }
@@ -90,6 +150,14 @@ public abstract class Validable {
         String name = getClass().getSimpleName();
         name = name.endsWith("DTO") ? name.replace("DTO", "") : name;
         return name;
+    }
+
+    @JsonIgnore
+    public String getTitle() {
+        if (customText == null) {
+            return getValidableClass();
+        }
+        return customText;
     }
 
 }
