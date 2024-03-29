@@ -2,6 +2,7 @@ package cz.trailsthroughshadows.api.table.schematic.location.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.images.ImageLoader;
+import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
 import cz.trailsthroughshadows.api.table.campaign.model.Story;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
@@ -12,6 +13,7 @@ import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,11 +54,10 @@ public class Location extends LocationDTO {
                         this.getStartHexes()
                                 .stream()
                                 .findFirst()
-                                .orElseThrow(
-                                        () -> new RuntimeException("No start part found in location " + this.getId()))
-                                .getIdPart())) // hoping there will be only one starting part
+                                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "No start part found in location {}", getId()))
+                            .getIdPart())) // hoping there will be only one starting part
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("No start part found in location " + this.getId()));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND,"No start part found in location {}", getId()));
 
         return Part.fromDTO(tmp);
     }
