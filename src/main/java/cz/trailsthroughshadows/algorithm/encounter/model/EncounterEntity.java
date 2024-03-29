@@ -168,7 +168,7 @@ public class EncounterEntity<T> {
     }
 
     public EntityStatusUpdate getStatusUpdate() {
-        return new EntityStatusUpdate(getId(), getHealth(), getEffects(), getHealth() != 0 ? EntityStatusUpdate.Status.ALIVE : EntityStatusUpdate.Status.DEAD);
+        return new EntityStatusUpdate(getType(), getId(), getIdGroup(), getHealth(), getEffects(), getHealth() != 0 ? EntityStatusUpdate.Status.ALIVE : EntityStatusUpdate.Status.DEAD);
     }
 
     public enum EntityType {
