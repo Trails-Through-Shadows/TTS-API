@@ -13,31 +13,29 @@ public abstract class Text extends Validable {
 
         String className = getValidableClass();
 
-        String title = getTitle();
-
         if (minLen == 0 && (text == null || text.isBlank())) {
             return;
         }
 
         // check min and max length
         if (minLen != 0 && (text == null || text.isBlank())) {
-            errors.add(new ValidationError(className, "text", text, "%s is required!".formatted(title)));
+            errors.add(new ValidationError(className, "text", text, "%s is required!".formatted(className)));
             return;
         }
 
         if (minLen != 0 && text.length() < minLen) {
             errors.add(new ValidationError(className, "text", text,
-                    "%s has to be at least %d characters long!".formatted(title, minLen)));
+                    "%s has to be at least %d characters long!".formatted(className, minLen)));
         }
         if (maxLen != 0 && text.length() > maxLen) {
             errors.add(new ValidationError(className, "text", text,
-                    "%s has to be at most %d characters long!".formatted(title, maxLen)));
+                    "%s has to be at most %d characters long!".formatted(className, maxLen)));
         }
 
         // check allowed regex
         if (allowedChars != null && !text.matches(allowedChars)) {
             errors.add(new ValidationError(className, "text", text,
-                    "%s contains disallowed characters!".formatted(title)));
+                    "%s contains disallowed characters!".formatted(className)));
         }
     }
 

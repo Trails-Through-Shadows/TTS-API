@@ -78,8 +78,8 @@ public class CharacterDTO extends Validable implements Cloneable {
 
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
-        // Title and playerName have to be valid using Title standards.
-        validateChild(new Title(title), validationConfig, "ůlaskjdfůlk");
+        // Title and playerName have to be valid using Title and Description standards.
+        validateChild(new Title(title), validationConfig);
         validateChild(new Description(playerName), validationConfig, "Player name");
 
         // Race and class must be validated.
