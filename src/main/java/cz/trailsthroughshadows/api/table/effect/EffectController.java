@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -58,6 +59,16 @@ public class EffectController {
                 entries.size(), page, limit);
         return new ResponseEntity<>(
                 RestPaginatedResult.of(pagination, entriesPage.stream().map(Effect::fromDTO).toList()), HttpStatus.OK);
+    }
+
+    @GetMapping("/enum/effectType")
+    public ResponseEntity<List<EffectDTO.EffectType>> getEffectType() {
+        return new ResponseEntity<>(Arrays.asList(EffectDTO.EffectType.values()), HttpStatus.OK);
+    }
+
+    @GetMapping("/enum/effectTarget")
+    public ResponseEntity<List<EffectDTO.EffectTarget>> getEffectTarget() {
+        return new ResponseEntity<>(Arrays.asList(EffectDTO.EffectTarget.values()), HttpStatus.OK);
     }
 
     @GetMapping("/effects/{id}")
