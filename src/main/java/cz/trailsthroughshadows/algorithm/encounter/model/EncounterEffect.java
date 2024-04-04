@@ -46,14 +46,10 @@ public class EncounterEffect {
             case POISON -> EffectDTO.EffectType.POISON_RESISTANCE;
             case FIRE -> EffectDTO.EffectType.FIRE_RESISTANCE;
             case BLEED -> EffectDTO.EffectType.BLEED_RESISTANCE;
-            case DISARM -> EffectDTO.EffectType.DISARM_RESISTANCE;
-            case ROOT -> EffectDTO.EffectType.ROOT_RESISTANCE;
             case STUN -> EffectDTO.EffectType.STUN_RESISTANCE;
             case CONFUSION -> EffectDTO.EffectType.CONFUSION_RESISTANCE;
             case ENFEEBLE -> EffectDTO.EffectType.ENFEEBLE_RESISTANCE;
             case SLOW -> EffectDTO.EffectType.SLOW_RESISTANCE;
-            case CONSTRAIN -> EffectDTO.EffectType.CONSTRAIN_RESISTANCE;
-            case WEAKNESS -> EffectDTO.EffectType.WEAKNESS_RESISTANCE;
             default -> null;
         };
     }
@@ -62,6 +58,7 @@ public class EncounterEffect {
     public boolean isInfinite() {
         return getDuration() == -1;
     }
+
     @JsonIgnore
     public boolean isExpired() {
         return getDuration() == 0;

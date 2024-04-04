@@ -82,9 +82,11 @@ public class EncounterEntity<T> {
 
         effects.add(effect);
     }
+
     public void addEffects(List<EncounterEffect> effects) {
         effects.forEach(this::addEffect);
     }
+
     public void applyEffect(EncounterEffect effect) {
         if (!effect.isApplicableAtStartTurn())
             return;
@@ -97,6 +99,7 @@ public class EncounterEntity<T> {
             }
         }
     }
+
     public void decreaseEffectDuration(EncounterEffect effect) {
         effect.decreaseDuration();
     }
@@ -110,7 +113,7 @@ public class EncounterEntity<T> {
             damage = Math.max(0, damage - getDefence());
             log.trace("Damage reduced by defence to {}", damage);
         }
-        health =  Math.max(0, health - damage);
+        health = Math.max(0, health - damage);
         log.trace("Entity health is now {}", health);
     }
 
@@ -120,6 +123,7 @@ public class EncounterEntity<T> {
 
         // todo add summons
     }
+
     public void endTurn() {
         log.debug("Ending turn for entity '{}'", entity);
         effects.forEach(this::decreaseEffectDuration);
@@ -132,36 +136,36 @@ public class EncounterEntity<T> {
         // todo add summons
     }
 
-    public int getBonusInitiative() {
-        return effects.stream()
-                .filter(e -> e.getType().equals(EffectDTO.EffectType.BONUS_INITIATIVE))
-                .mapToInt(EncounterEffect::getStrength)
-                .sum();
-    }
-    public int getInitiative() {
-        return initiative + getBonusInitiative();
-    }
+//    public int getBonusInitiative() {
+//        return effects.stream()
+//                .filter(e -> e.getType().equals(EffectDTO.EffectType.BONUS_INITIATIVE))
+//                .mapToInt(EncounterEffect::getStrength)
+//                .sum();
+//    }
+//    public int getInitiative() {
+//        return initiative + getBonusInitiative();
+//    }
 
-    public int getBonusDefence() {
-        return effects.stream()
-                .filter(e -> e.getType().equals(EffectDTO.EffectType.BONUS_DEFENCE))
-                .mapToInt(EncounterEffect::getStrength)
-                .sum();
-    }
-    public int getDefence() {
-        return defence + getBonusDefence();
-    }
+//    public int getBonusDefence() {
+//        return effects.stream()
+//                .filter(e -> e.getType().equals(EffectDTO.EffectType.BONUS_DEFENCE))
+//                .mapToInt(EncounterEffect::getStrength)
+//                .sum();
+//    }
+//    public int getDefence() {
+//        return defence + getBonusDefence();
+//    }
 
-    public int getBonusHealth() {
-        return effects.stream()
-                .filter(e -> e.getType().equals(EffectDTO.EffectType.BONUS_HEALTH))
-                .mapToInt(EncounterEffect::getStrength)
-                .sum();
-    }
-    public int getHealth() {
-        return health + getBonusHealth();
-    }
-
+    //    public int getBonusHealth() {
+//        return effects.stream()
+//                .filter(e -> e.getType().equals(EffectDTO.EffectType.BONUS_HEALTH))
+//                .mapToInt(EncounterEffect::getStrength)
+//                .sum();
+//    }
+//    public int getHealth() {
+//        return health + getBonusHealth();
+//    }
+//
     @Override
     public String toString() {
         return "%s %s: %s".formatted(type, id, entity.toString());

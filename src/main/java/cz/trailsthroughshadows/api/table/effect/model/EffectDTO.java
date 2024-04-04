@@ -1,14 +1,21 @@
 package cz.trailsthroughshadows.api.table.effect.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
+import io.swagger.v3.core.util.Json;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -43,7 +50,7 @@ public class EffectDTO extends Validable implements Serializable {
     @Column
     private String description;
 
-    //region Validation
+    // region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
         // Type, duration and target cant be null.
@@ -65,20 +72,31 @@ public class EffectDTO extends Validable implements Serializable {
         // Duration must be greater than 0 or exactly -1 (infinity).
         List<EffectDTO.EffectType> instant = List.of(EffectType.PUSH, EffectType.PULL, EffectType.HEAL);
         if (duration != null && instant.contains(type) && duration != 0) {
-            errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be 0 for this type of effect."));
+            errors.add(new ValidationError("Effect", "duration", getDuration(),
+                    "Duration must be 0 for this type of effect."));
         } else if (duration != null && !instant.contains(type) && duration < 1 && duration != -1) {
-            errors.add(new ValidationError("Effect", "duration", getDuration(), "Duration must be greater than 0 or -1 (infinity)."));
+            errors.add(new ValidationError("Effect", "duration", getDuration(),
+                    "Duration must be greater than 0 or -1 (infinity)."));
         }
 
-        // Strength must be positive. It must be null for types Disarm, Root, Stun, Confusion, Guidance and Incorporeal. It can be null for resistances.
-        List<EffectDTO.EffectType> noStrength = List.of(EffectType.DISARM, EffectType.ROOT, EffectType.STUN, EffectType.CONFUSION, EffectType.GUIDANCE, EffectType.INCORPOREAL);
-        List<EffectDTO.EffectType> resistances = List.of(EffectType.FORCED_MOVEMENT_RESISTANCE, EffectType.POISON_RESISTANCE, EffectType.FIRE_RESISTANCE, EffectType.BLEED_RESISTANCE, EffectType.DISARM_RESISTANCE, EffectType.ROOT_RESISTANCE, EffectType.STUN_RESISTANCE, EffectType.CONFUSION_RESISTANCE, EffectType.WEAKNESS_RESISTANCE, EffectType.ENFEEBLE_RESISTANCE, EffectType.SLOW_RESISTANCE, EffectType.CONSTRAIN_RESISTANCE);
+        // Strength must be positive. It must be null for types Disarm, Root, Stun,
+        // Confusion, Guidance and Incorporeal. It can be null for resistances.
+        List<EffectDTO.EffectType> noStrength = List.of(EffectType.STUN,
+                EffectType.CONFUSION, EffectType.GUIDANCE);
+        List<EffectDTO.EffectType> resistances = List.of(EffectType.FORCED_MOVEMENT_RESISTANCE,
+                EffectType.POISON_RESISTANCE, EffectType.FIRE_RESISTANCE, EffectType.BLEED_RESISTANCE,
+                EffectType.STUN_RESISTANCE, EffectType.CONFUSION_RESISTANCE,
+                EffectType.ENFEEBLE_RESISTANCE,
+                EffectType.SLOW_RESISTANCE);
         if (noStrength.contains(type) && strength != null) {
-            errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be null for this type of effect."));
+            errors.add(new ValidationError("Effect", "strength", getStrength(),
+                    "Strength must be null for this type of effect."));
         } else if (strength == null) {
-            errors.add(new ValidationError("Effect", "strength", null, "Strength must not be null for this type of effect."));
+            errors.add(new ValidationError("Effect", "strength", null,
+                    "Strength must not be null for this type of effect."));
         } else if (resistances.contains(type) && strength < 0 && strength != -1) {
-            errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than or equal to 0 for this type of effect."));
+            errors.add(new ValidationError("Effect", "strength", getStrength(),
+                    "Strength must be greater than or equal to 0 for this type of effect."));
         } else if (strength < 1) {
             errors.add(new ValidationError("Effect", "strength", getStrength(), "Strength must be greater than 0."));
         }
@@ -88,48 +106,52 @@ public class EffectDTO extends Validable implements Serializable {
     public String getValidableValue() {
         return type == null ? "Nothing" : getType().toString();
     }
-    //endregion
+    // endregion
 
+
+    @AllArgsConstructor
     public enum EffectType implements Serializable {
-        PUSH,
-        PULL,
-        FORCED_MOVEMENT_RESISTANCE,
-        POISON,
-        POISON_RESISTANCE,
-        FIRE,
-        FIRE_RESISTANCE,
-        BLEED,
-        BLEED_RESISTANCE,
-        DISARM,
-        DISARM_RESISTANCE,
-        ROOT,
-        ROOT_RESISTANCE,
-        STUN,
-        STUN_RESISTANCE,
-        CONFUSION,
-        CONFUSION_RESISTANCE,
-        GUIDANCE,
-        INVINCIBILITY,
-        SHIELD,
-        WEAKNESS,
-        WEAKNESS_RESISTANCE,
-        HEAL,
-        REGENERATION,
-        EMPOWER,
-        ENFEEBLE,
-        ENFEEBLE_RESISTANCE,
-        SPEED,
-        SLOW,
-        SLOW_RESISTANCE,
-        REACH,
-        CONSTRAIN,
-        CONSTRAIN_RESISTANCE,
-        INCORPOREAL,
-        BONUS_HEALTH,
-        BONUS_DEFENCE,
-        BONUS_INITIATIVE
-    }
+        PUSH("Push", true, false, false),
+        PULL("Pull", true, false, false),
+        FORCED_MOVEMENT_RESISTANCE("Forced Movement", true, true, true),
+        POISON("Poison", true, true, false),
+        POISON_RESISTANCE("Poison", true, true, true),
+        FIRE("Fire", true, true, false),
+        FIRE_RESISTANCE("Fire", true, true, true),
+        BLEED("Bleed", true, true, false),
+        BLEED_RESISTANCE("Bleed", true, true, true),
+        STUN("Stun", false, true, false),
+        STUN_RESISTANCE("Stun", false, true, true),
+        HEAL("Heal", true, false, false),
+        REGENERATION("Regeneration", true, true, false),
+        EMPOWER("Empower", true, true, false),
+        ENFEEBLE("Enfeeble", true, true, false),
+        ENFEEBLE_RESISTANCE("Enfeeble", true, true, true),
+        SPEED("Speed", true, true, false),
+        SLOW("Slow", true, true, false),
+        SLOW_RESISTANCE("Slow", true, true, true),
+        GUIDANCE("Guidance", false, true, false),
+        CONFUSION("Confusion", false, true, false),
+        CONFUSION_RESISTANCE("Confusion", false, true, true),
+        PROTECTION("Protection", true, true, false);
 
+        public final String displayName;
+        public final boolean hasStrength, hasDuration, isResistance;
+
+
+        // @JsonCreator
+        // public static String forJsonValues() {
+        // StringBuilder sb = new StringBuilder();
+        // sb.append("[");
+        // for (EffectType value : values()) {
+        // sb.append("{ \"").append(value).append("\": {");
+        // sb.append("\"hasDuration\": ").append(value.hasDuration).append(", ");
+        // sb.append("\"hasStrength\": ").append(value.hasStrength).append("}}, ");
+        // }
+        // return sb.substring(0, sb.length() - 2) + "]";
+        // }
+
+    }
 
     public enum EffectTarget implements Serializable {
         SELF,
