@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.effect.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,6 +14,7 @@ public class EffectEnum {
     private String description;
     private boolean hasDuration;
     private boolean hasStrength;
+    @JsonProperty("isResistance")
     private boolean isResistance;
     private String url;
 
