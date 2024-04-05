@@ -74,6 +74,11 @@ public class EncounterEffect {
     }
 
     @JsonIgnore
+    public boolean isInstant() {
+        return getDuration() == null;
+    }
+
+    @JsonIgnore
     public boolean hasResistance() {
         return getResistanceType(this) != null;
     }

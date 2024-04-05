@@ -1,12 +1,10 @@
 package cz.trailsthroughshadows.algorithm.encounter.model;
 
 import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
-import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @Data
@@ -54,11 +52,16 @@ public class EncounterEntity<T> {
 
         List<EncounterEffect> resistances = effects.stream()
                 .filter(e -> e.getType().equals(EncounterEffect.getResistanceType(effect)))
-                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+                .toList();
+//                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+
+        if (effect.isInstant()) {
+            log.trace("Effect is instant, applying it immediately");
+            applyEffect(effect);
+        }
 
         if (!resistances.isEmpty()) {
             log.trace("Entity has resistance: {}", resistances);
-            int resistance = 0;
 
             for (var r : resistances) {
                 if (r.getStrength() == -1) {
@@ -69,8 +72,6 @@ public class EncounterEntity<T> {
 
                 effect.decreaseStrength(r.getStrength());
             }
-
-            effect.decreaseStrength(resistance);
 
             if (effect.getStrength() <= 0) {
                 log.trace("Effect has been resisted");
@@ -88,15 +89,11 @@ public class EncounterEntity<T> {
     }
 
     public void applyEffect(EncounterEffect effect) {
-        if (!effect.isApplicableAtStartTurn())
-            return;
-
-        for (var e : effects.stream().filter(EncounterEffect::isApplicableAtStartTurn).toList()) {
-            log.trace("Applying effect '{}' for entity '{}'", e, this);
-            switch (e.getType()) {
-                case POISON, FIRE, BLEED -> damage(e.getStrength(), DamageSource.EFFECT);
-                case REGENERATION -> health += e.getStrength();
-            }
+        log.trace("Applying effect '{}' for entity '{}'", effect, this);
+        switch (effect.getType()) {
+            case POISON, FIRE, BLEED -> damage(effect.getStrength(), DamageSource.EFFECT);
+            case REGENERATION, HEAL -> health += effect.getStrength();
+            default -> log.warn("Effect '{}' is not applicable", effect);
         }
     }
 
@@ -119,7 +116,7 @@ public class EncounterEntity<T> {
 
     public void startTurn() {
         log.debug("Starting turn for entity '{}'", entity);
-        effects.forEach(this::applyEffect);
+        effects.stream().filter(EncounterEffect::isApplicableAtStartTurn).forEach(this::applyEffect);
 
         // todo add summons
     }
