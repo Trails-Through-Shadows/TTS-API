@@ -312,8 +312,8 @@ public class Encounter {
                 "damage", damage));
         }
 
-        entity.damage(damage, EncounterEntity.DamageSource.ATTACK);
         entity.addEffects(effects);
+        entity.damage(damage, EncounterEntity.DamageSource.ATTACK);
 
         EntityStatusUpdate ret = entity.getStatusUpdate();
 
