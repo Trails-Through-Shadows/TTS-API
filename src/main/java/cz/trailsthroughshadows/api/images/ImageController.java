@@ -31,7 +31,8 @@ public class ImageController {
             @PathVariable String type,
             @PathVariable String file,
             @RequestParam(required = false) Integer width,
-            @RequestParam(required = false) Integer height) throws IOException {
+            @RequestParam(required = false) Integer height,
+            @RequestParam(required = false) Integer size) throws IOException {
 
         String localpath = type + "/" + file;
         var physicalPath = config.getPath();
@@ -49,8 +50,8 @@ public class ImageController {
 
             if (width != null && height != null) {
                 return ImageScaler.scaleImage(resource, width, height).getInputStream().readAllBytes();
-            } else if (width != null) {
-                return ImageScaler.scaleImage(resource, width).getInputStream().readAllBytes();
+            } else if (size != null) {
+                return ImageScaler.scaleImage(resource, size).getInputStream().readAllBytes();
             }
 
             return resource.getInputStream().readAllBytes();
@@ -59,8 +60,8 @@ public class ImageController {
 
         if (width != null && height != null) {
             return ImageScaler.scaleImage(resource, width, height).getInputStream().readAllBytes();
-        } else if (width != null) {
-            return ImageScaler.scaleImage(resource, width).getInputStream().readAllBytes();
+        } else if (size != null) {
+            return ImageScaler.scaleImage(resource, size).getInputStream().readAllBytes();
         }
 
         return resource.getInputStream().readAllBytes();
