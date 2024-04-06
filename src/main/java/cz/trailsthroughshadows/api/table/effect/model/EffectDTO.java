@@ -69,20 +69,28 @@ public class EffectDTO extends Validable implements Serializable {
                     "Duration must not be null for this type of effect."));
         } else if (getType().hasDuration && duration < 1 && duration != -1) {
             errors.add(new ValidationError("Effect", "duration", getDuration(),
-                    "Duration must be greater than 0 or -1 (infinity)."));
+                    "Duration must be greater than 0, or -1 (infinity)."));
+        } else if (getType().hasDuration && duration > 50) {
+            errors.add(new ValidationError("Effect", "duration", getDuration(),
+                    "Duration must be less than 50."));
         }
 
         // Strength must be null for effects with no strength.
-        // Otherwise, it must not be null and must be greater than 0 or exactly -1 (infinity).
+        // Otherwise, it must not be null and must be greater than 0.
         if (!getType().hasStrength && strength != null) {
             errors.add(new ValidationError("Effect", "strength", getStrength(),
                     "Strength must be null for this type of effect."));
         } else if (getType().hasStrength && strength == null) {
             errors.add(new ValidationError("Effect", "strength", null,
                     "Strength must not be null for this type of effect."));
-        } else if (getType().hasStrength && strength < 1 && strength != -1) {
+        } else if ((getType() == EffectType.HEAL || getType() == EffectType.REGENERATION) && strength == -1) {
+            // this is okay and im too tired to think
+        } else if (getType().hasStrength && strength < 1) {
             errors.add(new ValidationError("Effect", "strength", getStrength(),
-                    "Strength must be greater than 0 or -1 (infinity)."));
+                    "Strength must be greater than 0."));
+        } else if (getType().hasStrength && strength > 50) {
+            errors.add(new ValidationError("Effect", "strength", getStrength(),
+                    "Strength must be less than 50."));
         }
     }
 

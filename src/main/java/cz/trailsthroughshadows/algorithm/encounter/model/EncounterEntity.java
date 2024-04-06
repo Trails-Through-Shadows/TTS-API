@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.algorithm.encounter.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.Summon;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,10 @@ public class EncounterEntity<T> {
     // only used for enemies, summons and obstacles - the actual type from the database
     private Integer idGroup;
 
+    @JsonIgnore
+    private int baseHealth;
     private int health;
+
     private int defence;
     private int initiative;
 
@@ -34,6 +38,7 @@ public class EncounterEntity<T> {
         this.entity = entity;
         this.type = type;
         this.health = health;
+        this.baseHealth = health;
         this.defence = defence;
     }
 
@@ -44,6 +49,7 @@ public class EncounterEntity<T> {
         this.entity = entity;
         this.type = type;
         this.health = health;
+        this.baseHealth = health;
         this.defence = defence;
     }
 
@@ -92,7 +98,7 @@ public class EncounterEntity<T> {
         log.trace("Applying effect '{}' for entity '{}'", effect, this);
         switch (effect.getType()) {
             case POISON, FIRE, BLEED -> damage(effect.getStrength(), DamageSource.EFFECT);
-            case REGENERATION, HEAL -> health += effect.getStrength();
+            case REGENERATION, HEAL -> heal(effect.getStrength());
             default -> log.warn("Effect '{}' is not applicable", effect);
         }
     }
@@ -111,6 +117,19 @@ public class EncounterEntity<T> {
             log.trace("Damage reduced by defence to {}", damage);
         }
         health = Math.max(0, health - damage);
+        log.trace("Entity health is now {}", health);
+    }
+
+    public void heal(int heal) {
+        if (heal == -1) {
+            log.debug("Healing entity '{}' to full health", this);
+            health = baseHealth;
+            return;
+        } else if (heal <= 0)
+            return;
+
+        log.debug("Healing {} to entity '{}'", heal, this);
+        health = Math.min(health + heal, baseHealth);
         log.trace("Entity health is now {}", health);
     }
 

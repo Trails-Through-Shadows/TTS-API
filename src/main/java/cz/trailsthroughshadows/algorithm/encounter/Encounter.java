@@ -237,7 +237,6 @@ public class Encounter {
     public LinkedHashMap<String, Object> startEnemyTurn(Integer id) {
         LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
         ret.put("entities", startTurn(EncounterEntity.EntityType.ENEMY, id));
-        //ret.put("action", entities.getEnemyGroup(id).getFirst().getEntity().drawCard());
         ActionDTO action = entities.getEnemyGroup(id).getFirst().getEntity().drawCard();
         Initialization.hibernateInitializeAll(action);
         ret.put("action", action);
@@ -303,13 +302,20 @@ public class Encounter {
             logError(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
         }
 
-        for (EncounterEffect effect : effects) {
-            validation.validate(effect.toEffect());
-        }
-
         if (damage < 0) {
             throw new RestException(new RestError(HttpStatus.NOT_ACCEPTABLE, "Damage must not be lesser than 0.",
                 "damage", damage));
+        } else if (damage > 50) {
+            throw new RestException(new RestError(HttpStatus.NOT_ACCEPTABLE, "You just woke up and chose violence. (Damage must not be greater than 50.)",
+                "damage", damage));
+        }
+
+        if (effects == null) {
+            effects = new ArrayList<>();
+        }
+
+        for (EncounterEffect effect : effects) {
+            validation.validate(effect.toEffect());
         }
 
         entity.addEffects(effects);
