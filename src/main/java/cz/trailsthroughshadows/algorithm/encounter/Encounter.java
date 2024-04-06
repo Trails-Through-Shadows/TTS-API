@@ -307,8 +307,8 @@ public class Encounter {
             validation.validate(effect.toEffect());
         }
 
-        if (damage <= 0) {
-            throw new RestException(new RestError(HttpStatus.NOT_ACCEPTABLE, "Damage must be greater than 0.",
+        if (damage < 0) {
+            throw new RestException(new RestError(HttpStatus.NOT_ACCEPTABLE, "Damage must not be lesser than 0.",
                 "damage", damage));
         }
 
