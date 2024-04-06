@@ -3,6 +3,7 @@ package cz.trailsthroughshadows.api.images;
 import cz.trailsthroughshadows.api.configuration.ImageLoaderConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
@@ -26,23 +27,43 @@ public class ImageController {
     private ResourceLoader resourceLoader;
 
     @GetMapping("/{type}/{file}")
-    public @ResponseBody byte[] getImage(@PathVariable String type, @PathVariable String file) throws IOException {
+    public @ResponseBody byte[] getImage(
+            @PathVariable String type,
+            @PathVariable String file,
+            @RequestParam(required = false) Integer width,
+            @RequestParam(required = false) Integer height) throws IOException {
+
         String localpath = type + "/" + file;
         var physicalPath = config.getPath();
         String currDir = System.getProperty("user.dir");
         String path = currDir + "/" + physicalPath + "/" + localpath;
+
         File f = new File(path);
+
+        log.debug("Loading image from: {}", path);
+        log.debug("width: {}, height: {}", width, height);
+
         if (!(f.exists() && !f.isDirectory())) {
             log.warn("File not found: {}", path);
             Resource resource = resourceLoader.getResource("classpath:/images/unknown.png");
-            return resource.getInputStream().readAllBytes();
 
+            if (width != null && height != null) {
+                return ImageScaler.scaleImage(resource, width, height).getInputStream().readAllBytes();
+            } else if (width != null) {
+                return ImageScaler.scaleImage(resource, width).getInputStream().readAllBytes();
+            }
+
+            return resource.getInputStream().readAllBytes();
+        }
+        Resource resource = resourceLoader.getResource("file:" + path);
+
+        if (width != null && height != null) {
+            return ImageScaler.scaleImage(resource, width, height).getInputStream().readAllBytes();
+        } else if (width != null) {
+            return ImageScaler.scaleImage(resource, width).getInputStream().readAllBytes();
         }
 
-        BufferedImage resource = ImageIO.read(f);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(resource, "png", baos);
-        return baos.toByteArray();
+        return resource.getInputStream().readAllBytes();
 
     }
 
