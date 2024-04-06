@@ -41,12 +41,15 @@ public class ImageController {
 
         File f = new File(path);
 
-        width = width == null ? null : width > 2000 ? 2000 : width;
-        height = height == null ? null : height > 2000 ? 2000 : height;
-        size = size == null ? null : size > 2000 ? 2000 : size;
-        width = width == null ? null : width < 10 ? 10 : width;
-        height = height == null ? null : height < 10 ? 10 : height;
-        size = size == null ? null : size < 10 ? 10 : size;
+        if (width != null) {
+            width = Math.clamp(width, 10, 2000);
+        }
+        if (height != null) {
+            height = Math.clamp(height, 10, 2000);
+        }
+        if (size != null) {
+            size = Math.clamp(size, 10, 2000);
+        }
 
         if (!(f.exists() && !f.isDirectory())) {
             log.warn("File not found: {}", path);
