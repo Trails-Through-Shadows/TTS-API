@@ -42,13 +42,13 @@ public class ImageController {
         File f = new File(path);
 
         if (width != null) {
-            width = Math.min(2000, Math.max(1, width));
+            width = Math.clamp(width, 10, 2000);
         }
         if (height != null) {
-            height = Math.min(2000, Math.max(1, height));
+            height = Math.clamp(height, 10, 2000);
         }
         if (size != null) {
-            size = Math.min(2000, Math.max(1, size));
+            size = Math.clamp(size, 10, 2000);
         }
 
         if (!(f.exists() && !f.isDirectory())) {
