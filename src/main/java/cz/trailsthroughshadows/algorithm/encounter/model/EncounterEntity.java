@@ -117,18 +117,18 @@ public class EncounterEntity<T> {
     public void startTurn() {
         log.debug("Starting turn for entity '{}'", entity);
         effects.stream().filter(EncounterEffect::isApplicableAtStartTurn).forEach(this::applyEffect);
-
-        // todo add summons
-    }
-
-    public void endTurn() {
-        log.debug("Ending turn for entity '{}'", entity);
         effects.forEach(this::decreaseEffectDuration);
 
         for (var e : effects.stream().filter(EncounterEffect::isExpired).toList()) {
             log.trace("Removing expired effect '{}'", e);
             effects.remove(e);
         }
+
+        // todo add summons
+    }
+
+    public void endTurn() {
+        log.debug("Ending turn for entity '{}'", entity);
 
         // todo add summons
     }
