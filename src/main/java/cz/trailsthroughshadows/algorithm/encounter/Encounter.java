@@ -5,6 +5,7 @@ import cz.trailsthroughshadows.algorithm.encounter.model.*;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.action.model.Action;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
@@ -235,7 +236,7 @@ public class Encounter {
         LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
         ret.put("entities", startTurn(EncounterEntity.EntityType.ENEMY, id));
         //ret.put("action", entities.getEnemyGroup(id).getFirst().getEntity().drawCard());
-        Action action = entities.getEnemyGroup(id).getFirst().getEntity().drawCard();
+        ActionDTO action = entities.getEnemyGroup(id).getFirst().getEntity().drawCard();
         Initialization.hibernateInitializeAll(action);
         ret.put("action", action);
         return ret;
