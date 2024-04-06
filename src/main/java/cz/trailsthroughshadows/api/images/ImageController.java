@@ -41,8 +41,12 @@ public class ImageController {
 
         File f = new File(path);
 
-        log.debug("Loading image from: {}", path);
-        log.debug("width: {}, height: {}", width, height);
+        width = width == null ? null : width > 2000 ? 2000 : width;
+        height = height == null ? null : height > 2000 ? 2000 : height;
+        size = size == null ? null : size > 2000 ? 2000 : size;
+        width = width == null ? null : width < 10 ? 10 : width;
+        height = height == null ? null : height < 10 ? 10 : height;
+        size = size == null ? null : size < 10 ? 10 : size;
 
         if (!(f.exists() && !f.isDirectory())) {
             log.warn("File not found: {}", path);
