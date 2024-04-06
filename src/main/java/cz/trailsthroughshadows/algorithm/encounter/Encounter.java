@@ -236,10 +236,10 @@ public class Encounter {
 
     public LinkedHashMap<String, Object> startEnemyTurn(Integer id) {
         LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
-        ret.put("entities", startTurn(EncounterEntity.EntityType.ENEMY, id));
         ActionDTO action = entities.getEnemyGroup(id).getFirst().getEntity().drawCard();
         Initialization.hibernateInitializeAll(action);
         ret.put("action", action);
+        ret.put("entities", startTurn(EncounterEntity.EntityType.ENEMY, id));
         return ret;
     }
 
