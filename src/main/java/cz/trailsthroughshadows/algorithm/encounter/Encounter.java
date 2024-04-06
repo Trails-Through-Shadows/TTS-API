@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.encounter.model.*;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
+import cz.trailsthroughshadows.api.table.action.model.Action;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
@@ -13,6 +14,7 @@ import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDoorDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
@@ -228,10 +230,14 @@ public class Encounter {
         return startTurn(EncounterEntity.EntityType.CHARACTER, id).stream().findFirst()
                 .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Couldn't find character #{}", id));
     }
+
     public LinkedHashMap<String, Object> startEnemyTurn(Integer id) {
         LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
         ret.put("entities", startTurn(EncounterEntity.EntityType.ENEMY, id));
-        ret.put("action", entities.getEnemyGroup(id).getFirst().getEntity().drawCard());
+        //ret.put("action", entities.getEnemyGroup(id).getFirst().getEntity().drawCard());
+        Action action = entities.getEnemyGroup(id).getFirst().getEntity().drawCard();
+        Initialization.hibernateInitializeAll(action);
+        ret.put("action", action);
         return ret;
     }
 
