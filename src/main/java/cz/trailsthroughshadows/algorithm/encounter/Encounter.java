@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.encounter.model.*;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
+import cz.trailsthroughshadows.api.rest.model.error.RestError;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.model.Action;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
@@ -303,6 +305,11 @@ public class Encounter {
 
         for (EncounterEffect effect : effects) {
             validation.validate(effect.toEffect());
+        }
+
+        if (damage <= 0) {
+            throw new RestException(new RestError(HttpStatus.NOT_ACCEPTABLE, "Damage must be greater than 0.",
+                "damage", damage));
         }
 
         entity.damage(damage, EncounterEntity.DamageSource.ATTACK);
