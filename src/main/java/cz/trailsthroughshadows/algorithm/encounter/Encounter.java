@@ -227,9 +227,8 @@ public class Encounter {
         return ret;
     }
 
-    public EntityStatusUpdate startCharacterTurn(Integer id) {
-        return startTurn(EncounterEntity.EntityType.CHARACTER, id).stream().findFirst()
-                .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Couldn't find character #{}", id));
+    public List<EntityStatusUpdate> startCharacterTurn(Integer id) {
+        return startTurn(EncounterEntity.EntityType.CHARACTER, id);
     }
 
     public LinkedHashMap<String, Object> startEnemyTurn(Integer id) {
@@ -285,9 +284,8 @@ public class Encounter {
         return ret;
     }
 
-    public EntityStatusUpdate endCharacterTurn(Integer id) {
-        return endTurn(EncounterEntity.EntityType.CHARACTER, id).stream().findFirst()
-                .orElseThrow(() -> logErrorReturn(HttpStatus.NOT_FOUND, "Couldn't find character #{}", id));
+    public List<EntityStatusUpdate> endCharacterTurn(Integer id) {
+        return endTurn(EncounterEntity.EntityType.CHARACTER, id);
     }
 
     public List<EntityStatusUpdate> endEnemyTurn(Integer id) {

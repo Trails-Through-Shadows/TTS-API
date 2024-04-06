@@ -53,12 +53,6 @@ public class EncounterEntity<T> {
         List<EncounterEffect> resistances = effects.stream()
                 .filter(e -> e.getType().equals(EncounterEffect.getResistanceType(effect)))
                 .toList();
-//                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-
-        if (effect.isInstant()) {
-            log.trace("Effect is instant, applying it immediately");
-            applyEffect(effect);
-        }
 
         if (!resistances.isEmpty()) {
             log.trace("Entity has resistance: {}", resistances);
@@ -79,6 +73,12 @@ public class EncounterEntity<T> {
             }
 
             log.trace("Effect strength has been reduced to '{}'", effect);
+        }
+
+        if (effect.isInstant()) {
+            log.trace("Effect is instant, applying it immediately");
+            applyEffect(effect);
+            return;
         }
 
         effects.add(effect);
