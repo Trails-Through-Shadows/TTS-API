@@ -13,7 +13,8 @@ import java.util.*;
 public class Initialization {
 
     /**
-     * Initializes all fields of the given entity according to filter in recursive way.
+     * Initializes all fields of the given entity according to filter in recursive
+     * way.
      * Can take Collection or single object
      *
      * @param entity Entity to initialize, can be Collection or simple object
@@ -63,10 +64,12 @@ public class Initialization {
         }
 
         // getting fields
+        log.trace("getting fields for class \nsimple name:{}\n get name:{} ", entity.getClass().getSimpleName(),
+                entity.getClass().getName());
         for (Field field : entity.getClass().getDeclaredFields()) {
             field.setAccessible(true);
 
-            if (!(filter.contains(field.getName()) || filter.contains("NONE") )) {
+            if (!(filter.contains(field.getName()) || filter.contains("NONE"))) {
                 continue;
             }
             if (!(field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToOne.class))) {
@@ -100,7 +103,10 @@ public class Initialization {
     }
 
     private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
-        return clazz.isPrimitive() || clazz.equals(String.class) || clazz.equals(Integer.class) || clazz.equals(Long.class) || clazz.equals(Double.class) || clazz.equals(Float.class) || clazz.equals(Character.class) || clazz.equals(Byte.class) || clazz.equals(Short.class) || clazz.equals(Boolean.class) || clazz.isEnum();
+        return clazz.isPrimitive() || clazz.equals(String.class) || clazz.equals(Integer.class)
+                || clazz.equals(Long.class) || clazz.equals(Double.class) || clazz.equals(Float.class)
+                || clazz.equals(Character.class) || clazz.equals(Byte.class) || clazz.equals(Short.class)
+                || clazz.equals(Boolean.class) || clazz.isEnum();
 
     }
 
