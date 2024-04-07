@@ -4,6 +4,7 @@ import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.background.clazz.model.Clazz;
 import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -78,7 +79,31 @@ public class ClazzController {
         return new ResponseEntity<>(Clazz.fromDTO(entity), HttpStatus.OK);
     }
 
-    @PutMapping
+    @PutMapping("classes/{id}")
+    public ResponseEntity<MessageResponse> updateEntity(
+            @PathVariable int id,
+            @RequestBody ClazzDTO entity
+    ) {
+        validation.validate(entity);
+
+        ClazzDTO clazz = clazzRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '%d' not found! ", id));
+
+        clazz.setTitle(entity.getTitle());
+        clazz.setTag(entity.getTag());
+        clazz.setDescription(entity.getDescription());
+        clazz.setBaseHealth(entity.getBaseHealth());
+        clazz.setBaseDefence(entity.getBaseDefence());
+        clazz.setBaseInitiative(entity.getBaseInitiative());
+
+        clazz.setActions(entity.getActions());
+        clazz.setEffects(entity.getEffects());
+
+        ClazzDTO updated = clazzRepo.save(clazz);
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK ,"Class with id '%d' updated!", updated.getId()), HttpStatus.OK);
+    }
 
     @Autowired
     public void setRepository(ClazzRepo repository) {
