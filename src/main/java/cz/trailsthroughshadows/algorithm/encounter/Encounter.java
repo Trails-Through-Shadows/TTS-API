@@ -448,20 +448,20 @@ public class Encounter {
                 .filter(c -> c.getType().equals(type))
                 .forEach((c) -> {
                     c.progress();
-                    log.info("Progressing condition {} to {}", c.getType(), c.getProgression());
+                    log.debug("Progressing condition {} to {}", c.getType(), c.getProgression());
                 });
     }
 
     private boolean checkEntityCondition(List<?> entities, CampaignLocation.Condition condition, String entityName) {
         if (condition.getValue() == -1) {
             if (entities.isEmpty()) {
-                log.info("Condition reached: All %s dead".formatted(entityName));
+                log.debug("Condition reached: All %s dead".formatted(entityName));
                 log.info("Setting state to %s".formatted(condition.getResult()));
                 return true;
             }
         } else {
             if (condition.getProgression() >= condition.getValue()) {
-                log.info("Condition reached: %s %s dead".formatted(condition.getValue(), entityName));
+                log.debug("Condition reached: %s %s dead".formatted(condition.getValue(), entityName));
                 log.info("Setting state to %s".formatted(condition.getResult()));
                 return true;
             }

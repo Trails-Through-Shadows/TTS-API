@@ -77,6 +77,7 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         });
         gen.writeEndArray();
 
+        gen.writeObjectField("conditions", value.getConditions());
         gen.writeObjectField("state", value.getState());
 
         gen.writeEndObject();
