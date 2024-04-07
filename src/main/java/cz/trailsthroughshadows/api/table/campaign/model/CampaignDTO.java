@@ -3,9 +3,12 @@ package cz.trailsthroughshadows.api.table.campaign.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.algorithm.validation.Validable;
+import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.achievement.AchievementDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +23,7 @@ import java.util.List;
 @Entity
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Table(name = "Campaign")
-public class CampaignDTO {
+public class CampaignDTO extends Validable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,4 +57,24 @@ public class CampaignDTO {
         return locations.stream().map(CampaignLocation::getLocation).toList();
     }
 
+//    @JsonIgnore
+//    public List<CampaignLocation.Condition> getConditions(Integer locationId) {
+//        return locations.stream()
+//                .filter(l -> l.getLocation().getId().equals(locationId))
+//                .map(CampaignLocation::getCondition)
+//                .orElse(null);
+//    }
+
+    //region Validation
+
+    @Override
+    protected void validateInner(@Nullable ValidationConfig validationConfig) {
+
+    }
+
+    @Override
+    public String getValidableValue() {
+        return "";
+    }
+    //endregion
 }

@@ -10,6 +10,8 @@ import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
 import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
 import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
 import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
+import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
+import cz.trailsthroughshadows.api.table.campaign.model.CampaignDTO;
 import cz.trailsthroughshadows.api.table.effect.EffectRepo;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
@@ -206,6 +208,19 @@ public class ValidationController {
     @PostMapping("/adventure/{id}")
     public ResponseEntity<RestResponse> validateAdventureById(@PathVariable int id) {
         return validate(adventureRepo.findById(id));
+    }
+
+    @PostMapping("/campaign")
+    public ResponseEntity<RestResponse> validateCampaign(@RequestBody CampaignDTO campaign) {
+        return validate(campaign);
+    }
+
+    @Autowired
+    CampaignRepo campaignRepo;
+
+    @PostMapping("/campaign/{id}")
+    public ResponseEntity<RestResponse> validateCampaignById(@PathVariable int id) {
+        return validate(campaignRepo.findById(id));
     }
 
     //endregion
