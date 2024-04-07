@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.encounter.Encounter;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
-import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
@@ -16,6 +15,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
@@ -96,6 +98,8 @@ public class CampaignLocation extends Validable {
             errors.add(new ValidationError("CampaignLocation", "stories", null, "Stories must not be null."));
         }
 
+        if (!errors.isEmpty()) return;
+
         for (Story story : stories) {
             validateChild(story, validationConfig);
         }
@@ -128,6 +132,8 @@ public class CampaignLocation extends Validable {
                 errors.add(new ValidationError("Condition", "result", null, "Result must not be null."));
             }
 
+            if (!errors.isEmpty()) return;
+
             // result has to be either COMPLETED or FAILED
             if (result != Encounter.EncounterState.COMPLETED && result != Encounter.EncounterState.FAILED) {
                 errors.add(new ValidationError("Condition", "result", result, "Result must be either COMPLETED or FAILED."));
@@ -151,7 +157,11 @@ public class CampaignLocation extends Validable {
         private Encounter.EncounterState result;
 
         @JsonIgnore
-        private Integer progression;
+        private Integer progression = 0;
+
+        public void progress() {
+            progression++;
+        }
     }
 
 }
