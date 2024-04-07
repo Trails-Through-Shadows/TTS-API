@@ -4,8 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.algorithm.encounter.Encounter;
+import cz.trailsthroughshadows.algorithm.validation.Validable;
+import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,42 +48,75 @@ public class CampaignLocation {
     @Column(nullable = false)
     private Boolean finish;
 
-    @Column(nullable = false, name = "winCondition")
-    private String winConditionString;
+    @Column(nullable = false, name = "condition")
+    private String conditionString;
 
     @Transient
-    private WinCondition winCondition;
+    private List<Condition> conditions;
 
     @PostLoad
     private void postLoad() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            String tmp = winConditionString.replaceAll("\\\\", "");
-            winCondition = mapper.readValue(tmp, WinCondition.class);
+            String tmp = conditionString.replaceAll("\\\\", "");
+            conditions = mapper.readValue(tmp, mapper.getTypeFactory().constructCollectionType(List.class, Condition.class));
         } catch (Exception e) {
-            winCondition = null;
+            conditions = List.of();
         }
     }
 
     @JsonIgnore
-    public void setWinConditionString(String winConditionString) {
-        this.winConditionString = winConditionString;
+    public void setConditionString(String conditionString) {
+        this.conditionString = conditionString;
         postLoad();
     }
 
     @JsonIgnore
-    public String getWinConditionString() {
-        return winConditionString;
+    public String getConditionString() {
+        return conditionString;
     }
 
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class WinCondition implements Serializable {
-        private String type;
+    public static class Condition extends Validable implements Serializable {
+        @Override
+        protected void validateInner(@Nullable ValidationConfig validationConfig) {
+            if (type == null) {
+                errors.add(new ValidationError("Condition", "type", null, "Type must not be null."));
+            }
+            if (value == null) {
+                errors.add(new ValidationError("Condition", "value", null, "Value must not be null."));
+            }
+            if (result == null) {
+                errors.add(new ValidationError("Condition", "result", null, "Result must not be null."));
+            }
 
+            // result has to be either COMPLETED or FAILED
+            if (result != Encounter.EncounterState.COMPLETED && result != Encounter.EncounterState.FAILED) {
+                errors.add(new ValidationError("Condition", "result", result, "Result must be either COMPLETED or FAILED."));
+            }
+        }
+
+        @Override
+        public String getValidableValue() {
+            return null;
+        }
+
+        public enum Type {
+            ENEMY_DEATHS,
+            PLAYER_DEATHS,
+            DOORS_OPENED,
+            ROUND_REACHED
+        }
+
+        private Type type;
         private Integer value;
+        private Encounter.EncounterState result;
+
+        @JsonIgnore
+        private Integer progression;
     }
 
 }

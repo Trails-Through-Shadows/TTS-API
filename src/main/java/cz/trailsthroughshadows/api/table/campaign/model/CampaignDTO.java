@@ -57,13 +57,14 @@ public class CampaignDTO extends Validable {
         return locations.stream().map(CampaignLocation::getLocation).toList();
     }
 
-//    @JsonIgnore
-//    public List<CampaignLocation.Condition> getConditions(Integer locationId) {
-//        return locations.stream()
-//                .filter(l -> l.getLocation().getId().equals(locationId))
-//                .map(CampaignLocation::getCondition)
-//                .orElse(null);
-//    }
+    @JsonIgnore
+    public List<CampaignLocation.Condition> getConditions(Integer locationId) {
+        return locations.stream()
+                .filter(l -> l.getLocation().getId().equals(locationId))
+                .findFirst()
+                .map(CampaignLocation::getConditions)
+                .orElse(null);
+    }
 
     //region Validation
 
