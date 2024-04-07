@@ -76,6 +76,11 @@ public class Skill extends Validable {
             errors.add(new ValidationError("Skill", "area", getArea(), "Area of effect must be greater than 0."));
         }
 
+        // There must be at least one effect.
+        if (effects == null || effects.isEmpty()) {
+            errors.add(new ValidationError("Skill", "effects", effects, "Skill must contain at least one effect."));
+        }
+
         // All effects must be validated.
         for (var e : getMappedEffects()) {
             if (e == null) {
