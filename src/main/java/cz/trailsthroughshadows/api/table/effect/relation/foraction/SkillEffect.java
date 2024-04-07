@@ -31,9 +31,11 @@ public class SkillEffect {
     @Embeddable
     public static class SkillEffectId implements Serializable {
         @Column(nullable = false)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer idSkill;
 
         @Column(nullable = false)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer idEffect;
     }
 

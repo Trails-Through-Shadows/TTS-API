@@ -39,7 +39,13 @@ public class Skill extends Validable {
     @Enumerated(EnumType.STRING)
     private EffectDTO.EffectTarget target;
 
-    @OneToMany(mappedBy = "key.idSkill", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OneToMany(mappedBy = "key.idSkill", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "SkillEffect",
+            joinColumns = @JoinColumn(name = "idSkill", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "idEffect", referencedColumnName = "idEffect")
+    )
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<SkillEffect> effects;
 

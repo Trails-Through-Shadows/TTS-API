@@ -5,8 +5,11 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.table.action.features.movement.Movement;
+import cz.trailsthroughshadows.api.table.action.features.skill.Skill;
 import cz.trailsthroughshadows.api.table.action.model.Action;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.util.Triplet;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -123,7 +126,11 @@ public class ActionController {
         //remove relations and save them for later
         //todo summons
 
+        //remove m:n tables and save them for later
+//        Map<String, Triplet<List<Movement>, List<Skill>,List<>>>
+//
         actions = actionRepo.saveAll(actions);
+
 
         String ids = actions.stream().map(ActionDTO::getId).map(String::valueOf).toList().toString();
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Actions with ids '%s' created!", ids),

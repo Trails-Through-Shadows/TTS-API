@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.util.reflect;
 
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.extern.log4j.Log4j2;
@@ -72,7 +73,7 @@ public class Initialization {
             if (!(filter.contains(field.getName()) || filter.contains("NONE"))) {
                 continue;
             }
-            if (!(field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToOne.class))) {
+            if (!(field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(ManyToMany.class))) {
                 continue;
             }
 

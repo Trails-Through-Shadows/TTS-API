@@ -31,9 +31,11 @@ public class MovementEffect {
     @Embeddable
     public static class MovementEffectId implements Serializable {
         @Column(nullable = false)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer idMovement;
 
         @Column(nullable = false)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer idEffect;
     }
 }
