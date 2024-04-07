@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.encounter.Encounter;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
@@ -25,7 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class CampaignLocation {
+public class CampaignLocation extends Validable {
 
     @Id
     private Integer id;
@@ -75,6 +76,40 @@ public class CampaignLocation {
     public String getConditionString() {
         return conditionString;
     }
+
+    //region Validation
+    @Override
+    protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        if (location == null) {
+            errors.add(new ValidationError("CampaignLocation", "location", null, "Location must not be null."));
+        }
+        if (start == null) {
+            errors.add(new ValidationError("CampaignLocation", "start", null, "Start must not be null."));
+        }
+        if (finish == null) {
+            errors.add(new ValidationError("CampaignLocation", "finish", null, "Finish must not be null."));
+        }
+        if (conditions == null) {
+            errors.add(new ValidationError("CampaignLocation", "conditions", null, "Conditions must not be null."));
+        }
+        if (stories == null) {
+            errors.add(new ValidationError("CampaignLocation", "stories", null, "Stories must not be null."));
+        }
+
+        for (Story story : stories) {
+            validateChild(story, validationConfig);
+        }
+
+        for (Condition condition : conditions) {
+            validateChild(condition, validationConfig);
+        }
+    }
+
+    @Override
+    public String getValidableValue() {
+        return null;
+    }
+    //endregion
 
 
     @Data

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.text.Description;
+import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.achievement.AchievementDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
@@ -71,11 +73,21 @@ public class CampaignDTO extends Validable {
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
 
+        validateChild(new Title(title), validationConfig);
+        validateChild(new Description(description), validationConfig);
+
+        for (CampaignLocation location : locations) {
+            validateChild(location, validationConfig);
+        }
+
+        for (CampaignAchievements achievement : achievements) {
+            validateChild(achievement.getAchievement(), validationConfig);
+        }
     }
 
     @Override
     public String getValidableValue() {
-        return "";
+        return title;
     }
     //endregion
 }
