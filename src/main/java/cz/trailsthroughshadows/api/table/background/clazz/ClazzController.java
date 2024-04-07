@@ -143,6 +143,20 @@ public class ClazzController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Class with id '%d' created!", ids), HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/classes/{id}")
+    @CacheEvict(value = "class", key = "#id")
+    public ResponseEntity<MessageResponse> deleteEntity(
+            @PathVariable int id
+    ) {
+        ClazzDTO entity = clazzRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '%d' not found! ", id));
+
+        clazzRepo.delete(entity);
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Class with id '%d' deleted!", id), HttpStatus.OK);
+    }
+
     @Autowired
     public void setRepository(ClazzRepo repository) {
         this.clazzRepo = repository;
