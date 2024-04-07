@@ -39,6 +39,11 @@ public class EncounterController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/{id}/status")
+    public ResponseEntity<RestResponse> getEncounterStatus(@RequestParam UUID token, @PathVariable Integer id) {
+        return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).getState()), HttpStatus.OK);
+    }
+
     @PostMapping("/{id}/initiative")
     public ResponseEntity<RestResponse> rollInitiative(@RequestParam UUID token, @PathVariable Integer id, @RequestBody List<Initiative> initiatives) {
         encounterHandler.getEncounter(token, id).rollInitiative(initiatives);

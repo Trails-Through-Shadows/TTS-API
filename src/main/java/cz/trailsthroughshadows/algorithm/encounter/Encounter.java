@@ -48,6 +48,7 @@ public class Encounter {
     private Part startPart;
     private List<Part> parts;
     private List<LocationDoorDTO> doorsToOpen = new ArrayList<>();
+    List<CampaignLocation.Condition> conditions = new ArrayList<>();
 
     @Setter
     private ValidationService validation;
@@ -58,7 +59,7 @@ public class Encounter {
         this.adventure = adventure;
         this.location = location;
 
-        List<CampaignLocation.Condition> conditions = adventure.getCampaign().getConditions(location.getId());
+        conditions = adventure.getCampaign().getConditions(location.getId());
 
 
         log.info("Creating encounter {}", id);
@@ -96,6 +97,7 @@ public class Encounter {
         }
 
         part.unlock();
+        progressCondition(CampaignLocation.Condition.Type.DOORS_OPENED);
         log.info("Unlocking part {}", idPart);
 
         // add enemies
@@ -232,6 +234,9 @@ public class Encounter {
             }
         }
 
+        // check condition
+        state = checkCondition();
+
         return ret;
     }
 
@@ -244,8 +249,6 @@ public class Encounter {
         LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
         ActionDTO action = new ActionDTO(entities.getEnemyGroup(id).getFirst().getEntity().drawCard());
         Initialization.hibernateInitializeAll(action);
-        log.trace("hibernate here", action);
-        log.trace("typeof action is {}", action.getClass().getName());
         ret.put("action", action);
         ret.put("entities", startTurn(EncounterEntity.EntityType.ENEMY, id));
         entities.getActiveEntity().setAction(action);
@@ -334,12 +337,23 @@ public class Encounter {
         EntityStatusUpdate ret = entity.getStatusUpdate();
 
         checkEntityDead(entity);
+
+        // check condition
+        state = checkCondition();
+
         return ret;
     }
 
     private void checkEntityDead(EncounterEntity<?> entity) {
         if (entity.getHealth() == 0) {
             log.info("Entity '{}' is dead", entity);
+
+            if (entity.getType().equals(EncounterEntity.EntityType.CHARACTER)) {
+                progressCondition(CampaignLocation.Condition.Type.PLAYER_DEATHS);
+            }
+            if (entity.getType().equals(EncounterEntity.EntityType.ENEMY)) {
+                progressCondition(CampaignLocation.Condition.Type.ENEMY_DEATHS);
+            }
 
             // to make sure the entity doesn't stay active after it's dead
             int entityId = entity.getType() == EncounterEntity.EntityType.CHARACTER ? entity.getId()
@@ -419,13 +433,73 @@ public class Encounter {
         // add unlocked parts to ret as json array
         ret.put("unlockedParts", unlockedParts);
 
-        // check win condition
-        // todo
+        // check condition
+        progressCondition(CampaignLocation.Condition.Type.ROUND_REACHED);
+        state = checkCondition();
 
         // status
         ret.put("status", state);
 
         return ret;
+    }
+
+    private void progressCondition(CampaignLocation.Condition.Type type) {
+        conditions.stream()
+                .filter(c -> c.getType().equals(type))
+                .forEach((c) -> {
+                    c.progress();
+                    log.info("Progressing condition {} to {}", c.getType(), c.getProgression());
+                });
+    }
+
+    private boolean checkEntityCondition(List<?> entities, CampaignLocation.Condition condition, String entityName) {
+        if (condition.getValue() == -1) {
+            if (entities.isEmpty()) {
+                log.info("Condition reached: All %s dead".formatted(entityName));
+                log.info("Setting state to %s".formatted(condition.getResult()));
+                return true;
+            }
+        } else {
+            if (condition.getProgression() >= condition.getValue()) {
+                log.info("Condition reached: %s %s dead".formatted(condition.getValue(), entityName));
+                log.info("Setting state to %s".formatted(condition.getResult()));
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private EncounterState checkCondition() {
+        if (state != EncounterState.ONGOING) {
+            logError(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+        }
+
+        for (CampaignLocation.Condition condition : conditions) {
+            switch (condition.getType()) {
+                case ENEMY_DEATHS -> {
+                    if (checkEntityCondition(entities.getEnemies(), condition, "enemies"))
+                        return condition.getResult();
+                }
+                case PLAYER_DEATHS -> {
+                    if (checkEntityCondition(entities.getCharacters(), condition, "players"))
+                        return condition.getResult();
+                }
+                case DOORS_OPENED -> {
+                    if (checkEntityCondition(parts.stream().filter(Part::getUnlocked).toList(), condition, "parts"))
+                        return condition.getResult();
+                }
+                case ROUND_REACHED -> {
+                    if (condition.getProgression() >= condition.getValue()) {
+                        log.info(("Condition reached: Round %s reached").formatted(condition.getValue()));
+                        log.info("Setting state to %s".formatted(condition.getResult()));
+                        return condition.getResult();
+                    }
+                }
+            }
+        }
+
+        return EncounterState.ONGOING;
     }
 
     private void logError(HttpStatus status, String message, Object... args) {
