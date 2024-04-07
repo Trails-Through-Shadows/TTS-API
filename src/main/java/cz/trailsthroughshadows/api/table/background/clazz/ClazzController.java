@@ -12,6 +12,7 @@ import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,7 @@ public class ClazzController {
     }
 
     @GetMapping("/classes/{id}")
-    @Cacheable(value = "enemy", key = "#id")
+    @Cacheable(value = "class", key = "#id")
     public ResponseEntity<Clazz> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -80,6 +81,7 @@ public class ClazzController {
     }
 
     @PutMapping("classes/{id}")
+    @CacheEvict(value = "class", key = "#id")
     public ResponseEntity<MessageResponse> updateEntity(
             @PathVariable int id,
             @RequestBody ClazzDTO entity
@@ -102,7 +104,17 @@ public class ClazzController {
 
         ClazzDTO updated = clazzRepo.save(clazz);
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK ,"Class with id '%d' updated!", updated.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Class with id '%d' updated!", updated.getId()), HttpStatus.OK);
+    }
+
+    @PostMapping("/classes")
+    public ResponseEntity<MessageResponse> createEntity(
+            @RequestBody ClazzDTO entity
+    ) {
+        validation.validate(entity);
+        entity.setId(null);
+        ClazzDTO created = clazzRepo.save(entity);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Class with id '%d' created!", created.getId()), HttpStatus.CREATED);
     }
 
     @Autowired
