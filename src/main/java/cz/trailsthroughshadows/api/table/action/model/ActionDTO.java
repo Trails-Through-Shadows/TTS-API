@@ -111,10 +111,21 @@ public class ActionDTO extends Validable {
         Description description = new Description(getDescription());
         validateChild(description, validationConfig);
 
-        // Level requirement must be greater than 0, if it is not null.
-        if (levelReq != null && levelReq < 0) {
+        // Level requirement can be null.
+        if (levelReq == null){
+            errors.add(new ValidationError(getValidableClass(), "levelReq", null,
+                    "Level requirement must not be null."));
+        }
+        // Level requirement must be positive.
+        if (levelReq != null && levelReq <= 0) {
             errors.add(new ValidationError(getValidableClass(), "levelReq", levelReq,
-                    "Level requirement must be greater than 0!"));
+                    "Level requirement must be positive."));
+        }
+
+        // Discard can't be null.
+        if (discard == null) {
+            errors.add(new ValidationError(getValidableClass(), "discard", null,
+                    "Discard must not be null."));
         }
 
         // All features must be validated.
