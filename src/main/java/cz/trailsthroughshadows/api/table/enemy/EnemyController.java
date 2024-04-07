@@ -13,8 +13,11 @@ import cz.trailsthroughshadows.api.util.Pair;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +35,7 @@ public class EnemyController {
     private EnemyRepo enemyRepo;
 
     @GetMapping("/enemies")
-    //@Cacheable(value = "enemy")
+    @Cacheable(value = "enemy")
     public ResponseEntity<RestPaginatedResult<Enemy>> getEnemies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -66,7 +69,7 @@ public class EnemyController {
     }
 
     @GetMapping("/enemies/{id}")
-    // @Cacheable(value = "enemy", key = "#id")
+    @Cacheable(value = "enemy", key = "#id")
     public ResponseEntity<Enemy> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -85,7 +88,7 @@ public class EnemyController {
     }
 
     @DeleteMapping("/enemies/{id}")
-    //@CacheEvict(value = "enemy", key = "#id")
+    @CacheEvict(value = "enemy", key = "#id")
     public ResponseEntity<MessageResponse> deleteEnemy(@PathVariable int id) {
         EnemyDTO enemyDTO = enemyRepo
                 .findById(id)
@@ -97,7 +100,7 @@ public class EnemyController {
     }
 
     @PutMapping("/enemies/{id}")
-    //@CacheEvict(value = "enemy", key = "#id")
+    @CacheEvict(value = "enemy", key = "#id")
     public ResponseEntity<MessageResponse> updateEnemyById(@PathVariable int id, @RequestBody EnemyDTO enemy) {
 
         // Validate enemy
@@ -127,7 +130,7 @@ public class EnemyController {
     }
 
     @PostMapping("/enemies")
-    //@CacheEvict(value = "enemy", allEntries = true)
+    @CacheEvict(value = "enemy", allEntries = true)
     public ResponseEntity<MessageResponse> createEnemies(@RequestBody List<EnemyDTO> enemies) {
         log.debug("Creating enemies: " + enemies);
 

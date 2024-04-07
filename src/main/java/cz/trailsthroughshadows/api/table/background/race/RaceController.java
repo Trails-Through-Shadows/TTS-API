@@ -4,22 +4,27 @@ import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.table.action.model.Action;
 import cz.trailsthroughshadows.api.table.background.race.model.Race;
 import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
+import cz.trailsthroughshadows.api.util.Pair;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController(value = "Race")
@@ -62,7 +67,7 @@ public class RaceController {
     }
 
     @GetMapping("/races/{id}")
-    //@Cacheable(value = "race", key = "#id")
+    @Cacheable(value = "race", key = "#id")
     public ResponseEntity<Race> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -80,6 +85,73 @@ public class RaceController {
 
         return new ResponseEntity<>(Race.fromDTO(entity), HttpStatus.OK);
     }
+
+    @PutMapping("races/{id}")
+    @CacheEvict(value = "race", allEntries = true)
+    public ResponseEntity<MessageResponse> updateRaceById(@PathVariable int id, @RequestBody RaceDTO entity) {
+        validation.validate(entity);
+        RaceDTO existing = clazzRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Race with id '%d' not found!", id));
+
+        existing.setTag(entity.getTag());
+        existing.setDescription(entity.getDescription());
+        existing.setTitle(entity.getTitle());
+        existing.setEffects(entity.getEffects());
+        existing.setActions(entity.getActions());
+
+        clazzRepo.save(existing);
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Race updated!"), HttpStatus.OK);
+    }
+
+    @PostMapping("races/")
+    @CacheEvict(value = "race", allEntries = true)
+    public ResponseEntity<MessageResponse> createEntity(@RequestBody List<RaceDTO> entities) {
+        entities.forEach(validation::validate);
+        entities.forEach(e -> e.setId(null));
+
+        //remove relations and save them for later
+        Map<String, Pair< List<RaceAction>, List<RaceEffect>>> actions = new HashMap<>();
+        entities.forEach(raceaction -> {
+            actions.put(raceaction.getTag(),
+                    new Pair<>(new ArrayList<>(raceaction.getActions()), new ArrayList<>(raceaction.getEffects())));
+            raceaction.setActions(null);
+            raceaction.setEffects(null);
+        });
+
+        entities = clazzRepo.saveAll(entities);
+
+        entities.forEach(entity->{
+            Pair<List<RaceAction>, List<RaceEffect>> pair = actions.get(entity.getTag());
+            entity.setActions(new ArrayList<>(pair.first()) );
+            entity.getActions().forEach(action -> action.getKey().setIdRace(action.getKey().getIdRace()));
+
+            entity.setEffects(pair.second());
+            entity.getEffects().forEach(effect -> effect.getKey().setIdRace(effect.getKey().getIdRace()));
+        });
+
+        entities = clazzRepo.saveAll(entities);
+
+        String ids = entities.stream().map(RaceDTO::getId).map(String::valueOf).toList().toString();
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Races with ids '%s' created",ids), HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("/races/{id}")
+    @CacheEvict(value = "race", key = "#id")
+    public ResponseEntity<MessageResponse> deleteEntity(@PathVariable int id){
+        RaceDTO entity = clazzRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND,"Race with id '%d' not found!", id));
+
+        clazzRepo.delete(entity);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Race with id '%d' deleted!", id),
+                HttpStatus.OK);
+    }
+
+
 
     @Autowired
     public void setRepository(RaceRepo repository) {

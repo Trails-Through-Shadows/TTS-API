@@ -48,22 +48,22 @@ public class ActionDTO extends Validable {
     @Column
     private Integer levelReq;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "movement")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Movement movement;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "skill")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Skill skill;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "attack")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Attack attack;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "restoreCards")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private RestoreCards restoreCards;

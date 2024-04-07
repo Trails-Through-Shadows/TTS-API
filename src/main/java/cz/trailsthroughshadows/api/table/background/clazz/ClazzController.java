@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -62,7 +59,7 @@ public class ClazzController {
     }
 
     @GetMapping("/classes/{id}")
-    //@Cacheable(value = "enemy", key = "#id")
+    @Cacheable(value = "enemy", key = "#id")
     public ResponseEntity<Clazz> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -80,6 +77,8 @@ public class ClazzController {
 
         return new ResponseEntity<>(Clazz.fromDTO(entity), HttpStatus.OK);
     }
+
+    @PutMapping
 
     @Autowired
     public void setRepository(ClazzRepo repository) {

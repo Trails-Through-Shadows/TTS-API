@@ -67,7 +67,7 @@ public class PartController {
     }
 
     @GetMapping("/parts/{id}")
-//    @Cacheable(value = "part", key = "#id")
+    @Cacheable(value = "part", key = "#id")
     public ResponseEntity<Part> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
