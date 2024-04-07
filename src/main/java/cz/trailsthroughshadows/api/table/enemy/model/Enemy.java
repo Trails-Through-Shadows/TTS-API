@@ -1,7 +1,9 @@
 package cz.trailsthroughshadows.api.table.enemy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.table.action.model.Action;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import lombok.Data;
@@ -20,7 +22,9 @@ public class Enemy extends EnemyDTO {
 
     private String url;
 
+    @JsonIgnore
     List<Action> deck = new ArrayList<>();
+    @JsonIgnore
     int deckIndex = 0;
 
     public String getUrl() {
@@ -56,7 +60,7 @@ public class Enemy extends EnemyDTO {
 
     public Action drawCard() {
         if (deckIndex == -1)
-            return null;
+            return Action.fromDTO(ActionDTO.DO_NOTHING);
 
         if (deckIndex >= deck.size()) {
             shuffleDeck();

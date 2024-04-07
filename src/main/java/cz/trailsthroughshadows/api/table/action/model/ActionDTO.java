@@ -94,6 +94,13 @@ public class ActionDTO extends Validable {
         action.getSummonActions().forEach(a -> this.summonActions.add(a));
     }
 
+    public ActionDTO(String title, String description, Discard discard, Integer levelReq) {
+        this.title = title;
+        this.description = description;
+        this.discard = discard;
+        this.levelReq = levelReq;
+    }
+
     // region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
@@ -132,4 +139,6 @@ public class ActionDTO extends Validable {
         LONG_REST,
         NEVER
     }
+
+    public static ActionDTO DO_NOTHING = new ActionDTO("Do nothing", "Just stand around.", Discard.NEVER, 0);
 }
