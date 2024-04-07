@@ -88,14 +88,7 @@ public class Skill extends Validable {
 
     @Override
     public String getValidableValue() {
-        StringBuilder res = new StringBuilder();
-        Collection<EffectDTO> effects = getMappedEffects().stream().filter(e -> e != null).filter(e -> e.getType() != null).toList();
-        List<String> effectNames = effects.stream()
-                .map(EffectDTO::getType)
-                .map(EffectDTO.EffectType::name)
-                .toList();
-        res.append(String.join(", ", effectNames));
-        return (res.isEmpty() ? "Nothing" : res) + " within " + getRange() + " hexes.";
+        return null;
     }
     //endregion
 }

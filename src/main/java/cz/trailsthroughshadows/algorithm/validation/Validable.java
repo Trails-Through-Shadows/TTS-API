@@ -50,7 +50,7 @@ public abstract class Validable {
             this.fieldName = fieldName;
         }
 
-        log.trace("Validating {} '{}'", getValidableClass(), getValidableValue());
+        log.trace("Validating {}{}", getValidableClass(), getValidableValueFormatted());
 
         errors = new ArrayList<>();
         validateInner(validationConfig);
@@ -59,9 +59,9 @@ public abstract class Validable {
             return Optional.empty();
         }
 
-        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "{} '{}' is not valid!",
+        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "{}{} is not valid!",
                 getValidableClass(),
-                getValidableValue());
+                getValidableValueFormatted());
 
         for (var e : errors) {
             error.addSubError(e);
@@ -130,5 +130,15 @@ public abstract class Validable {
             return name;
         }
         return fieldName;
+    }
+
+    /**
+     * Returns the value of the validable object formatted for use in a message.
+     *
+     * @return The formatted value of the object.
+     */
+    @JsonIgnore
+    public String getValidableValueFormatted() {
+        return getValidableValue() == null ? "" : " '%s'".formatted(getValidableValue());
     }
 }

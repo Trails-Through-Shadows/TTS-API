@@ -52,7 +52,7 @@ public class RestoreCards extends Validable {
 
     @Override
     public String getValidableValue() {
-        return ((numCards == null ? "null" : (numCards == -1 ? "all" : numCards)) + " cards to " + (target == null ? "null" : target.name()) + (random != null && random ? " randomly." : "."));
+        return null;
     }
     //endregion
 }

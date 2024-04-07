@@ -68,7 +68,7 @@ public class Movement extends Validable {
 
     @Override
     public String getValidableValue() {
-        return type == null ? "Null" : getType().name() + " for " + getRange() + " hexes.";
+        return null;
     }
     //endregion
 

@@ -56,7 +56,7 @@ public class SummonAction extends Validable {
 
     @Override
     public String getValidableValue() {
-        return summon.getTitle() + " for " + range + " hexes.";
+        return null;
     }
 
     @Embeddable

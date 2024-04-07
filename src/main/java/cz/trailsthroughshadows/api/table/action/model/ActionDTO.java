@@ -98,7 +98,7 @@ public class ActionDTO extends Validable {
 
         // All features must be validated.
         for (SummonAction summonAction : summonActions) {
-            validateChild(summonAction.getSummon(), validationConfig);
+            validateChild(summonAction, validationConfig);
         }
         validateChild(movement, validationConfig);
         validateChild(skill, validationConfig);

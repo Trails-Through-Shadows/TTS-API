@@ -95,7 +95,7 @@ public class Attack extends Validable implements Serializable {
 
     @Override
     public String getValidableValue() {
-        return getDamage() + " (" + getNumAttacks() + "x) within " + getRange() + " hexes.";
+        return null;
     }
     //endregion
 }
