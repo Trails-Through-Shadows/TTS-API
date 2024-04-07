@@ -28,7 +28,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "Action")
 @EqualsAndHashCode(callSuper = true)
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class ActionDTO extends Validable {
 
     @Id
@@ -81,7 +81,20 @@ public class ActionDTO extends Validable {
         }
     }
 
-    //region Validation
+    public ActionDTO(Action action) {
+        this.title = action.getTitle();
+        this.description = action.getDescription();
+        this.discard = action.getDiscard();
+        this.levelReq = action.getLevelReq();
+        this.movement = action.getMovement();
+        this.skill = action.getSkill();
+        this.attack = action.getAttack();
+        this.restoreCards = action.getRestoreCards();
+        this.summonActions = new ArrayList<>();
+        action.getSummonActions().forEach(a -> this.summonActions.add(a));
+    }
+
+    // region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
         // Title and description have to be valid.
@@ -93,7 +106,8 @@ public class ActionDTO extends Validable {
 
         // Level requirement must be greater than 0, if it is not null.
         if (levelReq != null && levelReq < 0) {
-            errors.add(new ValidationError(getValidableClass(), "levelReq", levelReq, "Level requirement must be greater than 0!"));
+            errors.add(new ValidationError(getValidableClass(), "levelReq", levelReq,
+                    "Level requirement must be greater than 0!"));
         }
 
         // All features must be validated.
@@ -110,7 +124,7 @@ public class ActionDTO extends Validable {
     public String getValidableValue() {
         return getTitle();
     }
-    //endregion
+    // endregion
 
     public enum Discard implements Serializable {
         PERMANENT,

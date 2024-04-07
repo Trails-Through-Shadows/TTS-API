@@ -22,6 +22,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -236,8 +238,10 @@ public class Encounter {
 
     public LinkedHashMap<String, Object> startEnemyTurn(Integer id) {
         LinkedHashMap<String, Object> ret = new LinkedHashMap<>();
-        ActionDTO action = entities.getEnemyGroup(id).getFirst().getEntity().drawCard();
+        ActionDTO action = new ActionDTO(entities.getEnemyGroup(id).getFirst().getEntity().drawCard());
         Initialization.hibernateInitializeAll(action);
+        log.trace("hibernate here", action);
+        log.trace("typeof action is {}", action.getClass().getName());
         ret.put("action", action);
         ret.put("entities", startTurn(EncounterEntity.EntityType.ENEMY, id));
         return ret;
@@ -304,10 +308,11 @@ public class Encounter {
 
         if (damage < 0) {
             throw new RestException(new RestError(HttpStatus.NOT_ACCEPTABLE, "Damage must not be lesser than 0.",
-                "damage", damage));
+                    "damage", damage));
         } else if (damage > 50) {
-            throw new RestException(new RestError(HttpStatus.NOT_ACCEPTABLE, "You just woke up and chose violence. (Damage must not be greater than 50.)",
-                "damage", damage));
+            throw new RestException(new RestError(HttpStatus.NOT_ACCEPTABLE,
+                    "You just woke up and chose violence. (Damage must not be greater than 50.)",
+                    "damage", damage));
         }
 
         if (effects == null) {
@@ -332,9 +337,13 @@ public class Encounter {
             log.info("Entity '{}' is dead", entity);
 
             // to make sure the entity doesn't stay active after it's dead
-            int entityId = entity.getType() == EncounterEntity.EntityType.CHARACTER ? entity.getId() : entity.getIdGroup();
-            if (entities.isEntityActive() && entities.getActiveEntity().getType() == entity.getType() && entities.getActiveEntity().getId() == entityId) {
-                if (entity.getType().equals(EncounterEntity.EntityType.CHARACTER) || entity.getType().equals(EncounterEntity.EntityType.ENEMY) && entities.getEnemyGroup(entity.getIdGroup()).stream().allMatch(e -> e.getHealth() == 0)) {
+            int entityId = entity.getType() == EncounterEntity.EntityType.CHARACTER ? entity.getId()
+                    : entity.getIdGroup();
+            if (entities.isEntityActive() && entities.getActiveEntity().getType() == entity.getType()
+                    && entities.getActiveEntity().getId() == entityId) {
+                if (entity.getType().equals(EncounterEntity.EntityType.CHARACTER)
+                        || entity.getType().equals(EncounterEntity.EntityType.ENEMY) && entities
+                                .getEnemyGroup(entity.getIdGroup()).stream().allMatch(e -> e.getHealth() == 0)) {
                     log.trace("Resetting active entity - they died during their turn");
                     entities.resetActiveEntity();
                 }
