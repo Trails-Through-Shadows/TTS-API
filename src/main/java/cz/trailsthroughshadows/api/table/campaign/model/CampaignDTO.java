@@ -69,6 +69,8 @@ public class CampaignDTO extends Validable {
                 .orElse(null);
     }
 
+
+
     //region Validation
 
     @Override

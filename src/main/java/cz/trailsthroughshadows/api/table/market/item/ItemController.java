@@ -4,6 +4,8 @@ import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.market.item.model.Item;
 import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -14,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -62,7 +61,7 @@ public class ItemController {
     }
 
     @GetMapping("/items/{id}")
-    //@Cacheable(value = "item", key = "#id")
+    @Cacheable(value = "item", key = "#id")
     public ResponseEntity<Item> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -79,6 +78,49 @@ public class ItemController {
         }
 
         return new ResponseEntity<>(Item.fromDTO(entity), HttpStatus.OK);
+    }
+
+    @PostMapping("/items")
+    @Cacheable(value = "item")
+    public ResponseEntity<MessageResponse> createEntity(@RequestBody List<ItemDTO> enTITIES) {
+        enTITIES.forEach(validation::validate);
+        List<ItemDTO> saved = itemRepo.saveAll(enTITIES);
+        String ids = saved.stream().map(ItemDTO::getId).map(String::valueOf).toList().toString();
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Actions with ids '%d' created!", ids),
+                HttpStatus.OK);
+    }
+
+    @PutMapping("/items/{id}")
+    @Cacheable(value = "item", key = "#id")
+    public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody ItemDTO item) {
+        validation.validate(item);
+
+        ItemDTO entityToUPdate = itemRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '%d' not found!", id));
+
+        entityToUPdate.setAction(item.getAction());
+        entityToUPdate.setTitle(item.getTitle());
+        entityToUPdate.setDescription(item.getDescription());
+        entityToUPdate.setTag(item.getTag());
+        entityToUPdate.setRequirements(item.getRequirements());
+        entityToUPdate.setEffects(item.getEffects());
+        entityToUPdate.setType(item.getType());
+
+        itemRepo.save(entityToUPdate);
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Item with id '%d' updated!", id), HttpStatus.OK);
+    }
+    @DeleteMapping("/items/{id}")
+    @Cacheable(value = "item", key = "#id")
+    public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
+        ItemDTO entityToDelete = itemRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '%d' not found!", id));
+
+        itemRepo.delete(entityToDelete);
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Item with id '%d' deleted!", id), HttpStatus.OK);
     }
 
     @Autowired
