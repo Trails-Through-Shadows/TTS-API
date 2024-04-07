@@ -32,7 +32,7 @@ public class Skill extends Validable {
     @Column(nullable = false)
     private Integer range;
 
-    @Column(nullable = false)
+    @Column
     private Integer area;
 
     @Column(nullable = false)

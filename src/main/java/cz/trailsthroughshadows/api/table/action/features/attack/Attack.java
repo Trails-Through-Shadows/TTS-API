@@ -35,7 +35,7 @@ public class Attack extends Validable implements Serializable {
     @Column(nullable = false)
     private Integer damage;
 
-    @Column(nullable = false)
+    @Column
     private Integer area;
 
     @Column(nullable = false)
