@@ -30,10 +30,10 @@ public class Attack extends Validable implements Serializable {
     private Integer id;
 
     @Column(nullable = false)
-    private int range;
+    private Integer range;
 
     @Column(nullable = false)
-    private int damage;
+    private Integer damage;
 
     @Column(nullable = false)
     private Integer area;
@@ -43,7 +43,7 @@ public class Attack extends Validable implements Serializable {
     private EffectDTO.EffectTarget target;
 
     @Column(nullable = false)
-    private int numAttacks;
+    private Integer numAttacks;
 
     @OneToMany(mappedBy = "key.idAttack", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
@@ -62,6 +62,20 @@ public class Attack extends Validable implements Serializable {
         if (target == null) {
             errors.add(new ValidationError("Attack", "target", null, "Target must not be null."));
         }
+        // Range cant be null.
+        if (range == null) {
+            errors.add(new ValidationError("Attack", "range", null, "Range must not be null."));
+        }
+        // Damage cant be null.
+        if (damage == null) {
+            errors.add(new ValidationError("Attack", "damage", null, "Damage must not be null."));
+        }
+        // Number of attacks cant be null.
+        if (numAttacks == null) {
+            errors.add(new ValidationError("Attack", "numAttacks", null, "Number of attacks must not be null."));
+        }
+
+        if (!errors.isEmpty()) return;
 
         // Range must be greater than 0. It can be 0 only if target is SELF.
         if (range < 0 || (range == 0 && target != EffectDTO.EffectTarget.SELF)) {
@@ -86,7 +100,7 @@ public class Attack extends Validable implements Serializable {
         // All effects must be validated.
         for (var e : getMappedEffects()) {
             if (e == null) {
-                errors.add(new ValidationError("Skill", "effects", null, "Skill must not contain null effects."));
+                errors.add(new ValidationError("Attack", "effects", null, "Attack must not contain null effects."));
                 break;
             }
             validateChild(e, validationConfig);

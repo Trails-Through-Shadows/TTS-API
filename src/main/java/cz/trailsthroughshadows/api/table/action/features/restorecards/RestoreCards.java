@@ -43,6 +43,9 @@ public class RestoreCards extends Validable {
         if (random == null) {
             errors.add(new ValidationError("RestoreCards", "random", null, "Random must not be null."));
         }
+        if (numCards == null) {
+            errors.add(new ValidationError("RestoreCards", "numCards", null, "Number of cards must not be null."));
+        }
 
         // Number of cards must be greater than 0 or exactly -1 (infinity).
         if (numCards != null && numCards < 0 && numCards != -1) {

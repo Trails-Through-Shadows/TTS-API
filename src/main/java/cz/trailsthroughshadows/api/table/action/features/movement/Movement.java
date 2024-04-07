@@ -29,7 +29,7 @@ public class Movement extends Validable {
     private Integer id;
 
     @Column(nullable = false)
-    private int range;
+    private Integer range;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -53,6 +53,10 @@ public class Movement extends Validable {
         // Type cant be null.
         if (type == null) {
             errors.add(new ValidationError("Movement", "type", null, "Type must not be null."));
+        }
+        // Range cant be null.
+        if (range == null) {
+            errors.add(new ValidationError("Movement", "range", null, "Range must not be null."));
         }
 
         // Range must be greater than 0.

@@ -39,6 +39,10 @@ public class SummonAction extends Validable {
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        // Range cant be null.
+        if (range == null) {
+            errors.add(new ValidationError("SummonAction", "range", null, "Range must not be null."));
+        }
         // Range must be greater than 0.
         if (range <= 0) {
             errors.add(new ValidationError("SummonAction", "range", range, "Range must be greater than 0."));
