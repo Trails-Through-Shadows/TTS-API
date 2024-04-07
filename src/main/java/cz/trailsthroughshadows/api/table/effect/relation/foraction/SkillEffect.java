@@ -22,7 +22,7 @@ public class SkillEffect {
     @EmbeddedId
     private SkillEffectId key;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;

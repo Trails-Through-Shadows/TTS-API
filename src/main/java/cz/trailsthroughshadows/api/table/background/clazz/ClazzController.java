@@ -7,6 +7,8 @@ import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.background.clazz.model.Clazz;
 import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
+import cz.trailsthroughshadows.api.util.Pair;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -18,7 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController(value = "Class")
@@ -109,12 +114,33 @@ public class ClazzController {
 
     @PostMapping("/classes")
     public ResponseEntity<MessageResponse> createEntity(
-            @RequestBody ClazzDTO entity
+            @RequestBody List<ClazzDTO> entity
     ) {
-        validation.validate(entity);
-        entity.setId(null);
-        ClazzDTO created = clazzRepo.save(entity);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Class with id '%d' created!", created.getId()), HttpStatus.CREATED);
+        entity.forEach(validation::validate);
+        entity.forEach((e) -> e.setId(null));
+
+        Map<String, Pair<List<ClazzAction>, List<ClazzEffect>>> actionsAndEffects = new HashMap<>();
+
+        entity.forEach((e) -> {
+            actionsAndEffects.put(e.getTag(), new Pair<>(new ArrayList<>(e.getActions()), new ArrayList<>(e.getEffects())));
+            e.setActions(null);
+            e.setEffects(null);
+        });
+
+        entity = clazzRepo.saveAll(entity);
+
+        entity.forEach((e) -> {
+            Pair<List<ClazzAction>, List<ClazzEffect>> pair = actionsAndEffects.get(e.getTag());
+            e.setActions(pair.first());
+            e.getActions().forEach(action -> action.getKey().setIdClass(e.getId()));
+            e.setEffects(pair.second());
+            e.getEffects().forEach(effect -> effect.getKey().setIdClass(e.getId()));
+        });
+
+        entity = clazzRepo.saveAll(entity);
+        String ids = entity.stream().map(ClazzDTO::getId).map(String::valueOf).reduce((a, b) -> a + ", " + b).orElse("");
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Class with id '%d' created!", ids), HttpStatus.CREATED);
     }
 
     @Autowired

@@ -45,10 +45,10 @@ public class Attack extends Validable implements Serializable {
     @Column(nullable = false)
     private Integer numAttacks;
 
-    @OneToMany(mappedBy = "key.idAttack", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "key.idAttack", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<AttackEffect> effects;
-    
+
     @JsonIgnore
     public Collection<EffectDTO> getMappedEffects() {
         if (effects == null) return null;

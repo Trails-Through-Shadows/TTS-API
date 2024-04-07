@@ -44,13 +44,13 @@ public class SummonDTO extends Validable implements Cloneable {
     @Column(length = 32)
     private String tag;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idAction")
     private ActionDTO action;
 
 
-    @OneToMany(mappedBy = "key.idSummon", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "key.idSummon", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<SummonEffect> effects;
 

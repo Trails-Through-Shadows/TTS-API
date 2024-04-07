@@ -64,7 +64,7 @@ public class CampaignController {
     }
 
     @PostMapping("")
-    @CacheEvict(value = "enemy", allEntries = true)
+    //@CacheEvict(value = "campaign", allEntries = true)
     public ResponseEntity<MessageResponse> create(@RequestBody List<CampaignDTO> campaigns) {
 
         //TODO validation of the input

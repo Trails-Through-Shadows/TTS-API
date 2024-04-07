@@ -126,7 +126,7 @@ public class ActionController {
         actions = actionRepo.saveAll(actions);
 
         String ids = actions.stream().map(ActionDTO::getId).map(String::valueOf).toList().toString();
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Actions with ids '%d' created!", ids),
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Actions with ids '%s' created!", ids),
                 HttpStatus.OK);
     }
 

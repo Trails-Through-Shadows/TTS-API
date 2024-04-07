@@ -17,7 +17,7 @@ public class ClazzAction {
     @EmbeddedId
     private ClazzActionId key;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "idAction", insertable = false, updatable = false)
     private ActionDTO action;
 

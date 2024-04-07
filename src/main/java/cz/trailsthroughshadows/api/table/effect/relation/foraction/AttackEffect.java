@@ -21,7 +21,7 @@ public class AttackEffect implements Serializable {
     @EmbeddedId
     private AttackEffectId key;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private EffectDTO effect;

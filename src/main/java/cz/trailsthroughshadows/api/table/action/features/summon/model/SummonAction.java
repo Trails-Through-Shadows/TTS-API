@@ -27,7 +27,7 @@ public class SummonAction extends Validable {
     @EmbeddedId
     private SummonActionId key;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @MapsId("idSummon")
     @JoinColumn(name = "idSummon")
