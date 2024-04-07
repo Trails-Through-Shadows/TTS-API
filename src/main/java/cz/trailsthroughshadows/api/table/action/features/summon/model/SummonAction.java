@@ -42,7 +42,9 @@ public class SummonAction extends Validable {
         // Range cant be null.
         if (range == null) {
             errors.add(new ValidationError("SummonAction", "range", null, "Range must not be null."));
+            return;
         }
+
         // Range must be greater than 0.
         if (range <= 0) {
             errors.add(new ValidationError("SummonAction", "range", range, "Range must be greater than 0."));

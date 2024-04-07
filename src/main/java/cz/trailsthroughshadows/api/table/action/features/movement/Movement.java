@@ -59,6 +59,8 @@ public class Movement extends Validable {
             errors.add(new ValidationError("Movement", "range", null, "Range must not be null."));
         }
 
+        if (!errors.isEmpty()) return;
+
         // Range must be greater than 0.
         if (range <= 0) {
             errors.add(new ValidationError("Movement", "range", getRange(), "Range must be greater than 0."));
