@@ -54,18 +54,17 @@ public class Encounter {
     private ValidationService validation;
 
     public Encounter(Integer id, Integer idLicense, Adventure adventure, Location location) {
+        log.info("Creating encounter {}", id);
+
         this.id = id;
         this.idLicense = idLicense;
         this.adventure = adventure;
         this.location = location;
 
-        conditions = adventure.getCampaign().getConditions(location.getId());
-
-
-        log.info("Creating encounter {}", id);
-
         parts = location.getMappedParts();
         startPart = location.getStartPart();
+
+        conditions = adventure.getCampaign().getConditions(location.getId());
 
         if (startPart == null) {
             log.warn("No unlocked parts in location " + location.getId());
@@ -83,6 +82,7 @@ public class Encounter {
             entities.addCharacter(character, effects);
         }
 
+        initConditions();
         discoverPart(startPart.getId());
     }
 
@@ -235,7 +235,7 @@ public class Encounter {
         }
 
         // check condition
-        state = checkCondition();
+        state = checkConditions();
 
         return ret;
     }
@@ -339,7 +339,7 @@ public class Encounter {
         checkEntityDead(entity);
 
         // check condition
-        state = checkCondition();
+        state = checkConditions();
 
         return ret;
     }
@@ -435,7 +435,7 @@ public class Encounter {
 
         // check condition
         progressCondition(CampaignLocation.Condition.Type.ROUND_REACHED);
-        state = checkCondition();
+        state = checkConditions();
 
         // status
         ret.put("status", state);
@@ -453,24 +453,40 @@ public class Encounter {
     }
 
     private boolean checkEntityCondition(List<?> entities, CampaignLocation.Condition condition, String entityName) {
-        if (condition.getValue() == -1) {
-            if (entities.isEmpty()) {
-                log.debug("Condition reached: All %s dead".formatted(entityName));
-                log.info("Setting state to %s".formatted(condition.getResult()));
-                return true;
-            }
-        } else {
-            if (condition.getProgression() >= condition.getValue()) {
-                log.debug("Condition reached: %s %s dead".formatted(condition.getValue(), entityName));
-                log.info("Setting state to %s".formatted(condition.getResult()));
-                return true;
-            }
+        if (condition.getProgression() >= condition.getValue()) {
+            log.debug("Condition reached: %s %s dead".formatted(condition.getValue(), entityName));
+            log.info("Setting state to %s".formatted(condition.getResult()));
+            return true;
         }
-
         return false;
     }
 
-    private EncounterState checkCondition() {
+    private void initConditions() {
+        for (CampaignLocation.Condition condition : conditions) {
+            if (condition.getValue() != -1)
+                continue;
+
+            switch (condition.getType()) {
+                case ENEMY_DEATHS -> {
+                    int count = parts.stream().mapToInt(p -> p.getEnemies().size()).sum();
+                    condition.setValue(count);
+                }
+                case PLAYER_DEATHS -> {
+                    int count = entities.getCharacters().size();
+                    condition.setValue(count);
+                }
+                case DOORS_OPENED -> {
+                    int count = parts.size();
+                    condition.setValue(count);
+                }
+                case ROUND_REACHED -> {
+                    condition.setValue(0);
+                }
+            }
+        }
+    }
+
+    private EncounterState checkConditions() {
         if (state != EncounterState.ONGOING) {
             logError(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
         }
@@ -500,6 +516,11 @@ public class Encounter {
         }
 
         return EncounterState.ONGOING;
+    }
+
+    private void endEncounter() {
+        log.info("Ending encounter");
+        state = EncounterState.COMPLETED;
     }
 
     private void logError(HttpStatus status, String message, Object... args) {
