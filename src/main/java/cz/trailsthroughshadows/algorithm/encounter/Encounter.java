@@ -5,9 +5,8 @@ import cz.trailsthroughshadows.algorithm.encounter.model.*;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
-import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
-import cz.trailsthroughshadows.api.table.action.model.Action;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.campaign.model.CampaignLocation;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
@@ -23,7 +22,6 @@ import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -59,6 +57,9 @@ public class Encounter {
         this.idLicense = idLicense;
         this.adventure = adventure;
         this.location = location;
+
+        List<CampaignLocation.Condition> conditions = adventure.getCampaign().getConditions(location.getId());
+
 
         log.info("Creating encounter {}", id);
 
@@ -180,6 +181,9 @@ public class Encounter {
             LinkedHashMap<String, Object> active = new LinkedHashMap<>();
             active.put("type", entities.getActiveEntity().getType());
             active.put("id", entities.getActiveEntity().getId());
+            if (entities.getActiveEntity().getType().equals(EncounterEntity.EntityType.ENEMY)) {
+                active.put("action", entities.getActiveEntity().getAction());
+            }
             ret.put("active", active);
         } else {
             ret.put("active", null);
@@ -244,6 +248,7 @@ public class Encounter {
         log.trace("typeof action is {}", action.getClass().getName());
         ret.put("action", action);
         ret.put("entities", startTurn(EncounterEntity.EntityType.ENEMY, id));
+        entities.getActiveEntity().setAction(action);
         return ret;
     }
 
@@ -432,7 +437,7 @@ public class Encounter {
         return RestException.of(status, message, args);
     }
 
-    enum EncounterState {
+    public enum EncounterState {
         NEW,
         ONGOING,
         COMPLETED,
