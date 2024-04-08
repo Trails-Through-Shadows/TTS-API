@@ -10,14 +10,14 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class AuthResponse {
-    String token;
-    //UUID token;
+    //String token;
+    UUID token;
     int licenseId;
     String key;
 
-    //    public AuthResponse(Session session) {
-//        this.token = session.getToken();
-//        this.licenseId = session.getLicenseId();
-//    }
+    public AuthResponse(Session session) {
+        this.token = session.getToken();
+        this.licenseId = session.getLicenseId();
+    }
 
 }

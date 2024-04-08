@@ -41,10 +41,11 @@ public class SessionController {
     //https://medium.com/@minadev/authentication-and-authorization-with-spring-security-bf22e985f2cb TODO
     //TODO jebat jwt stačí api key https://stackoverflow.com/questions/54134252/how-to-config-multiple-level-authentication-for-spring-boot-restful-web-service
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getKey(), request.getPassword()));
-        String token = JwtUtil.generateToken(request.getKey());
-        return ResponseEntity.ok(new AuthResponse(request.getKey(), token));
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) { //AuthRequest creds
+//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getKey(), request.getPassword()));
+//        String token = JwtUtil.generateToken(request.getKey());
+        return new ResponseEntity<>(sessionHandler.login(request), HttpStatus.OK);
+        //return ResponseEntity.ok(new AuthResponse(request.getKey(), token));
     }
 
     @DeleteMapping("/logout")
