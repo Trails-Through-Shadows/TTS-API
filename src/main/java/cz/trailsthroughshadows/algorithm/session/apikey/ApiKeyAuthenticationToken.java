@@ -10,11 +10,11 @@ import java.util.UUID;
 public class ApiKeyAuthenticationToken extends AbstractAuthenticationToken {
     private final String apiKey;
 
-//    public ApiKeyAuthenticationToken(String apiKey) {
-//        super(null);
-//        this.apiKey = apiKey;
-//        setAuthenticated(false);
-//    }
+    public ApiKeyAuthenticationToken(String apiKey) {
+        super(null);
+        this.apiKey = apiKey;
+        setAuthenticated(false);
+    }
 
     public ApiKeyAuthenticationToken(String apiKey, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
