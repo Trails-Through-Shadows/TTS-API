@@ -48,7 +48,7 @@ public class ActionDTO extends Validable {
     @Column
     private Integer levelReq;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "movement")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Movement movement;

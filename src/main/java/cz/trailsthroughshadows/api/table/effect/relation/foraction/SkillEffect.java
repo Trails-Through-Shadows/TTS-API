@@ -29,6 +29,8 @@ public class SkillEffect {
 
     @Data
     @Embeddable
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class SkillEffectId implements Serializable {
         @Column(nullable = false)
         @GeneratedValue(strategy = GenerationType.IDENTITY)

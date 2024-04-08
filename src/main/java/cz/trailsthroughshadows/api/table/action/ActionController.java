@@ -5,11 +5,13 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
-import cz.trailsthroughshadows.api.table.action.features.movement.Movement;
-import cz.trailsthroughshadows.api.table.action.features.skill.Skill;
 import cz.trailsthroughshadows.api.table.action.model.Action;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
-import cz.trailsthroughshadows.api.util.Triplet;
+import cz.trailsthroughshadows.api.table.effect.EffectRepo;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.AttackEffect;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.MovementEffect;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.SkillEffect;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -27,6 +30,7 @@ public class ActionController {
 
     private ValidationService validation;
     private ActionRepo actionRepo;
+    private EffectRepo effectRepo;
 
     @GetMapping("/actions")
     //@Cacheable(value = "action")
@@ -85,26 +89,101 @@ public class ActionController {
     public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody ActionDTO action) {
         validation.validate(action);
 
-        ActionDTO entityToUPdate = actionRepo
+        ActionDTO entityToUpdate = actionRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
 
-        entityToUPdate.setTitle(action.getTitle());
-        entityToUPdate.setDescription(action.getDescription());
-        entityToUPdate.setDiscard(action.getDiscard());
-        entityToUPdate.setLevelReq(action.getLevelReq());
+        entityToUpdate.setTitle(action.getTitle());
+        entityToUpdate.setDescription(action.getDescription());
+        entityToUpdate.setDiscard(action.getDiscard());
+        entityToUpdate.setLevelReq(action.getLevelReq());
 
-        entityToUPdate.setAttack(action.getAttack());
-        entityToUPdate.setMovement(action.getMovement());
-        entityToUPdate.setSkill(action.getSkill());
-        entityToUPdate.setRestoreCards(action.getRestoreCards());
+        List<AttackEffect> attackEffects = new ArrayList<>();
+        if (action.getAttack() != null && action.getAttack().getEffects() != null) {
+            attackEffects.addAll(action.getAttack().getEffects());
+            action.getAttack().getEffects().clear();
+        }
+        entityToUpdate.setAttack(action.getAttack());
 
-        entityToUPdate.setSummonActions(action.getSummonActions());
+        List<MovementEffect> movementEffects = new ArrayList<>();
+        if (action.getMovement() != null && action.getMovement().getEffects() != null) {
+            movementEffects.addAll(action.getMovement().getEffects());
+            action.getMovement().getEffects().clear();
+        }
+        entityToUpdate.setMovement(action.getMovement());
 
-        actionRepo.save(entityToUPdate);
+        List<SkillEffect> skillEffects = new ArrayList<>( );
+        if (action.getSkill() != null && action.getSkill().getEffects() != null) {
+            skillEffects.addAll(action.getSkill().getEffects());
+            action.getSkill().getEffects().clear();
+        }
+        entityToUpdate.setSkill(action.getSkill());
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' updated!", id),
-                HttpStatus.OK);
+        entityToUpdate.setRestoreCards(action.getRestoreCards());
+        entityToUpdate.setSummonActions(null); // Ptfuj
+
+        // Save the entity
+        log.info(entityToUpdate.toString());
+        entityToUpdate = actionRepo.save(entityToUpdate);
+
+        // Movement effects
+        if (entityToUpdate.getMovement() != null && entityToUpdate.getMovement().getEffects() != null) {
+            for (MovementEffect movementEffect : movementEffects) {
+                EffectDTO effect = processEffects(movementEffect.getEffect());
+
+                movementEffect.setKey(new MovementEffect.MovementEffectId(entityToUpdate.getMovement().getId(), effect.getId()));
+                movementEffect.setEffect(effect);
+            }
+
+            entityToUpdate.getMovement().getEffects().addAll(movementEffects);
+        }
+
+        // Skill effects
+        if (entityToUpdate.getSkill() != null && entityToUpdate.getSkill().getEffects() != null){
+            for (SkillEffect skillEffect : skillEffects) {
+                EffectDTO effect = processEffects(skillEffect.getEffect());
+
+                skillEffect.setKey(new SkillEffect.SkillEffectId(entityToUpdate.getSkill().getId(), effect.getId()));
+                skillEffect.setEffect(effect);
+            }
+
+            entityToUpdate.getSkill().getEffects().addAll(skillEffects);
+        }
+
+        // Attack effects
+        if (entityToUpdate.getAttack() != null && entityToUpdate.getAttack().getEffects() != null) {
+            for (AttackEffect attackEffect : attackEffects) {
+                EffectDTO effect = processEffects(attackEffect.getEffect());
+
+                attackEffect.setKey(new AttackEffect.AttackEffectId(entityToUpdate.getAttack().getId(), effect.getId()));
+                attackEffect.setEffect(effect);
+            }
+
+            entityToUpdate.getAttack().getEffects().addAll(attackEffects);
+        }
+
+        ActionDTO lateSave = actionRepo.save(entityToUpdate);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' updated!", id), HttpStatus.OK);
+    }
+
+    private EffectDTO processEffects(EffectDTO inputEffect) {
+        List<EffectDTO> effects = effectRepo.findUnique(
+                inputEffect.getTarget(),
+                inputEffect.getType(),
+                inputEffect.getDuration(),
+                inputEffect.getStrength()
+        );
+
+        EffectDTO effect = null;
+        if (effects.isEmpty()) {
+            log.info("Effect {} not found, creating new", inputEffect);
+            effect = effectRepo.save(inputEffect);
+        } else {
+            log.info("Effect {} found", inputEffect);
+            effect = effects.getFirst();
+        }
+
+        return effect;
     }
 
     @DeleteMapping("/actions/{id}")
@@ -140,6 +219,11 @@ public class ActionController {
     @Autowired
     public void setRepository(ActionRepo repository) {
         this.actionRepo = repository;
+    }
+
+    @Autowired
+    public void setEffectRepo(EffectRepo effectRepo) {
+        this.effectRepo = effectRepo;
     }
 
     @Autowired

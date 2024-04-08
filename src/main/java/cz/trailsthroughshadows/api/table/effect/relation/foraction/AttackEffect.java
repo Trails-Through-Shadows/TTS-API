@@ -26,8 +26,10 @@ public class AttackEffect implements Serializable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private EffectDTO effect;
 
-    @Embeddable
     @Data
+    @Embeddable
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class AttackEffectId implements Serializable {
         @Column(nullable = false)
         private Integer idAttack;

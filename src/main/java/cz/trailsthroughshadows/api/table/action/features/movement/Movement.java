@@ -14,7 +14,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "Movement")
@@ -43,12 +43,12 @@ public class Movement extends Validable {
             inverseJoinColumns = @JoinColumn(name = "idEffect", referencedColumnName = "idEffect")
     )
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private Collection<MovementEffect> effects;
+    private List<MovementEffect> effects;
 
     // Skipping n-to-n relationship, there is no additional data in that table
     //@ToString.Include(name = "effects") // Including replacement field in toString
     @JsonIgnore
-    public Collection<EffectDTO> getMappedEffects() {
+    public List<EffectDTO> getMappedEffects() {
         if (effects == null) return null;
         return effects.stream().map(MovementEffect::getEffect).toList();
     }
