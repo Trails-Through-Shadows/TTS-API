@@ -34,11 +34,11 @@ public class MovementEffect {
     public static class MovementEffectId implements Serializable {
 
         @Column
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @GeneratedValue(strategy = GenerationType.AUTO)
         private Integer idMovement;
 
         @Column(nullable = false)
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @GeneratedValue(strategy = GenerationType.AUTO)
         private Integer idEffect;
 
     }

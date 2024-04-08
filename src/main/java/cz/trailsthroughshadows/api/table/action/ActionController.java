@@ -112,7 +112,7 @@ public class ActionController {
         }
         entityToUpdate.setMovement(action.getMovement());
 
-        List<SkillEffect> skillEffects = new ArrayList<>( );
+        List<SkillEffect> skillEffects = new ArrayList<>();
         if (action.getSkill() != null && action.getSkill().getEffects() != null) {
             skillEffects.addAll(action.getSkill().getEffects());
             action.getSkill().getEffects().clear();
@@ -139,7 +139,7 @@ public class ActionController {
         }
 
         // Skill effects
-        if (entityToUpdate.getSkill() != null && entityToUpdate.getSkill().getEffects() != null){
+        if (entityToUpdate.getSkill() != null && entityToUpdate.getSkill().getEffects() != null) {
             for (SkillEffect skillEffect : skillEffects) {
                 EffectDTO effect = processEffects(skillEffect.getEffect());
 
@@ -198,21 +198,84 @@ public class ActionController {
     }
 
     @PostMapping("/actions")
-    public ResponseEntity<MessageResponse> create(@RequestBody List<ActionDTO> actions) {
-        actions.forEach(validation::validate);
-        actions.forEach(e -> e.setId(null));
+    public ResponseEntity<MessageResponse> create(@RequestBody ActionDTO action) {
+        validation.validate(action);
 
-        //remove relations and save them for later
-        //todo summons
+        ActionDTO entityToUpdate = action;
+        entityToUpdate.setAttack(null);
+        entityToUpdate.setMovement(null);
+        entityToUpdate.setSkill(null);
+        entityToUpdate.setRestoreCards(null);
+        entityToUpdate = actionRepo.save(entityToUpdate);
 
-        //remove m:n tables and save them for later
-//        Map<String, Triplet<List<Movement>, List<Skill>,List<>>>
-//
-        actions = actionRepo.saveAll(actions);
+        List<AttackEffect> attackEffects = new ArrayList<>();
+        if (action.getAttack() != null && action.getAttack().getEffects() != null) {
+            attackEffects.addAll(action.getAttack().getEffects());
+            action.getAttack().getEffects().clear();
+        }
+        entityToUpdate.setAttack(action.getAttack());
+
+        List<MovementEffect> movementEffects = new ArrayList<>();
+        if (action.getMovement() != null && action.getMovement().getEffects() != null) {
+            movementEffects.addAll(action.getMovement().getEffects());
+            action.getMovement().getEffects().clear();
+        }
+        entityToUpdate.setMovement(action.getMovement());
+
+        List<SkillEffect> skillEffects = new ArrayList<>();
+        if (action.getSkill() != null && action.getSkill().getEffects() != null) {
+            skillEffects.addAll(action.getSkill().getEffects());
+            action.getSkill().getEffects().clear();
+        }
+        entityToUpdate.setSkill(action.getSkill());
+
+        entityToUpdate.setRestoreCards(action.getRestoreCards());
+        entityToUpdate.setSummonActions(null); // Ptfuj
+
+        // Save the entity
+        log.info(entityToUpdate.toString());
+        entityToUpdate = actionRepo.save(entityToUpdate);
+
+        // Movement effects
+        if (entityToUpdate.getMovement() != null && entityToUpdate.getMovement().getEffects() != null) {
+            for (MovementEffect movementEffect : movementEffects) {
+                EffectDTO effect = processEffects(movementEffect.getEffect());
+
+                movementEffect.setKey(new MovementEffect.MovementEffectId(entityToUpdate.getMovement().getId(), effect.getId()));
+                movementEffect.setEffect(effect);
+            }
+
+            entityToUpdate.getMovement().getEffects().addAll(movementEffects);
+        }
+
+        // Skill effects
+        if (entityToUpdate.getSkill() != null && entityToUpdate.getSkill().getEffects() != null) {
+            for (SkillEffect skillEffect : skillEffects) {
+                EffectDTO effect = processEffects(skillEffect.getEffect());
+
+                skillEffect.setKey(new SkillEffect.SkillEffectId(entityToUpdate.getSkill().getId(), effect.getId()));
+                skillEffect.setEffect(effect);
+            }
+
+            entityToUpdate.getSkill().getEffects().addAll(skillEffects);
+        }
+
+        // Attack effects
+        if (entityToUpdate.getAttack() != null && entityToUpdate.getAttack().getEffects() != null) {
+            for (AttackEffect attackEffect : attackEffects) {
+                EffectDTO effect = processEffects(attackEffect.getEffect());
+
+                attackEffect.setKey(new AttackEffect.AttackEffectId(entityToUpdate.getAttack().getId(), effect.getId()));
+                attackEffect.setEffect(effect);
+            }
+
+            entityToUpdate.getAttack().getEffects().addAll(attackEffects);
+        }
+
+        ActionDTO lateSave = actionRepo.save(entityToUpdate);
 
 
-        String ids = actions.stream().map(ActionDTO::getId).map(String::valueOf).toList().toString();
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Actions with ids '%s' created!", ids),
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' created!", lateSave.getId()),
                 HttpStatus.OK);
     }
 
