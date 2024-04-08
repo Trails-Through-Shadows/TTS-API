@@ -124,7 +124,7 @@ public class ActionController {
 
         // Save the entity
         log.info(entityToUpdate.toString());
-        entityToUpdate = actionRepo.save(entityToUpdate);
+        entityToUpdate = actionRepo.saveAndFlush(entityToUpdate);
 
         // Movement effects
         if (entityToUpdate.getMovement() != null && entityToUpdate.getMovement().getEffects() != null) {
@@ -162,7 +162,7 @@ public class ActionController {
             entityToUpdate.getAttack().getEffects().addAll(attackEffects);
         }
 
-        ActionDTO lateSave = actionRepo.save(entityToUpdate);
+        ActionDTO lateSave = actionRepo.saveAndFlush(entityToUpdate);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' updated!", id), HttpStatus.OK);
     }
 
@@ -177,7 +177,7 @@ public class ActionController {
         EffectDTO effect = null;
         if (effects.isEmpty()) {
             log.info("Effect {} not found, creating new", inputEffect);
-            effect = effectRepo.save(inputEffect);
+            effect = effectRepo.saveAndFlush(inputEffect);
         } else {
             log.info("Effect {} found", inputEffect);
             effect = effects.getFirst();
@@ -201,12 +201,14 @@ public class ActionController {
     public ResponseEntity<MessageResponse> create(@RequestBody ActionDTO action) {
         validation.validate(action);
 
-        ActionDTO entityToUpdate = action;
+        //copy action into entityToUpdate
+        ActionDTO entityToUpdate = new ActionDTO(action);
+
         entityToUpdate.setAttack(null);
         entityToUpdate.setMovement(null);
         entityToUpdate.setSkill(null);
         entityToUpdate.setRestoreCards(null);
-        entityToUpdate = actionRepo.save(entityToUpdate);
+        entityToUpdate = actionRepo.saveAndFlush(entityToUpdate);
 
         List<AttackEffect> attackEffects = new ArrayList<>();
         if (action.getAttack() != null && action.getAttack().getEffects() != null) {
@@ -234,7 +236,7 @@ public class ActionController {
 
         // Save the entity
         log.info(entityToUpdate.toString());
-        entityToUpdate = actionRepo.save(entityToUpdate);
+        entityToUpdate = actionRepo.saveAndFlush(entityToUpdate);
 
         // Movement effects
         if (entityToUpdate.getMovement() != null && entityToUpdate.getMovement().getEffects() != null) {
@@ -272,7 +274,7 @@ public class ActionController {
             entityToUpdate.getAttack().getEffects().addAll(attackEffects);
         }
 
-        ActionDTO lateSave = actionRepo.save(entityToUpdate);
+        ActionDTO lateSave = actionRepo.saveAndFlush(entityToUpdate);
 
 
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' created!", lateSave.getId()),

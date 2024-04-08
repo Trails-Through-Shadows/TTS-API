@@ -35,13 +35,13 @@ public class Movement extends Validable {
     @Enumerated(EnumType.STRING)
     private MovementType type = MovementType.WALK;
 
-    //    @OneToMany(mappedBy = "key.idMovement", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "MovementEffect",
-            joinColumns = @JoinColumn(name = "idMovement", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "idEffect", referencedColumnName = "idEffect")
-    )
+    @OneToMany(mappedBy = "key.idMovement", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinTable(
+//            name = "MovementEffect",
+//            joinColumns = @JoinColumn(name = "idMovement", referencedColumnName = "id"),
+//            inverseJoinColumns = @JoinColumn(name = "idEffect", referencedColumnName = "idEffect")
+//    )
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<MovementEffect> effects;
 

@@ -22,7 +22,7 @@ public class MovementEffect {
     @EmbeddedId
     private MovementEffectId key;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private EffectDTO effect;

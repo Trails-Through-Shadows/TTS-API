@@ -22,7 +22,7 @@ public class SkillEffect {
     @EmbeddedId
     private SkillEffectId key;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;
@@ -33,11 +33,9 @@ public class SkillEffect {
     @NoArgsConstructor
     public static class SkillEffectId implements Serializable {
         @Column(nullable = false)
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer idSkill;
 
         @Column(nullable = false)
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer idEffect;
     }
 

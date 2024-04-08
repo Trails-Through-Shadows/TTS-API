@@ -28,7 +28,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "Action")
 @EqualsAndHashCode(callSuper = true)
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ActionDTO extends Validable {
 
     @Id
@@ -53,17 +53,17 @@ public class ActionDTO extends Validable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Movement movement;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "skill")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Skill skill;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "attack")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Attack attack;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "restoreCards")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private RestoreCards restoreCards;
@@ -81,6 +81,20 @@ public class ActionDTO extends Validable {
         }
     }
 
+    public ActionDTO(ActionDTO action) {
+        this.id = action.getId();
+        this.title = action.getTitle();
+        this.description = action.getDescription();
+        this.discard = action.getDiscard();
+        this.levelReq = action.getLevelReq();
+        this.movement = action.getMovement();
+        this.skill = action.getSkill();
+        this.attack = action.getAttack();
+        this.restoreCards = action.getRestoreCards();
+        this.summonActions = new ArrayList<>();
+        this.summonActions.addAll(action.getSummonActions());
+    }
+
     public ActionDTO(Action action) {
         this.title = action.getTitle();
         this.description = action.getDescription();
@@ -91,7 +105,7 @@ public class ActionDTO extends Validable {
         this.attack = action.getAttack();
         this.restoreCards = action.getRestoreCards();
         this.summonActions = new ArrayList<>();
-        action.getSummonActions().forEach(a -> this.summonActions.add(a));
+        this.summonActions.addAll(action.getSummonActions());
     }
 
     public ActionDTO(String title, String description, Discard discard, Integer levelReq) {
@@ -112,7 +126,7 @@ public class ActionDTO extends Validable {
         validateChild(description, validationConfig);
 
         // Level requirement can be null.
-        if (levelReq == null){
+        if (levelReq == null) {
             errors.add(new ValidationError(getValidableClass(), "levelReq", null,
                     "Level requirement must not be null."));
         }
