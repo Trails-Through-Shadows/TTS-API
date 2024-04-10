@@ -5,7 +5,9 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.table.action.ActionController;
 import cz.trailsthroughshadows.api.table.action.model.Action;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.background.race.model.Race;
 import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
@@ -29,6 +31,9 @@ import java.util.Map;
 @Slf4j
 @RestController(value = "Race")
 public class RaceController {
+
+    @Autowired
+    private ActionController actionController;
 
     private ValidationService validation;
     private RaceRepo clazzRepo;
@@ -98,7 +103,16 @@ public class RaceController {
         existing.setDescription(entity.getDescription());
         existing.setTitle(entity.getTitle());
         existing.setEffects(entity.getEffects());
-        existing.setActions(entity.getActions());
+        //TODO under constructino
+        //existing.setActions(entity.getActions());
+        //create or update actions
+//       List<ActionDTO> actions = entity.getActions().forEach( (action) -> {
+//                    ActionDTO exists = (ActionDTO) actionController.findById(action.getKey().getIdAction(), List.of(),true).getBody();
+//
+//                }
+//             );
+
+
 
         clazzRepo.save(existing);
 

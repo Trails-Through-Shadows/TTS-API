@@ -28,9 +28,10 @@ public class ImageController {
             @PathVariable String file,
             @RequestParam(required = false) Integer width,
             @RequestParam(required = false) Integer height,
-            @RequestParam(required = false) Integer size) throws IOException {
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) boolean token ) throws IOException {
 
-        String localpath = type + "/" + file;
+        String localpath = type + "/" + ((token) ? "tokens/" : "") + file;
         var physicalPath = config.getPath();
         String currDir = System.getProperty("user.dir");
         String path = currDir + "/" + physicalPath + "/" + localpath;
