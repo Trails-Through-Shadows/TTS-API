@@ -17,6 +17,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -25,8 +26,8 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "Enemy")
+@EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EnemyDTO extends Validable implements Cloneable {
 
@@ -62,7 +63,6 @@ public class EnemyDTO extends Validable implements Cloneable {
     @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyActionDTO> actions = new ArrayList<>();
-
 
     public void setEffects(List<EnemyEffectDTO> effects) {
         this.effects.clear();
