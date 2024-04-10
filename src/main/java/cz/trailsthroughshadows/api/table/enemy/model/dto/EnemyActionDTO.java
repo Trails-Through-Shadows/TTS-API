@@ -29,6 +29,8 @@ public class EnemyActionDTO {
 
     @Embeddable
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class EnemyActionId implements Serializable {
         @Column(nullable = false)
         private Integer idEnemy;
