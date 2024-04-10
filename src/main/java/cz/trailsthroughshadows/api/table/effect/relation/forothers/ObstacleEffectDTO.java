@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-@Entity
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ObstacleEffect")
@@ -20,13 +20,15 @@ public class ObstacleEffectDTO {
     @EmbeddedId
     private ObstacleEffectKey key;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;
 
-    @Embeddable
     @Data
+    @Embeddable
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ObstacleEffectKey implements Serializable {
         @Column(nullable = false)
         private Integer idObstacle;
