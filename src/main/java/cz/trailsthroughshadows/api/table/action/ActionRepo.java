@@ -11,4 +11,5 @@ public interface ActionRepo extends JpaRepository<ActionDTO, Integer> {
 
     @Query("SELECT c FROM ActionDTO c")
     Collection<ActionDTO> getAll();
+
 }

@@ -5,6 +5,10 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.table.action.ActionRepo;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.effect.EffectRepo;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyActionDTO;
@@ -13,7 +17,6 @@ import cz.trailsthroughshadows.api.util.Pair;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,6 +36,8 @@ public class EnemyController {
 
     private ValidationService validation;
     private EnemyRepo enemyRepo;
+    private EffectRepo effectRepo;
+    private ActionRepo actionRepo;
 
     @GetMapping("/enemies")
     @Cacheable(value = "enemy")
@@ -102,6 +107,7 @@ public class EnemyController {
     @PutMapping("/enemies/{id}")
     @CacheEvict(value = "enemy", key = "#id")
     public ResponseEntity<MessageResponse> updateEnemyById(@PathVariable int id, @RequestBody EnemyDTO enemy) {
+        log.debug("Updating enemy with id: " + id);
 
         // Validate enemy
         validation.validate(enemy);
@@ -110,7 +116,18 @@ public class EnemyController {
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
 
-        log.trace("enemy effects:{}", enemyToUpdate.getEffects().toString());
+        // Remove relations and save them for later
+        List<EnemyEffectDTO> enemyEffects = new ArrayList<>();
+        if (enemy.getEffects() != null) {
+            enemyEffects.addAll(enemy.getEffects());
+            enemy.getEffects().clear();
+        }
+
+        List<EnemyActionDTO> enemyActions = new ArrayList<>();
+        if (enemy.getActions() != null) {
+            enemyActions.addAll(enemy.getActions());
+            enemy.getActions().clear();
+        }
 
         enemyToUpdate.setTag(enemy.getTag());
         enemyToUpdate.setTitle(enemy.getTitle());
@@ -119,14 +136,41 @@ public class EnemyController {
         enemyToUpdate.setBaseHealth(enemy.getBaseHealth());
         enemyToUpdate.setBaseInitiative(enemy.getBaseInitiative());
 
-        enemyToUpdate.setEffects(enemy.getEffects());
-        enemyToUpdate.setActions(enemy.getActions());
+        enemyToUpdate = enemyRepo.save(enemyToUpdate);
+        log.info("Enemy updated: {}", enemyToUpdate);
 
-        log.trace("enemy effects:{}", enemyToUpdate.getEffects().toString());
+//        // Save relations
+        if (enemyToUpdate.getEffects() != null) {
+            for (EnemyEffectDTO effect : enemyEffects) {
+                EffectDTO effectDTO = processEffects(effect.getEffect());
 
-        enemyRepo.saveAndFlush(enemyToUpdate);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' updated!", id),
-                HttpStatus.OK);
+                effect.setKey(new EnemyEffectDTO.EnemyEffect(enemyToUpdate.getId(), effectDTO.getId()));
+                effect.setEffect(effectDTO);
+            }
+
+            enemyToUpdate.getEffects().clear();
+            enemyToUpdate.getEffects().addAll(enemyEffects);
+        }
+
+        if (enemyToUpdate.getActions() != null) {
+            for (EnemyActionDTO action : enemyActions) {
+                ActionDTO actionDTO = actionRepo.findById(action.getAction().getId())
+                        .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id %d not found", action.getAction().getId()));
+
+                action.setKey(new EnemyActionDTO.EnemyActionId(enemyToUpdate.getId(), actionDTO.getId()));
+                action.setAction(actionDTO);
+            }
+
+            enemyToUpdate.getActions().clear();
+            enemyToUpdate.getActions().addAll(enemyActions);
+        }
+
+        enemyRepo.save(enemyToUpdate);
+//
+//        log.trace("enemy effects:{}", enemyToUpdate.getEffects().toString());
+//
+//        enemyRepo.saveAndFlush(enemyToUpdate);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' updated!", id), HttpStatus.OK);
     }
 
     @PostMapping("/enemies")
@@ -171,9 +215,39 @@ public class EnemyController {
                 HttpStatus.OK);
     }
 
+    private EffectDTO processEffects(EffectDTO inputEffect) {
+        List<EffectDTO> effects = effectRepo.findUnique(
+                inputEffect.getTarget(),
+                inputEffect.getType(),
+                inputEffect.getDuration(),
+                inputEffect.getStrength()
+        );
+
+        EffectDTO effect = null;
+        if (effects.isEmpty()) {
+            log.info("Effect {} not found, creating new", inputEffect);
+            effect = effectRepo.saveAndFlush(inputEffect);
+        } else {
+            log.info("Effect {} found", inputEffect);
+            effect = effects.getFirst();
+        }
+
+        return effect;
+    }
+
     @Autowired
     public void setRepository(EnemyRepo repository) {
         this.enemyRepo = repository;
+    }
+
+    @Autowired
+    public void setEffectRepo(EffectRepo effectRepo) {
+        this.effectRepo = effectRepo;
+    }
+
+    @Autowired
+    public void setActionRepo(ActionRepo actionRepo) {
+        this.actionRepo = actionRepo;
     }
 
     @Autowired

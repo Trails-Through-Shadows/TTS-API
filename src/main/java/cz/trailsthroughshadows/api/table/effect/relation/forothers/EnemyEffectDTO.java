@@ -22,13 +22,15 @@ public class EnemyEffectDTO {
     @EmbeddedId
     private EnemyEffect key;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idEffect", insertable = false, updatable = false)
     private EffectDTO effect;
 
     @Embeddable
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class EnemyEffect implements Serializable {
 
         @Column(nullable = false)
