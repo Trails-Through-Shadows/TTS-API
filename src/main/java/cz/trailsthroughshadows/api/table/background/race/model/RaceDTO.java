@@ -46,7 +46,7 @@ public class RaceDTO extends Validable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     public Collection<RaceEffect> effects;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idRace", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idRace", cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     public Collection<RaceAction> actions;
 

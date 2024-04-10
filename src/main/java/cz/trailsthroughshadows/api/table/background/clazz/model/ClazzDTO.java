@@ -57,7 +57,7 @@ public class ClazzDTO extends Validable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<ClazzEffect> effects;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idClass", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idClass", cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Collection<ClazzAction> actions;
 
