@@ -32,6 +32,8 @@ public class RaceEffect {
 
     @Embeddable
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class RaceEffectId implements Serializable {
         @Column(nullable = false)
         private int idRace;
