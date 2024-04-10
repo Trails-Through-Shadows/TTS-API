@@ -94,21 +94,12 @@ public class EnemyController {
         return new ResponseEntity<>(Enemy.fromDTO(entity), HttpStatus.OK);
     }
 
-    @DeleteMapping("/enemies/{id}")
-    @CacheEvict(value = "enemy", key = "#id")
-    public ResponseEntity<MessageResponse> deleteEnemy(@PathVariable int id) {
-        EnemyDTO enemyDTO = enemyRepo
-                .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
-
-        enemyRepo.delete(enemyDTO);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' deleted!", id),
-                HttpStatus.OK);
-    }
-
     @PutMapping("/enemies/{id}")
     @CacheEvict(value = "enemy", key = "#id")
-    public ResponseEntity<MessageResponse> updateEnemyById(@PathVariable int id, @RequestBody EnemyDTO enemy) {
+    public ResponseEntity<MessageResponse> updateEnemyById(
+            @PathVariable int id,
+            @RequestBody EnemyDTO enemy
+    ) {
         log.debug("Updating enemy with id: " + id);
 
         // Validate enemy
@@ -175,20 +166,19 @@ public class EnemyController {
 
     @PostMapping("/enemies")
     @CacheEvict(value = "enemy", allEntries = true)
-    public ResponseEntity<MessageResponse> createEnemies(@RequestBody List<EnemyDTO> enemies) {
-        log.debug("Creating enemies: " + enemies);
-
-        // Validate all enemies
+    public ResponseEntity<MessageResponse> createEnemies(
+            @RequestBody List<EnemyDTO> enemies
+    ) {
+        // Validate enemies
         enemies.forEach(validation::validate);
 
-        // Remove ids to always create new enemies
+        // Remove ids to prevent conflicts
         enemies.forEach(e -> e.setId(null));
 
         // Remove relations and save them for later
         Map<String, Pair<List<EnemyEffectDTO>, List<EnemyActionDTO>>> enemyRelations = new HashMap<>();
         enemies.forEach(enemy -> {
-            enemyRelations.put(enemy.getTag(),
-                    new Pair<>(new ArrayList<>(enemy.getEffects()), new ArrayList<>(enemy.getActions())));
+            enemyRelations.put(enemy.getTag(), new Pair<>(new ArrayList<>(enemy.getEffects()), new ArrayList<>(enemy.getActions())));
             enemy.setEffects(null);
             enemy.setActions(null);
         });
@@ -211,8 +201,7 @@ public class EnemyController {
         enemies = enemyRepo.saveAll(enemies);
 
         String ids = enemies.stream().map((entry) -> String.valueOf(entry.getId())).toList().toString();
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemies with ids '%s' created!", ids),
-                HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemies with ids '%s' created!", ids), HttpStatus.OK);
     }
 
     private EffectDTO processEffects(EffectDTO inputEffect) {
@@ -233,6 +222,18 @@ public class EnemyController {
         }
 
         return effect;
+    }
+
+    @DeleteMapping("/enemies/{id}")
+    @CacheEvict(value = "enemy", key = "#id")
+    public ResponseEntity<MessageResponse> deleteEnemy(@PathVariable int id) {
+        EnemyDTO enemyDTO = enemyRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
+
+        enemyRepo.delete(enemyDTO);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' deleted!", id),
+                HttpStatus.OK);
     }
 
     @Autowired
