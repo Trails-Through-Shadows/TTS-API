@@ -85,9 +85,39 @@ public class ActionController {
         return new ResponseEntity<>(Action.fromDTO(entity), HttpStatus.OK);
     }
 
-    @PutMapping("/actions/{id}")
-    public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody ActionDTO action) {
-        validation.validate(action);
+    /**
+     * helper thing for effects
+     * @param inputEffect
+     * @return
+     */
+    private EffectDTO processEffects(EffectDTO inputEffect) {
+        List<EffectDTO> effects = effectRepo.findUnique(
+                inputEffect.getTarget(),
+                inputEffect.getType(),
+                inputEffect.getDuration(),
+                inputEffect.getStrength()
+        );
+
+        EffectDTO effect = null;
+        if (effects.isEmpty()) {
+            log.info("Effect {} not found, creating new", inputEffect);
+            effect = effectRepo.save(inputEffect);
+        } else {
+            log.info("Effect {} found", inputEffect);
+            effect = effects.getFirst();
+        }
+
+        return effect;
+    }
+
+
+    /**
+     * should update or create everything in action
+     * @param id
+     * @param action
+     * @return updated action
+     */
+    public ActionDTO updateInner(int id,ActionDTO action){
 
         ActionDTO entityToUpdate = actionRepo
                 .findById(id)
@@ -124,13 +154,12 @@ public class ActionController {
 
         // Save the entity
         log.info(entityToUpdate.toString());
-        entityToUpdate = actionRepo.saveAndFlush(entityToUpdate);
+        entityToUpdate = actionRepo.save(entityToUpdate);
 
         // Movement effects
         if (entityToUpdate.getMovement() != null && entityToUpdate.getMovement().getEffects() != null) {
             for (MovementEffect movementEffect : movementEffects) {
                 EffectDTO effect = processEffects(movementEffect.getEffect());
-
                 movementEffect.setKey(new MovementEffect.MovementEffectId(entityToUpdate.getMovement().getId(), effect.getId()));
                 movementEffect.setEffect(effect);
             }
@@ -162,29 +191,39 @@ public class ActionController {
             entityToUpdate.getAttack().getEffects().addAll(attackEffects);
         }
 
-        ActionDTO lateSave = actionRepo.saveAndFlush(entityToUpdate);
+        ActionDTO lateSave = actionRepo.save(entityToUpdate);
+
+        return lateSave;
+    }
+
+    /**
+     * should create everything in action
+     * @param action
+     * @return
+     */
+    public ActionDTO createInnner(ActionDTO action) {
+        ActionDTO entityToUpdate = new ActionDTO(action);
+
+        entityToUpdate.setAttack(null);
+        entityToUpdate.setMovement(null);
+        entityToUpdate.setSkill(null);
+        entityToUpdate.setRestoreCards(null);
+        entityToUpdate = actionRepo.save(entityToUpdate);
+
+        ActionDTO lateSave = updateInner(entityToUpdate.getId(),action);
+
+        return lateSave;
+    }
+
+    @PutMapping("/actions/{id}")
+    public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody ActionDTO action) {
+        validation.validate(action);
+
+        ActionDTO updated = updateInner(id,action);
+
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' updated!", id), HttpStatus.OK);
     }
 
-    private EffectDTO processEffects(EffectDTO inputEffect) {
-        List<EffectDTO> effects = effectRepo.findUnique(
-                inputEffect.getTarget(),
-                inputEffect.getType(),
-                inputEffect.getDuration(),
-                inputEffect.getStrength()
-        );
-
-        EffectDTO effect = null;
-        if (effects.isEmpty()) {
-            log.info("Effect {} not found, creating new", inputEffect);
-            effect = effectRepo.saveAndFlush(inputEffect);
-        } else {
-            log.info("Effect {} found", inputEffect);
-            effect = effects.getFirst();
-        }
-
-        return effect;
-    }
 
     @DeleteMapping("/actions/{id}")
     public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
@@ -204,80 +243,7 @@ public class ActionController {
         for (ActionDTO action : actions) {
             validation.validate(action);
 
-            //copy action into entityToUpdate
-            ActionDTO entityToUpdate = new ActionDTO(action);
-
-            entityToUpdate.setAttack(null);
-            entityToUpdate.setMovement(null);
-            entityToUpdate.setSkill(null);
-            entityToUpdate.setRestoreCards(null);
-            entityToUpdate = actionRepo.saveAndFlush(entityToUpdate);
-
-            List<AttackEffect> attackEffects = new ArrayList<>();
-            if (action.getAttack() != null && action.getAttack().getEffects() != null) {
-                attackEffects.addAll(action.getAttack().getEffects());
-                action.getAttack().getEffects().clear();
-            }
-            entityToUpdate.setAttack(action.getAttack());
-
-            List<MovementEffect> movementEffects = new ArrayList<>();
-            if (action.getMovement() != null && action.getMovement().getEffects() != null) {
-                movementEffects.addAll(action.getMovement().getEffects());
-                action.getMovement().getEffects().clear();
-            }
-            entityToUpdate.setMovement(action.getMovement());
-
-            List<SkillEffect> skillEffects = new ArrayList<>();
-            if (action.getSkill() != null && action.getSkill().getEffects() != null) {
-                skillEffects.addAll(action.getSkill().getEffects());
-                action.getSkill().getEffects().clear();
-            }
-            entityToUpdate.setSkill(action.getSkill());
-
-            entityToUpdate.setRestoreCards(action.getRestoreCards());
-            entityToUpdate.setSummonActions(null); // Ptfuj
-
-            // Save the entity
-            log.info(entityToUpdate.toString());
-            entityToUpdate = actionRepo.saveAndFlush(entityToUpdate);
-
-            // Movement effects
-            if (entityToUpdate.getMovement() != null && entityToUpdate.getMovement().getEffects() != null) {
-                for (MovementEffect movementEffect : movementEffects) {
-                    EffectDTO effect = processEffects(movementEffect.getEffect());
-
-                    movementEffect.setKey(new MovementEffect.MovementEffectId(entityToUpdate.getMovement().getId(), effect.getId()));
-                    movementEffect.setEffect(effect);
-                }
-
-                entityToUpdate.getMovement().getEffects().addAll(movementEffects);
-            }
-
-            // Skill effects
-            if (entityToUpdate.getSkill() != null && entityToUpdate.getSkill().getEffects() != null) {
-                for (SkillEffect skillEffect : skillEffects) {
-                    EffectDTO effect = processEffects(skillEffect.getEffect());
-
-                    skillEffect.setKey(new SkillEffect.SkillEffectId(entityToUpdate.getSkill().getId(), effect.getId()));
-                    skillEffect.setEffect(effect);
-                }
-
-                entityToUpdate.getSkill().getEffects().addAll(skillEffects);
-            }
-
-            // Attack effects
-            if (entityToUpdate.getAttack() != null && entityToUpdate.getAttack().getEffects() != null) {
-                for (AttackEffect attackEffect : attackEffects) {
-                    EffectDTO effect = processEffects(attackEffect.getEffect());
-
-                    attackEffect.setKey(new AttackEffect.AttackEffectId(entityToUpdate.getAttack().getId(), effect.getId()));
-                    attackEffect.setEffect(effect);
-                }
-
-                entityToUpdate.getAttack().getEffects().addAll(attackEffects);
-            }
-
-            ActionDTO lateSave = actionRepo.saveAndFlush(entityToUpdate);
+            ActionDTO lateSave = createInnner(action);
             ids.add(String.valueOf(lateSave.getId()));
         }
 
