@@ -17,15 +17,17 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "Class")
+@EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ClazzDTO extends Validable {
 

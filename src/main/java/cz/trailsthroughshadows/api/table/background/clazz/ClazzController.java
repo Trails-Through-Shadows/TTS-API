@@ -5,8 +5,12 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.table.action.ActionRepo;
+import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.background.clazz.model.Clazz;
 import cz.trailsthroughshadows.api.table.background.clazz.model.ClazzDTO;
+import cz.trailsthroughshadows.api.table.effect.EffectRepo;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
 import cz.trailsthroughshadows.api.util.Pair;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -31,6 +35,8 @@ public class ClazzController {
 
     private ValidationService validation;
     private ClazzRepo clazzRepo;
+    private EffectRepo effectRepo;
+    private ActionRepo actionRepo;
 
     @GetMapping("/classes")
     @Cacheable(value = "class")
@@ -91,56 +97,128 @@ public class ClazzController {
             @PathVariable int id,
             @RequestBody ClazzDTO entity
     ) {
+        log.debug("Updating class with id: " + id);
+
+        // Validate class
         validation.validate(entity);
 
-        ClazzDTO clazz = clazzRepo
+        ClazzDTO clazzToUpdate = clazzRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '%d' not found! ", id));
 
-        clazz.setTitle(entity.getTitle());
-        clazz.setTag(entity.getTag());
-        clazz.setDescription(entity.getDescription());
-        clazz.setBaseHealth(entity.getBaseHealth());
-        clazz.setBaseDefence(entity.getBaseDefence());
-        clazz.setBaseInitiative(entity.getBaseInitiative());
+        // Remove relations and save them for later
+        List<ClazzEffect> entityEffects = new ArrayList<>();
+        if (entity.getEffects() != null) {
+            entityEffects.addAll(entity.getEffects());
+            entity.getEffects().clear();
+        }
 
-        clazz.setActions(entity.getActions());
-        clazz.setEffects(entity.getEffects());
+        List<ClazzAction> entityActions = new ArrayList<>();
+        if (entity.getActions() != null) {
+            entityActions.addAll(entity.getActions());
+            entity.getActions().clear();
+        }
 
-        ClazzDTO updated = clazzRepo.save(clazz);
+        // Update enemy
+        clazzToUpdate.setTitle(entity.getTitle());
+        clazzToUpdate.setTag(entity.getTag());
+        clazzToUpdate.setDescription(entity.getDescription());
+        clazzToUpdate.setBaseHealth(entity.getBaseHealth());
+        clazzToUpdate.setBaseDefence(entity.getBaseDefence());
+        clazzToUpdate.setBaseInitiative(entity.getBaseInitiative());
+        clazzToUpdate = clazzRepo.save(clazzToUpdate);
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Class with id '%d' updated!", updated.getId()), HttpStatus.OK);
+        // Post load relations
+        if (clazzToUpdate.getEffects() != null) {
+            for (ClazzEffect effect : entityEffects) {
+                EffectDTO effectDTO = processEffects(effect.getEffect());
+
+                effect.setKey(new ClazzEffect.ClazzEffectId(clazzToUpdate.getId(), effectDTO.getId()));
+                effect.setEffect(effectDTO);
+            }
+
+            clazzToUpdate.getEffects().clear();
+            clazzToUpdate.getEffects().addAll(entityEffects);
+        }
+
+        if (clazzToUpdate.getActions() != null) {
+            for (ClazzAction action : entityActions) {
+                ActionDTO actionDTO = actionRepo.findById(action.getKey().getIdAction())
+                        .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! ", action.getKey().getIdAction()));
+
+                action.setKey(new ClazzAction.ClazzActionId(clazzToUpdate.getId(), actionDTO.getId()));
+                action.setAction(actionDTO);
+            }
+
+            clazzToUpdate.getActions().clear();
+            clazzToUpdate.getActions().addAll(entityActions);
+        }
+
+        if (!entityEffects.isEmpty() || !entityActions.isEmpty()) {
+            clazzRepo.save(clazzToUpdate);
+        }
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Class with id '%d' updated!", id), HttpStatus.OK);
     }
 
     @PostMapping("/classes")
+    @CacheEvict(value = "class", allEntries = true)
     public ResponseEntity<MessageResponse> createEntity(
-            @RequestBody List<ClazzDTO> entity
+            @RequestBody List<ClazzDTO> clazzes
     ) {
-        entity.forEach(validation::validate);
-        entity.forEach((e) -> e.setId(null));
+        // Validate enemies
+        clazzes.forEach(validation::validate);
 
+        // Remove ids to prevent conflicts
+        clazzes.forEach((e) -> e.setId(null));
+
+        // Remove relations and save them for later
         Map<String, Pair<List<ClazzAction>, List<ClazzEffect>>> actionsAndEffects = new HashMap<>();
-
-        entity.forEach((e) -> {
+        clazzes.forEach((e) -> {
             actionsAndEffects.put(e.getTag(), new Pair<>(new ArrayList<>(e.getActions()), new ArrayList<>(e.getEffects())));
             e.setActions(null);
             e.setEffects(null);
         });
 
-        entity = clazzRepo.saveAll(entity);
+        // Save classes
+        clazzes = clazzRepo.saveAll(clazzes);
 
-        entity.forEach((e) -> {
+        // Load relations
+        clazzes.forEach((e) -> {
             Pair<List<ClazzAction>, List<ClazzEffect>> pair = actionsAndEffects.get(e.getTag());
-            e.setActions(pair.first());
+
+            e.setActions(new ArrayList<>(pair.first()));
             e.getActions().forEach(action -> action.getKey().setIdClass(e.getId()));
-            e.setEffects(pair.second());
+
+            e.setEffects(new ArrayList<>(pair.second()));
             e.getEffects().forEach(effect -> effect.getKey().setIdClass(e.getId()));
         });
 
-        entity = clazzRepo.saveAll(entity);
-        String ids = entity.stream().map(ClazzDTO::getId).map(String::valueOf).reduce((a, b) -> a + ", " + b).orElse("");
+        // Save clazz relations
+        clazzes = clazzRepo.saveAll(clazzes);
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Class with id '%d' created!", ids), HttpStatus.CREATED);
+        String ids = clazzes.stream().map((entry) -> String.valueOf(entry.getId())).toList().toString();
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Classes with ids '%d' created!", ids), HttpStatus.CREATED);
+    }
+
+    private EffectDTO processEffects(EffectDTO inputEffect) {
+        List<EffectDTO> effects = effectRepo.findUnique(
+                inputEffect.getTarget(),
+                inputEffect.getType(),
+                inputEffect.getDuration(),
+                inputEffect.getStrength()
+        );
+
+        EffectDTO effect = null;
+        if (effects.isEmpty()) {
+            log.info("Effect {} not found, creating new", inputEffect);
+            effect = effectRepo.saveAndFlush(inputEffect);
+        } else {
+            log.info("Effect {} found", inputEffect);
+            effect = effects.getFirst();
+        }
+
+        return effect;
     }
 
     @DeleteMapping("/classes/{id}")
@@ -160,6 +238,16 @@ public class ClazzController {
     @Autowired
     public void setRepository(ClazzRepo repository) {
         this.clazzRepo = repository;
+    }
+
+    @Autowired
+    public void setEffectRepo(EffectRepo effectRepo) {
+        this.effectRepo = effectRepo;
+    }
+
+    @Autowired
+    public void setActionRepo(ActionRepo actionRepo) {
+        this.actionRepo = actionRepo;
     }
 
     @Autowired
