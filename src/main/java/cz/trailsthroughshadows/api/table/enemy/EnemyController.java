@@ -47,7 +47,8 @@ public class EnemyController {
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "true") boolean lazy) {
+            @RequestParam(required = false, defaultValue = "true") boolean lazy
+    ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
@@ -78,7 +79,8 @@ public class EnemyController {
     public ResponseEntity<Enemy> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "false") boolean lazy) {
+            @RequestParam(required = false, defaultValue = "false") boolean lazy
+    ) {
         EnemyDTO entity = enemyRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id '%d' not found!", id));
@@ -129,17 +131,16 @@ public class EnemyController {
             enemy.getActions().clear();
         }
 
+        // Update enemy
         enemyToUpdate.setTag(enemy.getTag());
         enemyToUpdate.setTitle(enemy.getTitle());
         enemyToUpdate.setDescription(enemy.getDescription());
         enemyToUpdate.setBaseDefence(enemy.getBaseDefence());
         enemyToUpdate.setBaseHealth(enemy.getBaseHealth());
         enemyToUpdate.setBaseInitiative(enemy.getBaseInitiative());
-
         enemyToUpdate = enemyRepo.save(enemyToUpdate);
-        log.info("Enemy updated: {}", enemyToUpdate);
 
-//        // Save relations
+        // Post load relations
         if (enemyToUpdate.getEffects() != null) {
             for (EnemyEffectDTO effect : enemyEffects) {
                 EffectDTO effectDTO = processEffects(effect.getEffect());
@@ -165,11 +166,10 @@ public class EnemyController {
             enemyToUpdate.getActions().addAll(enemyActions);
         }
 
-        enemyRepo.save(enemyToUpdate);
-//
-//        log.trace("enemy effects:{}", enemyToUpdate.getEffects().toString());
-//
-//        enemyRepo.saveAndFlush(enemyToUpdate);
+        if (!enemyActions.isEmpty() || !enemyEffects.isEmpty()) {
+            enemyRepo.save(enemyToUpdate);
+        }
+
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' updated!", id), HttpStatus.OK);
     }
 
