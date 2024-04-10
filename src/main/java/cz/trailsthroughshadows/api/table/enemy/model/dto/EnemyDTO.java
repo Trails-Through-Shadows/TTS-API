@@ -60,7 +60,7 @@ public class EnemyDTO extends Validable implements Cloneable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyEffectDTO> effects = new ArrayList<>();
 
-    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "key.idEnemy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyActionDTO> actions = new ArrayList<>();
 

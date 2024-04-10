@@ -27,8 +27,8 @@ public class EnemyActionDTO {
     @JoinColumn(name = "idAction", insertable = false, updatable = false)
     private ActionDTO action;
 
-    @Embeddable
     @Data
+    @Embeddable
     @AllArgsConstructor
     @NoArgsConstructor
     public static class EnemyActionId implements Serializable {
