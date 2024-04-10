@@ -5,6 +5,8 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
+import cz.trailsthroughshadows.api.table.effect.EffectRepo;
+import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forothers.ObstacleEffectDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
@@ -14,6 +16,7 @@ import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,16 +32,18 @@ public class ObstacleController {
 
     private ValidationService validation;
     private ObstacleRepo obstacleRepo;
+    private EffectRepo effectRepo;
 
     @GetMapping("/obstacles")
-    //@Cacheable(value = "obstacle")
+    @Cacheable(value = "obstacle")
     public ResponseEntity<RestPaginatedResult<Obstacle>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "true") boolean lazy) {
+            @RequestParam(required = false, defaultValue = "true") boolean lazy
+    ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
@@ -66,11 +71,12 @@ public class ObstacleController {
     }
 
     @GetMapping("/obstacles/{id}")
-    // @Cacheable(value = "obstacle", key = "#id")
+    @Cacheable(value = "obstacle", key = "#id")
     public ResponseEntity<Obstacle> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "false") boolean lazy) {
+            @RequestParam(required = false, defaultValue = "false") boolean lazy
+    ) {
         ObstacleDTO entity = obstacleRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found! " + id));
@@ -86,46 +92,73 @@ public class ObstacleController {
 
     @DeleteMapping("/obstacles/{id}")
     @CacheEvict(value = "obstacle", key = "#id")
-    public ResponseEntity<MessageResponse> deleteObstacleById(@PathVariable int id) {
+    public ResponseEntity<MessageResponse> deleteObstacleById(
+            @PathVariable int id
+    ) {
         ObstacleDTO obstacleDTO = obstacleRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
 
         obstacleRepo.delete(obstacleDTO);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' deleted!", id),
-                HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' deleted!", id), HttpStatus.OK);
     }
 
     @PutMapping("/obstacles/{id}")
-    //@CacheEvict(value = "obstacle", key = "#id")
-    public ResponseEntity<MessageResponse> updateObstacleById(@PathVariable int id, @RequestBody ObstacleDTO obstacle) {
-        ObstacleDTO obstacleToUpdate = obstacleRepo
-                .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
+    @CacheEvict(value = "obstacle", key = "#id")
+    public ResponseEntity<MessageResponse> updateObstacleById(
+            @PathVariable int id,
+            @RequestBody ObstacleDTO obstacle
+    ) {
+        log.debug("Updating obstacle with id: " + id);
 
         // Validate obstacle
         validation.validate(obstacle);
 
+        ObstacleDTO obstacleToUpdate = obstacleRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
+
+        // Remove relations and save them for later
+        List<ObstacleEffectDTO> obstacleEffects = new ArrayList<>();
+        if (obstacle.getEffects() != null) {
+            obstacleEffects.addAll(obstacle.getEffects());
+            obstacle.getEffects().clear();
+        }
+
+        // Update obstacles
         obstacleToUpdate.setTag(obstacle.getTag());
         obstacleToUpdate.setTitle(obstacle.getTitle());
         obstacleToUpdate.setDescription(obstacle.getDescription());
         obstacleToUpdate.setBaseDamage(obstacle.getBaseDamage());
         obstacleToUpdate.setBaseHealth(obstacle.getBaseHealth());
         obstacleToUpdate.setCrossable(obstacle.isCrossable());
+        obstacleToUpdate = obstacleRepo.save(obstacleToUpdate);
 
-        obstacleToUpdate.getEffects().retainAll(obstacle.getEffects());
-        obstacleToUpdate.getEffects().addAll(obstacle.getEffects());
-        obstacleToUpdate.getEffects().forEach((effect) -> effect.getKey().setIdObstacle(obstacleToUpdate.getId()));
+        // Post load relations
+        if (obstacleToUpdate.getEffects() != null) {
+            for (ObstacleEffectDTO effect : obstacleEffects) {
+                EffectDTO effectDTO = processEffects(effect.getEffect());
 
-        obstacleRepo.save(obstacleToUpdate);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' updated!", id),
-                HttpStatus.OK);
+                effect.setKey(new ObstacleEffectDTO.ObstacleEffectKey(obstacleToUpdate.getId(), effectDTO.getId()));
+                effect.setEffect(effectDTO);
+            }
+
+            obstacleToUpdate.getEffects().clear();
+            obstacleToUpdate.getEffects().addAll(obstacleEffects);
+        }
+
+        if (!obstacleEffects.isEmpty()) {
+            obstacleRepo.save(obstacleToUpdate);
+        }
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' updated!", id), HttpStatus.OK);
     }
 
     @PostMapping("/obstacles")
-    public ResponseEntity<MessageResponse> createObstacle(@RequestBody List<ObstacleDTO> obstacles) {
-        log.debug("Creating new obstacles: " + obstacles);
-
+    @CacheEvict(value = "obstacle", allEntries = true)
+    public ResponseEntity<MessageResponse> createObstacle(
+            @RequestBody List<ObstacleDTO> obstacles
+    ) {
         // Validate obstacle
         obstacles.forEach(validation::validate);
 
@@ -154,8 +187,27 @@ public class ObstacleController {
         obstacles = obstacleRepo.saveAll(obstacles);
 
         String ids = obstacles.stream().map((entry) -> String.valueOf(entry.getId())).toList().toString();
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacles with ids '%s' created!", ids),
-                HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacles with ids '%s' created!", ids), HttpStatus.OK);
+    }
+
+    private EffectDTO processEffects(EffectDTO inputEffect) {
+        List<EffectDTO> effects = effectRepo.findUnique(
+                inputEffect.getTarget(),
+                inputEffect.getType(),
+                inputEffect.getDuration(),
+                inputEffect.getStrength()
+        );
+
+        EffectDTO effect = null;
+        if (effects.isEmpty()) {
+            log.info("Effect {} not found, creating new", inputEffect);
+            effect = effectRepo.saveAndFlush(inputEffect);
+        } else {
+            log.info("Effect {} found", inputEffect);
+            effect = effects.getFirst();
+        }
+
+        return effect;
     }
 
     /**
@@ -165,6 +217,11 @@ public class ObstacleController {
     @Autowired
     public void setObstacleRepo(ObstacleRepo obstacleRepo) {
         this.obstacleRepo = obstacleRepo;
+    }
+
+    @Autowired
+    public void setEffectRepo(EffectRepo effectRepo) {
+        this.effectRepo = effectRepo;
     }
 
     @Autowired

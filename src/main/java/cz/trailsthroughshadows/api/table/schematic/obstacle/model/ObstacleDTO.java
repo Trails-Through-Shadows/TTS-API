@@ -53,7 +53,7 @@ public class ObstacleDTO extends Validable {
     @Column
     public Integer usages = 0;
 
-    @OneToMany(mappedBy = "key.idObstacle", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "key.idObstacle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     public List<ObstacleEffectDTO> effects;
 
