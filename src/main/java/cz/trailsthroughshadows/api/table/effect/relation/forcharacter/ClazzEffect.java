@@ -32,6 +32,8 @@ public class ClazzEffect {
 
     @Embeddable
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ClazzEffectId implements Serializable {
         @Column(nullable = false)
         private Integer idClass;
