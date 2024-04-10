@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "RaceAction")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class RaceAction {
@@ -22,13 +22,15 @@ public class RaceAction {
     @EmbeddedId
     private RaceActionId key;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     @JoinColumn(name = "idAction", insertable = false, updatable = false)
     private ActionDTO action;
 
-    @Embeddable
     @Data
+    @Embeddable
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class RaceActionId implements Serializable {
         @Column(nullable = false)
         private int idRace;

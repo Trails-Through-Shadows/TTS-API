@@ -42,12 +42,12 @@ public class RaceDTO extends Validable {
     @Column(nullable = false)
     public Integer baseInitiative;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idRace", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idRace")
     public Collection<RaceEffect> effects;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idRace", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idRace")
     public Collection<RaceAction> actions;
 
     @Column(length = 32)
