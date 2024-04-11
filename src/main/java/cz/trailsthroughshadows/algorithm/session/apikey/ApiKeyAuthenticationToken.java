@@ -8,15 +8,15 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class ApiKeyAuthenticationToken extends AbstractAuthenticationToken {
-    private final String apiKey;
+    private final UUID apiKey;
 
-    public ApiKeyAuthenticationToken(String apiKey) {
+    public ApiKeyAuthenticationToken(UUID apiKey) {
         super(null);
         this.apiKey = apiKey;
         setAuthenticated(false);
     }
 
-    public ApiKeyAuthenticationToken(String apiKey, Collection<? extends GrantedAuthority> authorities) {
+    public ApiKeyAuthenticationToken(UUID apiKey, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.apiKey = apiKey;
         super.setAuthenticated(true); // must use super, as we override

