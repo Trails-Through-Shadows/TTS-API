@@ -33,7 +33,7 @@ public class EncounterController {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id)), HttpStatus.OK);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<RestResponse> getAllEncounters(@RequestParam UUID token) {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getAllEncounters(token)), HttpStatus.OK);
     }
