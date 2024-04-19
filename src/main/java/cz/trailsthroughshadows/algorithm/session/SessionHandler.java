@@ -8,6 +8,7 @@ import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.AdventureRepo;
 import cz.trailsthroughshadows.api.table.playerdata.license.License;
 import cz.trailsthroughshadows.api.table.playerdata.license.LicenseRepo;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-@Component
 @Log4j2
+@Component
 public class SessionHandler {
 
     @Autowired
@@ -59,6 +60,11 @@ public class SessionHandler {
         return parts[1];
     }
 
+    public String getTokenFromRequest(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        return getTokenFromAuthHeader(authorization);
+    }
+
     public Session getSession(String uuid) {
         if (Objects.equals(uuid, Session.ADMINISTRATOR_SESSION.getToken())) {
             return Session.ADMINISTRATOR_SESSION;
@@ -75,6 +81,12 @@ public class SessionHandler {
     }
 
     public Session getSessionFromAuthHeader(String authorization) {
+        String token = getTokenFromAuthHeader(authorization);
+        return getSession(token);
+    }
+
+    public Session getSessionFromRequest(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
         String token = getTokenFromAuthHeader(authorization);
         return getSession(token);
     }

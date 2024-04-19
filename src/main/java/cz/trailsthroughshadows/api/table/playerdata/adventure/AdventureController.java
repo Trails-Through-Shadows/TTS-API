@@ -15,6 +15,7 @@ import cz.trailsthroughshadows.api.table.playerdata.character.model.CharacterDTO
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +41,9 @@ public class AdventureController {
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "false") boolean lazy,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
+        Session session = sessionHandler.getSessionFromRequest(request);
         AdventureDTO entity = adventureService.findById(id);
 
         if (!session.hasAccess(entity.getIdLicense())) {
@@ -67,12 +68,12 @@ public class AdventureController {
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "true") boolean lazy,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
+        Session session = sessionHandler.getSessionFromRequest(request);
 
         List<AdventureDTO> entries = adventureService.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))) &&
@@ -99,26 +100,29 @@ public class AdventureController {
     public ResponseEntity<RestResponse> addAdventure(
             @PathVariable int idLicense,
             @RequestBody AdventureDTO adventure,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        return new ResponseEntity<>(adventureService.add(adventure, idLicense, sessionHandler.getSessionFromAuthHeader(authorization)), HttpStatus.OK);
+        Session session = sessionHandler.getSessionFromRequest(request);
+        return new ResponseEntity<>(adventureService.add(adventure, idLicense,session), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<RestResponse> updateAdventure(
             @PathVariable int id,
             @RequestBody AdventureDTO adventure,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        return new ResponseEntity<>(adventureService.update(id, adventure, sessionHandler.getSessionFromAuthHeader(authorization)), HttpStatus.OK);
+        Session session = sessionHandler.getSessionFromRequest(request);
+        return new ResponseEntity<>(adventureService.update(id, adventure, session), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<RestResponse> deleteAdventure(
             @PathVariable int id,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        return new ResponseEntity<>(adventureService.delete(id, sessionHandler.getSessionFromAuthHeader(authorization)), HttpStatus.OK);
+        Session session = sessionHandler.getSessionFromRequest(request);
+        return new ResponseEntity<>(adventureService.delete(id, session), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/characters")
@@ -130,12 +134,12 @@ public class AdventureController {
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "true") boolean lazy,
             @PathVariable int id,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
+        Session session = sessionHandler.getSessionFromRequest(request);
 
         List<CharacterDTO> entries = characterService.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))) &&
@@ -164,8 +168,9 @@ public class AdventureController {
     public ResponseEntity<RestResponse> addCharacter(
             @PathVariable int id,
             @RequestBody CharacterDTO character,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        return new ResponseEntity<>(characterService.add(character, id, sessionHandler.getSessionFromAuthHeader(authorization)), HttpStatus.OK);
+        Session session = sessionHandler.getSessionFromRequest(request);
+        return new ResponseEntity<>(characterService.add(character, id, session), HttpStatus.OK);
     }
 }

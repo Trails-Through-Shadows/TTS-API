@@ -14,6 +14,7 @@ import cz.trailsthroughshadows.api.table.playerdata.character.model.CharacterDTO
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +40,9 @@ public class CharacterController {
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "false") boolean lazy,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
+        Session session = sessionHandler.getSessionFromRequest(request);
         CharacterDTO entity = characterService.findById(id);
         AdventureDTO adventure = adventureService.findById(entity.getIdAdventure());
 
@@ -66,12 +67,12 @@ public class CharacterController {
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "true") boolean lazy,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
+        Session session = sessionHandler.getSessionFromRequest(request);
 
         List<CharacterDTO> entries = characterService.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))) &&
@@ -99,18 +100,18 @@ public class CharacterController {
     public ResponseEntity<RestResponse> updateCharacter(
             @PathVariable int id,
             @RequestBody CharacterDTO character,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
+        Session session = sessionHandler.getSessionFromRequest(request);
         return new ResponseEntity<>(characterService.update(id, character, session), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<RestResponse> deleteCharacter(
             @PathVariable int id,
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
+        Session session = sessionHandler.getSessionFromRequest(request);
         return new ResponseEntity<>(characterService.delete(id, session), HttpStatus.OK);
     }
 }

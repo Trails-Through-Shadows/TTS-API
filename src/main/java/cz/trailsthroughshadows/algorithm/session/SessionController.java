@@ -4,6 +4,7 @@ import cz.trailsthroughshadows.algorithm.session.credentials.AuthRequest;
 import cz.trailsthroughshadows.algorithm.session.credentials.AuthResponse;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,17 +28,17 @@ public class SessionController {
 
     @DeleteMapping("/logout")
     public ResponseEntity<RestResponse> logout(
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        String token = sessionHandler.getTokenFromAuthHeader(authorization);
+        String token = sessionHandler.getTokenFromRequest(request);
         return new ResponseEntity<>(sessionHandler.logout(token), HttpStatus.OK);
     }
 
     @GetMapping("/hello")
     public ResponseEntity<MessageResponse> hello(
-            @RequestHeader(name = "Authorization") String authorization
+            HttpServletRequest request
     ) {
-        String token = sessionHandler.getTokenFromAuthHeader(authorization);
+        String token = sessionHandler.getTokenFromRequest(request);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, sessionHandler.getSession(token).hello()), HttpStatus.OK);
     }
 }

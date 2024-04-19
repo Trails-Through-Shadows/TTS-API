@@ -13,7 +13,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Session {
 
-    private static final String key = "0000:admin";
+    private static final String key = "shadefa11en:ourPassword";
     private static final String masterKey = Base64.getEncoder().encodeToString(key.getBytes(StandardCharsets.UTF_8));
     public static Session ADMINISTRATOR_SESSION = new Session(masterKey, 0, List.of());
 

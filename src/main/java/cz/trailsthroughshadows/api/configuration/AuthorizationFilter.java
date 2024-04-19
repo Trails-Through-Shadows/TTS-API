@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 public class AuthorizationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -30,7 +32,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        log.info(request.getRequestURI());
 
         // Ignore SessionController
         if (ignoredPaths.stream().anyMatch(path -> request.getRequestURI().contains(path))) {
@@ -39,12 +40,28 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
+        // Authorization header is missing
+        if (authHeader == null) {
+            log.warn("Authorization header is missing.");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+            try {
+                JSONObject jsonResponse = new JSONObject();
+                jsonResponse.put("message", "Authorization header is missing.");
+                response.getWriter().write(jsonResponse.toString());
+            } catch (IOException | JSONException e) {
+                log.error("Failed to write JSON response.");
+            }
+
+            return;
+        }
+
         String token = null;
         try {
             token = sessionHandler.getTokenFromAuthHeader(authHeader);
         } catch (RestException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(e.getMessage()); // TODO: Send JSON response
+            response.getWriter().write(e.getMessage());
             return;
         }
 
@@ -61,6 +78,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("Invalid session token."); // TODO: Send JSON response
+
+        try {
+            JSONObject jsonResponse = new JSONObject();
+            jsonResponse.put("message", "Invalid session token!");
+            response.getWriter().write(jsonResponse.toString());
+        } catch (IOException | JSONException e) {
+            log.error("Failed to write JSON response.");
+        }
     }
 }
