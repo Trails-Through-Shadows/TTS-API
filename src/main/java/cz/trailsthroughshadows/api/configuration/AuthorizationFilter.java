@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -49,7 +48,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 JSONObject jsonResponse = new JSONObject();
                 jsonResponse.put("message", "Authorization header is missing.");
                 response.getWriter().write(jsonResponse.toString());
-            } catch (IOException | JSONException e) {
+            } catch (Exception e) {
                 log.error("Failed to write JSON response.");
             }
 
@@ -83,7 +82,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("message", "Invalid session token!");
             response.getWriter().write(jsonResponse.toString());
-        } catch (IOException | JSONException e) {
+        } catch (Exception e) {
             log.error("Failed to write JSON response.");
         }
     }
