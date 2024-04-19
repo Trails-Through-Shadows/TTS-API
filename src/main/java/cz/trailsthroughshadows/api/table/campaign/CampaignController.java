@@ -8,7 +8,6 @@ import cz.trailsthroughshadows.api.table.campaign.model.Campaign;
 import cz.trailsthroughshadows.api.table.campaign.model.CampaignDTO;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

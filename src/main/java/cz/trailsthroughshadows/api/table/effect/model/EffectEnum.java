@@ -1,7 +1,6 @@
 package cz.trailsthroughshadows.api.table.effect.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -18,10 +17,6 @@ public class EffectEnum {
     private boolean isResistance;
     private String url;
 
-    public String getUrl() {
-        return "/effects/" + title;
-    }
-
     public static EffectEnum fromDTO(EffectDTO dto) {
         return new EffectEnum(dto.getType().name(), dto.getType().displayName, dto.getDescription(),
                 dto.getType().hasDuration, dto.getType().hasStrength, dto.getType().isResistance, null);
@@ -30,6 +25,10 @@ public class EffectEnum {
     public static EffectEnum fromEnum(EffectDTO.EffectType type) {
         return new EffectEnum(type.name(), type.displayName, null, type.hasDuration, type.hasStrength,
                 type.isResistance, null);
+    }
+
+    public String getUrl() {
+        return "/effects/" + title;
     }
 
 }

@@ -5,7 +5,6 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
-import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.market.item.model.Item;
 import cz.trailsthroughshadows.api.table.market.item.model.ItemDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -111,6 +110,7 @@ public class ItemController {
 
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Item with id '%d' updated!", id), HttpStatus.OK);
     }
+
     @DeleteMapping("/items/{id}")
     @Cacheable(value = "item", key = "#id")
     public ResponseEntity<MessageResponse> delete(@PathVariable int id) {

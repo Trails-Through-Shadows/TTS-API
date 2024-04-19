@@ -48,6 +48,12 @@ public class EncounterHandler {
         return encounters.size() + 1;
     }
 
+    public List<Encounter> getAllEncounters(UUID token) {
+        return encounters.stream()
+                .filter(e -> sessionHandler.getSession(token).hasAccess(e.getIdLicense()))
+                .toList();
+    }
+
     public Encounter getEncounter(UUID token, Integer id) {
         Encounter[] enc = new Encounter[1];
 

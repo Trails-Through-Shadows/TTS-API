@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.api.table.playerdata.license;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,14 +11,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "License")
 @Entity
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class License {
     @Id
     private Integer id;

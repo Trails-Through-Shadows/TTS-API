@@ -31,55 +31,39 @@ import java.util.List;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ActionDTO extends Validable {
 
+    public static ActionDTO DO_NOTHING = new ActionDTO("Do nothing", "Just stand around.", Discard.NEVER, 0);
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @Column(nullable = false, length = 128)
     private String title;
-
     @Column
     private String description;
-
     @Column
     @Enumerated(EnumType.STRING)
     private Discard discard;
-
     @Column
     private Integer levelReq;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "movement")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Movement movement;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "skill")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Skill skill;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "attack")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private Attack attack;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "restoreCards")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private RestoreCards restoreCards;
-
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "idAction")
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<SummonAction> summonActions = new ArrayList<>();
-
-    public void setSummonActions(List<SummonAction> actions) {
-        this.summonActions.clear();
-        if (actions != null) {
-            this.summonActions.addAll(actions);
-            this.summonActions.forEach(a -> a.getKey().setIdAction(this.getId()));
-        }
-    }
 
     public ActionDTO(ActionDTO action) {
         this.id = action.getId();
@@ -113,6 +97,14 @@ public class ActionDTO extends Validable {
         this.description = description;
         this.discard = discard;
         this.levelReq = levelReq;
+    }
+
+    public void setSummonActions(List<SummonAction> actions) {
+        this.summonActions.clear();
+        if (actions != null) {
+            this.summonActions.addAll(actions);
+            this.summonActions.forEach(a -> a.getKey().setIdAction(this.getId()));
+        }
     }
 
     // region Validation
@@ -151,12 +143,12 @@ public class ActionDTO extends Validable {
         validateChild(attack, validationConfig);
         validateChild(restoreCards, validationConfig);
     }
+    // endregion
 
     @Override
     public String getValidableValue() {
         return getTitle();
     }
-    // endregion
 
     public enum Discard implements Serializable {
         PERMANENT,
@@ -164,6 +156,4 @@ public class ActionDTO extends Validable {
         LONG_REST,
         NEVER
     }
-
-    public static ActionDTO DO_NOTHING = new ActionDTO("Do nothing", "Just stand around.", Discard.NEVER, 0);
 }

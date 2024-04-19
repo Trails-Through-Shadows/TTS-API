@@ -27,6 +27,12 @@ public class Location extends LocationDTO {
 
     private List<Story> stories;
 
+    // TODO: Map locations only by specific campaign frrom database @rcMarty
+    public static Location fromDTO(LocationDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Location.class);
+    }
+
     public String getUrl() {
         if (url == null)
             url = ImageLoader.getPath(this.getTag());
@@ -55,9 +61,9 @@ public class Location extends LocationDTO {
                                 .stream()
                                 .findFirst()
                                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "No start part found in location {}", getId()))
-                            .getIdPart())) // hoping there will be only one starting part
+                                .getIdPart())) // hoping there will be only one starting part
                 .findFirst()
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND,"No start part found in location {}", getId()));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "No start part found in location {}", getId()));
 
         return Part.fromDTO(tmp);
     }
@@ -73,12 +79,6 @@ public class Location extends LocationDTO {
                 .map(s -> Hex.fromDTO(s.getHex()))
                 .toList();
         return hexes;
-    }
-
-    // TODO: Map locations only by specific campaign frrom database @rcMarty
-    public static Location fromDTO(LocationDTO dto) {
-        ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Location.class);
     }
 
     @JsonIgnore

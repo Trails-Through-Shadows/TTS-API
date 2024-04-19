@@ -33,6 +33,80 @@ public class Part extends PartDTO {
 
     private String url;
 
+    public static Part fromDTO(PartDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Part.class);
+    }
+
+    /**
+     * Create a Part from a DTO and add the enemies, obstacles and doors to it based
+     * on Part ID
+     *
+     * @param dto       dto object of Part
+     * @param rotation  rotation of the part (must be filtered by the caller)
+     * @param enemies   list of all DTO enemies from that Location (is filtered by
+     *                  id in constructor)
+     * @param obstacles list of all DTO obstacles from that Location (is filtered by
+     *                  id in constructor)
+     * @param doors     list of all DTO doors from that Location (is filtered by id
+     *                  in constructor)
+     * @return Part object
+     * @implNote This constructor filters enemies, obstacles, and doors by the ID of
+     * the Part
+     */
+    public static Part fromDTO(PartDTO dto, Integer rotation, List<HexEnemyDTO> enemies, List<HexObstacleDTO> obstacles,
+                               List<LocationDoorDTO> doors) {
+        Part part = fromDTO(dto);
+        part.setRotation(rotation);
+        part.setFilterEnemies(enemies);
+        part.setFilterObstacles(obstacles);
+        part.setFilterDoors(doors);
+        return part;
+    }
+
+    /**
+     * Create a Part from a DTO and add the enemies, obstacles and doors to it based
+     * on Part ID
+     *
+     * @param dto       dto object of Part
+     * @param rotation  rotation of the part (must be filtered by the caller)
+     * @param enemies   list of all DTO enemies from that Location (is filtered by
+     *                  id in constructor)
+     * @param obstacles list of all DTO obstacles from that Location (is filtered by
+     *                  id in constructor)
+     * @return Part object
+     * @implNote This constructor filters enemies, obstacles, and doors by the ID of
+     * the Part
+     */
+    public static Part fromDTO(PartDTO dto, Integer rotation, List<HexEnemyDTO> enemies,
+                               List<HexObstacleDTO> obstacles) {
+        Part part = fromDTO(dto);
+        part.setRotation(rotation);
+        part.setFilterEnemies(enemies);
+        part.setFilterObstacles(obstacles);
+        return part;
+    }
+
+    /**
+     * Create a Part from a DTO and add the enemies, obstacles and doors to it based
+     * on Part ID
+     *
+     * @param dto       dto object of Part
+     * @param obstacles list of all DTO obstacles from that Location (is filtered by
+     *                  id in constructor)
+     * @param doors     list of all DTO doors from that Location (is filtered by id
+     *                  in constructor)
+     * @return Part object
+     * @implNote This constructor filters enemies, obstacles, and doors by the ID of
+     * the Part
+     */
+    public static Part fromDTO(PartDTO dto, List<HexObstacleDTO> obstacles, List<LocationDoorDTO> doors) {
+        Part part = fromDTO(dto);
+        part.setFilterObstacles(obstacles);
+        part.setFilterDoors(doors);
+        return part;
+    }
+
     public String getUrl() {
         if (url == null)
             url = ImageLoader.getPath(getTag());
@@ -64,80 +138,6 @@ public class Part extends PartDTO {
         this.setDoors(doors.stream()
                 .filter(e -> e.getKey().getIdPartFrom() == this.getId())
                 .toList());
-    }
-
-    public static Part fromDTO(PartDTO dto) {
-        ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Part.class);
-    }
-
-    /**
-     * Create a Part from a DTO and add the enemies, obstacles and doors to it based
-     * on Part ID
-     * 
-     * @implNote This constructor filters enemies, obstacles, and doors by the ID of
-     *           the Part
-     * @param dto       dto object of Part
-     * @param rotation  rotation of the part (must be filtered by the caller)
-     * @param enemies   list of all DTO enemies from that Location (is filtered by
-     *                  id in constructor)
-     * @param obstacles list of all DTO obstacles from that Location (is filtered by
-     *                  id in constructor)
-     * @param doors     list of all DTO doors from that Location (is filtered by id
-     *                  in constructor)
-     * @return Part object
-     */
-    public static Part fromDTO(PartDTO dto, Integer rotation, List<HexEnemyDTO> enemies, List<HexObstacleDTO> obstacles,
-            List<LocationDoorDTO> doors) {
-        Part part = fromDTO(dto);
-        part.setRotation(rotation);
-        part.setFilterEnemies(enemies);
-        part.setFilterObstacles(obstacles);
-        part.setFilterDoors(doors);
-        return part;
-    }
-
-    /**
-     * Create a Part from a DTO and add the enemies, obstacles and doors to it based
-     * on Part ID
-     * 
-     * @implNote This constructor filters enemies, obstacles, and doors by the ID of
-     *           the Part
-     * @param dto       dto object of Part
-     * @param rotation  rotation of the part (must be filtered by the caller)
-     * @param enemies   list of all DTO enemies from that Location (is filtered by
-     *                  id in constructor)
-     * @param obstacles list of all DTO obstacles from that Location (is filtered by
-     *                  id in constructor)
-     * @return Part object
-     */
-    public static Part fromDTO(PartDTO dto, Integer rotation, List<HexEnemyDTO> enemies,
-            List<HexObstacleDTO> obstacles) {
-        Part part = fromDTO(dto);
-        part.setRotation(rotation);
-        part.setFilterEnemies(enemies);
-        part.setFilterObstacles(obstacles);
-        return part;
-    }
-
-    /**
-     * Create a Part from a DTO and add the enemies, obstacles and doors to it based
-     * on Part ID
-     * 
-     * @implNote This constructor filters enemies, obstacles, and doors by the ID of
-     *           the Part
-     * @param dto       dto object of Part
-     * @param obstacles list of all DTO obstacles from that Location (is filtered by
-     *                  id in constructor)
-     * @param doors     list of all DTO doors from that Location (is filtered by id
-     *                  in constructor)
-     * @return Part object
-     */
-    public static Part fromDTO(PartDTO dto, List<HexObstacleDTO> obstacles, List<LocationDoorDTO> doors) {
-        Part part = fromDTO(dto);
-        part.setFilterObstacles(obstacles);
-        part.setFilterDoors(doors);
-        return part;
     }
 
     public Optional<Hex> getHex(int id) {

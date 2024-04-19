@@ -18,18 +18,12 @@ import java.util.List;
 // @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Enemy extends EnemyDTO {
 
-    private HexDTO startingHex;
-
-    private String url;
-
     @JsonIgnore
     List<Action> deck = new ArrayList<>();
     @JsonIgnore
     int deckIndex = 0;
-
-    public String getUrl() {
-        return ImageLoader.getPath(getTag());
-    }
+    private HexDTO startingHex;
+    private String url;
 
     public static Enemy fromDTO(EnemyDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
@@ -45,6 +39,10 @@ public class Enemy extends EnemyDTO {
             enemy.setDeckIndex(-1);
 
         return enemy;
+    }
+
+    public String getUrl() {
+        return ImageLoader.getPath(getTag());
     }
 
     public void shuffleDeck() {

@@ -26,8 +26,8 @@ public class LocationStartDTO implements Serializable {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idHex",insertable = false, updatable = false)
-    @JoinColumn(name = "idPart",insertable = false, updatable = false)
+    @JoinColumn(name = "idHex", insertable = false, updatable = false)
+    @JoinColumn(name = "idPart", insertable = false, updatable = false)
     private HexDTO hex;
 
 }
