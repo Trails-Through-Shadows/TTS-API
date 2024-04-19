@@ -119,6 +119,7 @@ public class Encounter {
         }
     }
 
+    // initiative
     public void rollInitiative(List<Initiative> initiatives) {
         log.info("Rolling initiative");
 
@@ -194,6 +195,7 @@ public class Encounter {
         return ret;
     }
 
+    // start turn
     private List<EntityStatusUpdate> startTurn(EncounterEntity.EntityType type, Integer id) {
         log.info("Starting turn for {} {}", type, id);
 
@@ -260,6 +262,7 @@ public class Encounter {
         return ret;
     }
 
+    // end turn
     private List<EntityStatusUpdate> endTurn(EncounterEntity.EntityType type, Integer id) {
         log.info("Ending turn for {} {}", type, id);
 
@@ -312,6 +315,7 @@ public class Encounter {
         return endTurn(EncounterEntity.EntityType.ENEMY, id);
     }
 
+    // interaction
     private EntityStatusUpdate entityInteraction(EncounterEntity<?> entity, int damage, List<EncounterEffect> effects) {
         log.info("Interacting with entity '{}'", entity);
 
@@ -393,6 +397,7 @@ public class Encounter {
         return entityInteraction(entities.getSummon(id, idGroup), interaction.getDamage(), interaction.getEffects());
     }
 
+    // door
     public void openDoor(LocationDoorDTO door) {
         log.info("Opening door {}", door);
         // todo more sophisticated door opening
@@ -407,6 +412,7 @@ public class Encounter {
         doorsToOpen.add(door);
     }
 
+    // round
     public LinkedHashMap<String, Object> endRound() {
         log.info("Ending round");
 
@@ -448,6 +454,7 @@ public class Encounter {
         return ret;
     }
 
+    // condition
     private void progressCondition(CampaignLocation.Condition.Type type) {
         conditions.stream()
                 .filter(c -> c.getType().equals(type))
@@ -523,6 +530,7 @@ public class Encounter {
         return EncounterState.ONGOING;
     }
 
+    // misc
     private void endEncounter() {
         log.info("Ending encounter");
         state = EncounterState.COMPLETED;

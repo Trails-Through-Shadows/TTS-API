@@ -50,7 +50,8 @@ public abstract class Validable {
             this.fieldName = fieldName;
         }
 
-        log.trace("Validating {}{}", getValidableClass(), getValidableValueFormatted());
+        String name = getValidableClass() + getValidableValueFormatted();
+        log.trace("Validating {}", name);
 
         errors = new ArrayList<>();
         validateInner(validationConfig);
@@ -59,9 +60,7 @@ public abstract class Validable {
             return Optional.empty();
         }
 
-        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "{}{} is not valid!",
-                getValidableClass(),
-                getValidableValueFormatted());
+        RestError error = new RestError(HttpStatus.NOT_ACCEPTABLE, "{} is not valid!", name);
 
         for (var e : errors) {
             error.addSubError(e);
