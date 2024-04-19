@@ -15,9 +15,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
@@ -69,14 +66,14 @@ public class CampaignLocation extends Validable {
     }
 
     @JsonIgnore
-    public void setConditionString(String conditionString) {
-        this.conditionString = conditionString;
-        postLoad();
+    public String getConditionString() {
+        return conditionString;
     }
 
     @JsonIgnore
-    public String getConditionString() {
-        return conditionString;
+    public void setConditionString(String conditionString) {
+        this.conditionString = conditionString;
+        postLoad();
     }
 
     //region Validation
@@ -120,6 +117,12 @@ public class CampaignLocation extends Validable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Condition extends Validable implements Serializable {
+        private Type type;
+        private Integer value;
+        private Encounter.EncounterState result;
+        @JsonIgnore
+        private Integer progression = 0;
+
         @Override
         protected void validateInner(@Nullable ValidationConfig validationConfig) {
             if (type == null) {
@@ -145,22 +148,15 @@ public class CampaignLocation extends Validable {
             return null;
         }
 
+        public void progress() {
+            progression++;
+        }
+
         public enum Type {
             ENEMY_DEATHS,
             PLAYER_DEATHS,
             DOORS_OPENED,
             ROUND_REACHED
-        }
-
-        private Type type;
-        private Integer value;
-        private Encounter.EncounterState result;
-
-        @JsonIgnore
-        private Integer progression = 0;
-
-        public void progress() {
-            progression++;
         }
     }
 

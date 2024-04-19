@@ -34,28 +34,21 @@ public class ObstacleDTO extends Validable {
 
     @Column(nullable = false, length = 128)
     public String title;
-
-    @Column(length = 32)
-    private String tag;
-
     @Column
     public String description;
-
     @Column
     public Integer baseDamage;
-
     @Column
     public Integer baseHealth;
-
     @Column(nullable = false)
     public boolean crossable;
-
     @Column
     public Integer usages = 0;
-
     @OneToMany(mappedBy = "key.idObstacle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     public List<ObstacleEffectDTO> effects;
+    @Column(length = 32)
+    private String tag;
 
     @JsonIgnore
     public List<EffectDTO> getMappedEffects() {

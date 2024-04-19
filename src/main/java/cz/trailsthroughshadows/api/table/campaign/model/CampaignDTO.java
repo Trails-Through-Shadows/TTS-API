@@ -24,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "Campaign")
 public class CampaignDTO extends Validable {
 
@@ -68,7 +68,6 @@ public class CampaignDTO extends Validable {
                 .map(CampaignLocation::getConditions)
                 .orElse(null);
     }
-
 
 
     //region Validation

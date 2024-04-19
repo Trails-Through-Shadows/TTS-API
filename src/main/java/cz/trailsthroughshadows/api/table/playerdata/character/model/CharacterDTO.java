@@ -25,7 +25,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Table(name = "`Character`")
 @Entity
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CharacterDTO extends Validable implements Cloneable {
 
     @Id

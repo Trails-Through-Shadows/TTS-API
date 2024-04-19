@@ -14,10 +14,6 @@ public class Obstacle extends ObstacleDTO {
 
     private String url;
 
-    public String getUrl() {
-        return ImageLoader.getPath(getTag());
-    }
-
     public static Obstacle fromDTO(ObstacleDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Obstacle.class);
@@ -33,6 +29,10 @@ public class Obstacle extends ObstacleDTO {
     public static ObstacleDTO toDTO(Obstacle obstacle) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(obstacle, ObstacleDTO.class);
+    }
+
+    public String getUrl() {
+        return ImageLoader.getPath(getTag());
     }
 
     @Override

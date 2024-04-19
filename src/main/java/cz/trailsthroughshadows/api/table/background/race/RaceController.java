@@ -7,7 +7,6 @@ import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.action.ActionRepo;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
-import cz.trailsthroughshadows.api.table.background.clazz.ClazzAction;
 import cz.trailsthroughshadows.api.table.background.race.model.Race;
 import cz.trailsthroughshadows.api.table.background.race.model.RaceDTO;
 import cz.trailsthroughshadows.api.table.effect.EffectRepo;
@@ -171,7 +170,7 @@ public class RaceController {
         races.forEach(e -> e.setId(null));
 
         //remove relations and save them for later
-        Map<String, Pair< List<RaceAction>, List<RaceEffect>>> actionsAndEffects = new HashMap<>();
+        Map<String, Pair<List<RaceAction>, List<RaceEffect>>> actionsAndEffects = new HashMap<>();
         races.forEach(raceaction -> {
             actionsAndEffects.put(raceaction.getTag(), new Pair<>(new ArrayList<>(raceaction.getActions()), new ArrayList<>(raceaction.getEffects())));
             raceaction.setActions(null);
@@ -182,10 +181,10 @@ public class RaceController {
         races = raceRepo.saveAll(races);
 
         // Load relations
-        races.forEach(entity->{
+        races.forEach(entity -> {
             Pair<List<RaceAction>, List<RaceEffect>> pair = actionsAndEffects.get(entity.getTag());
 
-            entity.setActions(new ArrayList<>(pair.first()) );
+            entity.setActions(new ArrayList<>(pair.first()));
             entity.getActions().forEach(action -> action.getKey().setIdRace(action.getKey().getIdRace()));
 
             entity.setEffects(new ArrayList<>(pair.second()));
@@ -196,7 +195,7 @@ public class RaceController {
         races = raceRepo.saveAll(races);
 
         String ids = races.stream().map(RaceDTO::getId).map(String::valueOf).toList().toString();
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Races with ids '%s' created",ids), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Races with ids '%s' created", ids), HttpStatus.OK);
     }
 
     private EffectDTO processEffects(EffectDTO inputEffect) {
@@ -221,10 +220,10 @@ public class RaceController {
 
     @DeleteMapping("/races/{id}")
     @CacheEvict(value = "race", key = "#id")
-    public ResponseEntity<MessageResponse> deleteEntity(@PathVariable int id){
+    public ResponseEntity<MessageResponse> deleteEntity(@PathVariable int id) {
         RaceDTO entity = raceRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND,"Race with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Race with id '%d' not found!", id));
 
         raceRepo.delete(entity);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Race with id '%d' deleted!", id), HttpStatus.OK);

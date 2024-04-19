@@ -29,7 +29,7 @@ public class ImageController {
             @RequestParam(required = false) Integer width,
             @RequestParam(required = false) Integer height,
             @RequestParam(required = false) Integer size,
-            @RequestParam(required = false) boolean token ) throws IOException {
+            @RequestParam(required = false) boolean token) throws IOException {
 
         String localpath = type + "/" + ((token) ? "tokens/" : "") + file;
         var physicalPath = config.getPath();

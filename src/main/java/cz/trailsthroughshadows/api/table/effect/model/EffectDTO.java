@@ -1,7 +1,6 @@
 package cz.trailsthroughshadows.api.table.effect.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Description;
@@ -103,31 +102,31 @@ public class EffectDTO extends Validable implements Serializable {
 
     @AllArgsConstructor
     public enum EffectType implements Serializable {
-        PUSH("Push",                                    true,   false,  false),
-        PULL("Pull",                                    true,   false,  false),
-        FORCED_MOVEMENT_RESISTANCE("Forced Movement",   true,   true,   true),
-        POISON("Poison",                                true,   true,   false),
-        POISON_RESISTANCE("Poison",                     true,   true,   true),
-        FIRE("Fire",                                    true,   true,   false),
-        FIRE_RESISTANCE("Fire",                         true,   true,   true),
-        BLEED("Bleed",                                  true,   true,   false),
-        BLEED_RESISTANCE("Bleed",                       true,   true,   true),
-        STUN("Stun",                                    false,  true,   false),
-        STUN_RESISTANCE("Stun",                         false,  true,   true),
-        HEAL("Heal",                                    true,   false,  false),
-        REGENERATION("Regeneration",                    true,   true,   false),
-        EMPOWER("Empower",                              true,   true,   false),
-        ENFEEBLE("Enfeeble",                            true,   true,   false),
-        ENFEEBLE_RESISTANCE("Enfeeble",                 true,   true,   true),
-        SPEED("Speed",                                  true,   true,   false),
-        SLOW("Slow",                                    true,   true,   false),
-        SLOW_RESISTANCE("Slow",                         true,   true,   true),
-        GUIDANCE("Guidance",                            false,  true,   false),
-        CONFUSION("Confusion",                          false,  true,   false),
-        CONFUSION_RESISTANCE("Confusion",               false,  true,   true),
-        PROTECTION("Protection",                        true,   true,   false),
-        VULNERABILITY("Vulnerability",                  true,   true,   false),
-        VULNERABILITY_RESISTANCE("Vulnerability",       true,   true,   true);
+        PUSH("Push", true, false, false),
+        PULL("Pull", true, false, false),
+        FORCED_MOVEMENT_RESISTANCE("Forced Movement", true, true, true),
+        POISON("Poison", true, true, false),
+        POISON_RESISTANCE("Poison", true, true, true),
+        FIRE("Fire", true, true, false),
+        FIRE_RESISTANCE("Fire", true, true, true),
+        BLEED("Bleed", true, true, false),
+        BLEED_RESISTANCE("Bleed", true, true, true),
+        STUN("Stun", false, true, false),
+        STUN_RESISTANCE("Stun", false, true, true),
+        HEAL("Heal", true, false, false),
+        REGENERATION("Regeneration", true, true, false),
+        EMPOWER("Empower", true, true, false),
+        ENFEEBLE("Enfeeble", true, true, false),
+        ENFEEBLE_RESISTANCE("Enfeeble", true, true, true),
+        SPEED("Speed", true, true, false),
+        SLOW("Slow", true, true, false),
+        SLOW_RESISTANCE("Slow", true, true, true),
+        GUIDANCE("Guidance", false, true, false),
+        CONFUSION("Confusion", false, true, false),
+        CONFUSION_RESISTANCE("Confusion", false, true, true),
+        PROTECTION("Protection", true, true, false),
+        VULNERABILITY("Vulnerability", true, true, false),
+        VULNERABILITY_RESISTANCE("Vulnerability", true, true, true);
 
         public final String displayName;
         public final boolean hasStrength, hasDuration, isResistance;

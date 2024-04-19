@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.table.playerdata.adventure.relation;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.achievement.AchievementDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,16 +9,12 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import cz.trailsthroughshadows.api.table.playerdata.adventure.achievement.AchievementDTO;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "`AdventureAchievement`")
 @Entity
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class AdventureAchievement {
 
     @EmbeddedId

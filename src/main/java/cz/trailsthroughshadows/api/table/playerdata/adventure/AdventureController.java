@@ -7,6 +7,7 @@ import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.RestResponse;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.model.Adventure;
 import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
 import cz.trailsthroughshadows.api.table.playerdata.character.CharacterService;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.Character;
@@ -36,7 +37,7 @@ public class AdventureController {
     private CharacterService characterService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdventureDTO> findById(
+    public ResponseEntity<Adventure> findById(
             @RequestParam UUID token,
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -54,8 +55,9 @@ public class AdventureController {
         } else {
             Initialization.hibernateInitializeAll(entity, include);
         }
+        Adventure res = Adventure.fromDTO(entity);
 
-        return new ResponseEntity<>(entity, HttpStatus.OK);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @GetMapping("")

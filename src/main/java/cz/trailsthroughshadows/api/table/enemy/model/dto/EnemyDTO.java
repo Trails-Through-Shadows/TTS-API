@@ -15,7 +15,6 @@ import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffectDT
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

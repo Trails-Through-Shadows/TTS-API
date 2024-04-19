@@ -5,12 +5,12 @@ import org.modelmapper.ModelMapper;
 
 public class Race extends RaceDTO {
 
-    public String getUrl() {
-        return ImageLoader.getPath(getTag());
-    }
-
     public static Race fromDTO(RaceDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Race.class);
+    }
+
+    public String getUrl() {
+        return ImageLoader.getPath(getTag());
     }
 }

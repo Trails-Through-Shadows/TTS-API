@@ -15,16 +15,16 @@ public class Character extends CharacterDTO {
 
     private String url;
 
+    public static Character fromDTO(CharacterDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Character.class);
+    }
+
     public String getUrl() {
         if (url == null) {
             url = ImageLoader.getPath(new ArrayList<>(Arrays.asList(getRace().getTag(), getClazz().getTag())));
         }
         return url;
-    }
-
-    public static Character fromDTO(CharacterDTO dto) {
-        ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Character.class);
     }
 
     public Integer getDefence() {

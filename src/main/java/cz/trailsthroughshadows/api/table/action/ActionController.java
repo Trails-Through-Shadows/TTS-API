@@ -87,6 +87,7 @@ public class ActionController {
 
     /**
      * helper thing for effects
+     *
      * @param inputEffect
      * @return
      */
@@ -113,11 +114,12 @@ public class ActionController {
 
     /**
      * should update or create everything in action
+     *
      * @param id
      * @param action
      * @return updated action
      */
-    public ActionDTO updateInner(int id,ActionDTO action){
+    public ActionDTO updateInner(int id, ActionDTO action) {
 
         ActionDTO entityToUpdate = actionRepo
                 .findById(id)
@@ -198,6 +200,7 @@ public class ActionController {
 
     /**
      * should create everything in action
+     *
      * @param action
      * @return
      */
@@ -210,7 +213,7 @@ public class ActionController {
         entityToUpdate.setRestoreCards(null);
         entityToUpdate = actionRepo.save(entityToUpdate);
 
-        ActionDTO lateSave = updateInner(entityToUpdate.getId(),action);
+        ActionDTO lateSave = updateInner(entityToUpdate.getId(), action);
 
         return lateSave;
     }
@@ -219,7 +222,7 @@ public class ActionController {
     public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody ActionDTO action) {
         validation.validate(action);
 
-        ActionDTO updated = updateInner(id,action);
+        ActionDTO updated = updateInner(id, action);
 
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' updated!", id), HttpStatus.OK);
     }

@@ -31,7 +31,7 @@ public class ImageLoader {
     /**
      * @param tag
      * @return parsed url to image based on tag, if tag is unknown, returns
-     *         unknown.png
+     * unknown.png
      */
     public static String getPath(String tag) {
         return parsePath(tag);

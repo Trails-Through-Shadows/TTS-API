@@ -10,5 +10,5 @@ import java.util.List;
 public interface CampaignRepo extends JpaRepository<CampaignDTO, Integer> {
 
     @Query("SELECT s from Story s where s.idCampaignLocation = ?1")
-    public List<Story> findAllStoriesByCampaignId(int idCampaign);
+    List<Story> findAllStoriesByCampaignId(int idCampaign);
 }

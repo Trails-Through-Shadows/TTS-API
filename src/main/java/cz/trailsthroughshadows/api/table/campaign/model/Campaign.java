@@ -15,7 +15,7 @@ public class Campaign extends CampaignDTO {
         return modelMapper.map(dto, Campaign.class);
     }
 
-     public String getTree() {
+    public String getTree() {
         JsonArray nodes = new JsonArray();
         JsonArray links = new JsonArray();
 
@@ -46,5 +46,5 @@ public class Campaign extends CampaignDTO {
         tree.add("links", links);
 
         return tree.toString();
-     }
+    }
 }

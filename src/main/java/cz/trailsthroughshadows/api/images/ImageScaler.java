@@ -1,13 +1,12 @@
 package cz.trailsthroughshadows.api.images;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 
 public class ImageScaler {
 

@@ -5,12 +5,12 @@ import org.modelmapper.ModelMapper;
 
 public class Clazz extends ClazzDTO {
 
-    public String getUrl() {
-        return ImageLoader.getPath(getTag());
-    }
-
     public static Clazz fromDTO(ClazzDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Clazz.class);
+    }
+
+    public String getUrl() {
+        return ImageLoader.getPath(getTag());
     }
 }

@@ -11,13 +11,13 @@ public class Summon extends SummonDTO {
 
     private String url;
 
-    public String getUrl() {
-        return ImageLoader.getPath(getTag());
-    }
-
     public static Summon fromDTO(SummonDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Summon.class);
+    }
+
+    public String getUrl() {
+        return ImageLoader.getPath(getTag());
     }
 
     @Override

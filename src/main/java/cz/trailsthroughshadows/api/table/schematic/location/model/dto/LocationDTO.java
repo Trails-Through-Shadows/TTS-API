@@ -23,7 +23,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "Location")
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class LocationDTO {
 
     @Id
