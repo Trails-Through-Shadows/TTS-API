@@ -33,6 +33,11 @@ public class EncounterController {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id)), HttpStatus.OK);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<RestResponse> getAllEncounters(@RequestParam UUID token) {
+        return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getAllEncounters(token)), HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> endEncounter(@RequestParam UUID token, @PathVariable Integer id) {
         encounterHandler.removeEncounter(token, id);
