@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Component
@@ -34,13 +35,32 @@ public class SessionHandler {
         throw RestException.of(HttpStatus.UNAUTHORIZED, message, args);
     }
 
-    public boolean isSessionValid(UUID token) {
+    public boolean isSessionValid(String token) {
         return sessions.stream().anyMatch(s -> s.getToken().equals(token));
     }
 
-    public Session getSession(UUID uuid) {
+    public String getTokenFromAuthHeader(String authorization) {
+        if (authorization == null) {
+            responseFail(HttpStatus.UNAUTHORIZED, "Authorization header is missing!");
+            return null;
+        }
 
-        if (Objects.equals(uuid.toString(), Session.ADMINISTRATOR_SESSION.getToken().toString())) {
+        String[] parts = authorization.split(" ");
+        if (parts.length != 2) {
+            responseFail(HttpStatus.UNAUTHORIZED, "Invalid authorization header!");
+            return null;
+        }
+
+        if (!parts[0].equalsIgnoreCase("Basic")) {
+            responseFail(HttpStatus.UNAUTHORIZED, "Invalid authorization type!");
+            return null;
+        }
+
+        return parts[1];
+    }
+
+    public Session getSession(String uuid) {
+        if (Objects.equals(uuid, Session.ADMINISTRATOR_SESSION.getToken())) {
             return Session.ADMINISTRATOR_SESSION;
         }
 
@@ -54,6 +74,11 @@ public class SessionHandler {
                 });
     }
 
+    public Session getSessionFromAuthHeader(String authorization) {
+        String token = getTokenFromAuthHeader(authorization);
+        return getSession(token);
+    }
+
     public AuthResponse login(AuthRequest credentials) {
         log.debug("Authorizing session for '{}'", credentials.getKey());
 
@@ -61,6 +86,7 @@ public class SessionHandler {
 
         if (license.isEmpty() || !Objects.equals(license.get().getPassword(), credentials.getPassword())) {
             responseFail(HttpStatus.UNAUTHORIZED, "Invalid credentials!");
+            return null;
         }
 
         if (license.get().getActivated() == null) {
@@ -77,20 +103,22 @@ public class SessionHandler {
             return new AuthResponse(optionalSession.get());
         }
 
-        Session session = new Session(UUID.randomUUID(), license.get().getId(), new ArrayList<>());
+        String randomToken = Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
+        Session session = new Session(randomToken, license.get().getId(), new ArrayList<>());
         log.debug("Creating new session for license #{}.", session.getLicenseId());
         sessions.add(session);
+
         return new AuthResponse(session);
     }
 
-    public MessageResponse logout(UUID token) {
+    public MessageResponse logout(String token) {
         if (sessions.stream().noneMatch(s -> s.getToken().equals(token))) {
             responseFail(HttpStatus.UNAUTHORIZED, "Invalid session token!");
         }
+
         Session session = getSession(token);
         sessions.remove(session);
+
         return new MessageResponse(HttpStatus.OK, "Logged out!");
     }
-
-
 }

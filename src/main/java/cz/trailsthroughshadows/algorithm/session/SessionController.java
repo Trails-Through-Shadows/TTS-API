@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @Log4j2
 @Component
 @RestController
@@ -28,12 +26,18 @@ public class SessionController {
     }
 
     @DeleteMapping("/logout")
-    public ResponseEntity<RestResponse> logout(@RequestParam UUID token) {
+    public ResponseEntity<RestResponse> logout(
+            @RequestHeader(name = "Authorization") String authorization
+    ) {
+        String token = sessionHandler.getTokenFromAuthHeader(authorization);
         return new ResponseEntity<>(sessionHandler.logout(token), HttpStatus.OK);
     }
 
     @GetMapping("/hello")
-    public ResponseEntity<MessageResponse> hello(@RequestParam UUID token) {
+    public ResponseEntity<MessageResponse> hello(
+            @RequestHeader(name = "Authorization") String authorization
+    ) {
+        String token = sessionHandler.getTokenFromAuthHeader(authorization);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, sessionHandler.getSession(token).hello()), HttpStatus.OK);
     }
 }

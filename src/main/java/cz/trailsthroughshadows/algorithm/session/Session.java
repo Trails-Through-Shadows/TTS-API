@@ -4,17 +4,21 @@ import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
 public class Session {
-    private UUID token;
+
+    private static final String key = "0000:admin";
+    private static final String masterKey = Base64.getEncoder().encodeToString(key.getBytes(StandardCharsets.UTF_8));
+    public static Session ADMINISTRATOR_SESSION = new Session(masterKey, 0, List.of());
+
+    private String token;
     private Integer licenseId;
-
-    public static Session ADMINISTRATOR_SESSION = new Session(UUID.fromString("00000000-0000-0000-0000-000000000000"), 0, List.of());
-
     private List<AdventureDTO> adventures;
 
     public String hello() {
@@ -22,7 +26,7 @@ public class Session {
     }
 
     public boolean isAdmin() {
-        return token == ADMINISTRATOR_SESSION.token;
+        return Objects.equals(token, ADMINISTRATOR_SESSION.token);
     }
 
     public boolean hasAccess(Integer licenseId) {

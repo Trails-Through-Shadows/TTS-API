@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -48,13 +47,13 @@ public class EncounterHandler {
         return encounters.size() + 1;
     }
 
-    public List<Encounter> getAllEncounters(UUID token) {
+    public List<Encounter> getAllEncounters(String token) {
         return encounters.stream()
                 .filter(e -> sessionHandler.getSession(token).hasAccess(e.getIdLicense()))
                 .toList();
     }
 
-    public Encounter getEncounter(UUID token, Integer id) {
+    public Encounter getEncounter(String token, Integer id) {
         Encounter[] enc = new Encounter[1];
 
         return encounters.stream()
@@ -74,7 +73,7 @@ public class EncounterHandler {
                 });
     }
 
-    public Integer addEncounter(UUID token, Integer idAdventure, Integer idLocation) {
+    public Integer addEncounter(String token, Integer idAdventure, Integer idLocation) {
 
         AdventureDTO adventure = adventureRepo.findById(idAdventure)
                 .orElseThrow(() -> {
@@ -105,7 +104,7 @@ public class EncounterHandler {
         return encounter.getId();
     }
 
-    public void removeEncounter(UUID token, Integer id) {
+    public void removeEncounter(String  token, Integer id) {
         Encounter encounter = getEncounter(token, id);
         encounters.remove(encounter);
         log.info("Encounter removed: {}", encounter.getId());

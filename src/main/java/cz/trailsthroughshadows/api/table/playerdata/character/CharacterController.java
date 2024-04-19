@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/characters")
@@ -37,12 +36,12 @@ public class CharacterController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Character> findById(
-            @RequestParam UUID token,
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "false") boolean lazy
+            @RequestParam(required = false, defaultValue = "false") boolean lazy,
+            @RequestHeader(name = "Authorization") String authorization
     ) {
-        Session session = sessionHandler.getSession(token);
+        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
         CharacterDTO entity = characterService.findById(id);
         AdventureDTO adventure = adventureService.findById(entity.getIdAdventure());
 
@@ -61,18 +60,18 @@ public class CharacterController {
 
     @GetMapping("")
     public ResponseEntity<RestPaginatedResult<Character>> findAllEntities(
-            @RequestParam UUID token,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "true") boolean lazy
+            @RequestParam(required = false, defaultValue = "true") boolean lazy,
+            @RequestHeader(name = "Authorization") String authorization
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        Session session = sessionHandler.getSession(token);
+        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
 
         List<CharacterDTO> entries = characterService.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))) &&
@@ -97,12 +96,21 @@ public class CharacterController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RestResponse> updateCharacter(@RequestParam UUID token, @PathVariable int id, @RequestBody CharacterDTO character) {
-        return new ResponseEntity<>(characterService.update(id, character, sessionHandler.getSession(token)), HttpStatus.OK);
+    public ResponseEntity<RestResponse> updateCharacter(
+            @PathVariable int id,
+            @RequestBody CharacterDTO character,
+            @RequestHeader(name = "Authorization") String authorization
+    ) {
+        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
+        return new ResponseEntity<>(characterService.update(id, character, session), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<RestResponse> deleteCharacter(@RequestParam UUID token, @PathVariable int id) {
-        return new ResponseEntity<>(characterService.delete(id, sessionHandler.getSession(token)), HttpStatus.OK);
+    public ResponseEntity<RestResponse> deleteCharacter(
+            @PathVariable int id,
+            @RequestHeader(name = "Authorization") String authorization
+    ) {
+        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
+        return new ResponseEntity<>(characterService.delete(id, session), HttpStatus.OK);
     }
 }

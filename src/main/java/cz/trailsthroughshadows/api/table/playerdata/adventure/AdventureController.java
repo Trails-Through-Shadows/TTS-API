@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/adventures")
@@ -38,12 +37,12 @@ public class AdventureController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Adventure> findById(
-            @RequestParam UUID token,
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "false") boolean lazy
+            @RequestParam(required = false, defaultValue = "false") boolean lazy,
+            @RequestHeader(name = "Authorization") String authorization
     ) {
-        Session session = sessionHandler.getSession(token);
+        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
         AdventureDTO entity = adventureService.findById(id);
 
         if (!session.hasAccess(entity.getIdLicense())) {
@@ -62,18 +61,18 @@ public class AdventureController {
 
     @GetMapping("")
     public ResponseEntity<RestPaginatedResult<AdventureDTO>> findAllEntities(
-            @RequestParam UUID token,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @RequestParam(required = false, defaultValue = "true") boolean lazy
+            @RequestParam(required = false, defaultValue = "true") boolean lazy,
+            @RequestHeader(name = "Authorization") String authorization
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        Session session = sessionHandler.getSession(token);
+        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
 
         List<AdventureDTO> entries = adventureService.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))) &&
@@ -97,35 +96,46 @@ public class AdventureController {
     }
 
     @PostMapping("/{idLicense}")
-    public ResponseEntity<RestResponse> addAdventure(@RequestParam UUID token, @PathVariable int idLicense, @RequestBody AdventureDTO adventure) {
-        return new ResponseEntity<>(adventureService.add(adventure, idLicense, sessionHandler.getSession(token)), HttpStatus.OK);
+    public ResponseEntity<RestResponse> addAdventure(
+            @PathVariable int idLicense,
+            @RequestBody AdventureDTO adventure,
+            @RequestHeader(name = "Authorization") String authorization
+    ) {
+        return new ResponseEntity<>(adventureService.add(adventure, idLicense, sessionHandler.getSessionFromAuthHeader(authorization)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RestResponse> updateAdventure(@RequestParam UUID token, @PathVariable int id, @RequestBody AdventureDTO adventure) {
-        return new ResponseEntity<>(adventureService.update(id, adventure, sessionHandler.getSession(token)), HttpStatus.OK);
+    public ResponseEntity<RestResponse> updateAdventure(
+            @PathVariable int id,
+            @RequestBody AdventureDTO adventure,
+            @RequestHeader(name = "Authorization") String authorization
+    ) {
+        return new ResponseEntity<>(adventureService.update(id, adventure, sessionHandler.getSessionFromAuthHeader(authorization)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<RestResponse> deleteAdventure(@RequestParam UUID token, @PathVariable int id) {
-        return new ResponseEntity<>(adventureService.delete(id, sessionHandler.getSession(token)), HttpStatus.OK);
+    public ResponseEntity<RestResponse> deleteAdventure(
+            @PathVariable int id,
+            @RequestHeader(name = "Authorization") String authorization
+    ) {
+        return new ResponseEntity<>(adventureService.delete(id, sessionHandler.getSessionFromAuthHeader(authorization)), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/characters")
     public ResponseEntity<RestPaginatedResult<Character>> findAllEntities(
-            @RequestParam UUID token,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "true") boolean lazy,
-            @PathVariable int id
+            @PathVariable int id,
+            @RequestHeader(name = "Authorization") String authorization
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
         // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
 
-        Session session = sessionHandler.getSession(token);
+        Session session = sessionHandler.getSessionFromAuthHeader(authorization);
 
         List<CharacterDTO> entries = characterService.findAll().stream()
                 .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))) &&
@@ -151,7 +161,11 @@ public class AdventureController {
     }
 
     @PostMapping("/{id}/characters")
-    public ResponseEntity<RestResponse> addCharacter(@RequestParam UUID token, @PathVariable int id, @RequestBody CharacterDTO character) {
-        return new ResponseEntity<>(characterService.add(character, id, sessionHandler.getSession(token)), HttpStatus.OK);
+    public ResponseEntity<RestResponse> addCharacter(
+            @PathVariable int id,
+            @RequestBody CharacterDTO character,
+            @RequestHeader(name = "Authorization") String authorization
+    ) {
+        return new ResponseEntity<>(characterService.add(character, id, sessionHandler.getSessionFromAuthHeader(authorization)), HttpStatus.OK);
     }
 }

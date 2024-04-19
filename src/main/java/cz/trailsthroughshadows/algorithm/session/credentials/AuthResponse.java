@@ -4,12 +4,10 @@ import cz.trailsthroughshadows.algorithm.session.Session;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 public class AuthResponse {
-    UUID token;
+    String token;
     Integer licenseId;
 
     public AuthResponse(Session session) {
