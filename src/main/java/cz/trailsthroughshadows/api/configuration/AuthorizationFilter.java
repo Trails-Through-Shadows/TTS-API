@@ -27,7 +27,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private SessionHandler sessionHandler;
 
-    private final List<String> ignoredPaths = List.of("/session/login", "/swagger-ui", "/api-docs");
+    private final List<String> ignoredPaths = List.of("/session/login", "/swagger-ui", "/api-docs", "/images");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
