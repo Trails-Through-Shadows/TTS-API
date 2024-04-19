@@ -1,5 +1,7 @@
 package cz.trailsthroughshadows.api.configuration;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import cz.trailsthroughshadows.algorithm.session.Session;
 import cz.trailsthroughshadows.algorithm.session.SessionHandler;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
@@ -9,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -45,8 +46,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
             try {
-                JSONObject jsonResponse = new JSONObject();
-                jsonResponse.put("message", "Authorization header is missing.");
+                JsonElement jsonResponse = new JsonObject();
+                jsonResponse.getAsJsonObject().addProperty("message", "Authorization header is missing.");
                 response.getWriter().write(jsonResponse.toString());
             } catch (Exception e) {
                 log.error("Failed to write JSON response.");
@@ -79,8 +80,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         try {
-            JSONObject jsonResponse = new JSONObject();
-            jsonResponse.put("message", "Invalid session token!");
+            JsonElement jsonResponse = new JsonObject();
+            jsonResponse.getAsJsonObject().addProperty("message", "Invalid session token.");
             response.getWriter().write(jsonResponse.toString());
         } catch (Exception e) {
             log.error("Failed to write JSON response.");

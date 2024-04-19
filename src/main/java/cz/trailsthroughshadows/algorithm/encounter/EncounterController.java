@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 @RestController
@@ -47,7 +46,7 @@ public class EncounterController {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id)), HttpStatus.OK);
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ResponseEntity<RestResponse> getAllEncounters(
             HttpServletRequest request
     ) {
