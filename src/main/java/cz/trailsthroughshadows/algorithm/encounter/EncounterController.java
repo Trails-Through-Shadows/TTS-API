@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Controller
 @RestController
-@RequestMapping("/encounter")
+@RequestMapping("/encounters")
 public class EncounterController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class EncounterController {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id)), HttpStatus.OK);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public ResponseEntity<RestResponse> getAllEncounters(@RequestParam UUID token) {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getAllEncounters(token)), HttpStatus.OK);
     }
