@@ -40,6 +40,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
+        //bypass get requests
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // Authorization header is missing
         if (authHeader == null) {
             log.warn("Authorization header is missing.");
