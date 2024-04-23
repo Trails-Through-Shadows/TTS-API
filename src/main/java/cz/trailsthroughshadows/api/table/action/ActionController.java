@@ -1,5 +1,8 @@
 package cz.trailsthroughshadows.api.table.action;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
@@ -7,11 +10,17 @@ import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.action.model.Action;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
+import cz.trailsthroughshadows.api.table.background.clazz.ClazzRepo;
+import cz.trailsthroughshadows.api.table.background.clazz.model.Clazz;
+import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
+import cz.trailsthroughshadows.api.table.background.race.model.Race;
 import cz.trailsthroughshadows.api.table.effect.EffectRepo;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.foraction.AttackEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.foraction.MovementEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.foraction.SkillEffect;
+import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
+import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -22,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Slf4j
@@ -253,6 +263,104 @@ public class ActionController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Actions %s created!", String.join(", ", ids)),
                 HttpStatus.OK);
     }
+
+    @Autowired
+    private EnemyRepo enemyRepo;
+    @Autowired
+    private ClazzRepo clazzRepo;
+    @Autowired
+    private RaceRepo raceRepo;
+
+    @GetMapping("/actions/{id}/card")
+    public ResponseEntity<LinkedHashMap<String, Object>> getCard(@PathVariable int id) {
+        ActionDTO entity = actionRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
+
+        Initialization.hibernateInitializeAll(entity);
+
+        enum Source {
+            ENEMY,
+            CLASS,
+            RACE,
+        }
+
+        // enemies
+        List<Enemy> enemies = enemyRepo.findAll()
+                .stream()
+                .map(Enemy::fromDTO)
+                .filter((e) -> e.getActions().stream().anyMatch((a) -> a.getKey().getIdAction() == id))
+                .toList();
+        // classes
+        List<Clazz> classes = clazzRepo.findAll()
+                .stream()
+                .map(Clazz::fromDTO)
+                .filter((c) -> c.getActions().stream().anyMatch((a) -> a.getKey().getIdAction() == id))
+                .toList();
+        // races
+        List<Race> races = raceRepo.findAll()
+                .stream()
+                .map(Race::fromDTO)
+                .filter((r) -> r.getActions().stream().anyMatch((a) -> a.getKey().getIdAction() == id))
+                .toList();
+
+        // check if there is exactly one item in one of the lists and zero in the others
+        Source source = null;
+        String color = null;
+        String icon = null;
+        if (classes.size() == 1 && enemies.isEmpty() && races.isEmpty()) {
+            source = Source.CLASS;
+
+            color = switch (classes.get(0).getTitle()) {
+                case "Knight" -> "#D60D00";
+                case "Mage" -> "#8B00DB";
+                case "Rogue" -> "#00478A";
+                case "Bard" -> "#00B3B0";
+                default -> "#000000";
+            };
+
+            icon = classes.get(0).getUrl();
+        } else if (races.size() == 1 && enemies.isEmpty() && classes.isEmpty()) {
+            source = Source.RACE;
+
+            color = switch (races.get(0).getTitle()) {
+                case "Human" -> "#BD8100";
+                case "Elf" -> "#1CBD00";
+                case "Dwarf" -> "#C7BD00";
+                case "Demonkin" -> "#7D0041";
+                default -> "#000000";
+            };
+
+            icon = races.get(0).getUrl();
+        } else if (!enemies.isEmpty() && classes.isEmpty() && races.isEmpty()) {
+            source = Source.ENEMY;
+
+            color = "#000000";
+
+            icon = "https://api.tts-game.fun/enemy/nothing.png";
+        } else {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Action with id '%d' does not have a conclusive source!", id);
+        }
+
+        log.info(entity.toString());
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = "";
+        try {
+            json = ow.writeValueAsString(entity);
+        } catch (Exception e) {
+            log.error("Error while converting to json", e);
+            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+        }
+
+        LinkedHashMap<String, Object> map = new Gson().fromJson(json, LinkedHashMap.class);
+        map.put("source", source.toString());
+        map.put("color", color);
+        map.put("icon", icon);
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
 
     @Autowired
     public void setRepository(ActionRepo repository) {

@@ -29,6 +29,7 @@ public class ImageController {
             @RequestParam(required = false) Integer width,
             @RequestParam(required = false) Integer height,
             @RequestParam(required = false) Integer size,
+            @RequestParam(required = false, defaultValue = "0") Integer radius,
             @RequestParam(required = false) boolean token) throws IOException {
 
         String localpath = type + "/" + ((token) ? "tokens/" : "") + file;
@@ -53,9 +54,9 @@ public class ImageController {
             Resource resource = resourceLoader.getResource("classpath:/images/unknown.png");
 
             if (width != null && height != null) {
-                return ImageScaler.scaleImage(resource, width, height).getInputStream().readAllBytes();
+                return ImageScaler.scaleImage(resource, width, height, radius).getInputStream().readAllBytes();
             } else if (size != null) {
-                return ImageScaler.scaleImage(resource, size).getInputStream().readAllBytes();
+                return ImageScaler.scaleImage(resource, size, size, radius).getInputStream().readAllBytes();
             }
 
             return resource.getInputStream().readAllBytes();
@@ -63,9 +64,9 @@ public class ImageController {
         Resource resource = resourceLoader.getResource("file:" + path);
 
         if (width != null && height != null) {
-            return ImageScaler.scaleImage(resource, width, height).getInputStream().readAllBytes();
+            return ImageScaler.scaleImage(resource, width, height, radius).getInputStream().readAllBytes();
         } else if (size != null) {
-            return ImageScaler.scaleImage(resource, size).getInputStream().readAllBytes();
+            return ImageScaler.scaleImage(resource, size, size, radius).getInputStream().readAllBytes();
         }
 
         return resource.getInputStream().readAllBytes();
