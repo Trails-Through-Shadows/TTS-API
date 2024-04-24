@@ -337,7 +337,7 @@ public class ActionController {
 
             color = "#000000";
 
-            icon = "https://api.tts-game.fun/enemy/nothing.png";
+            icon = "https://api.tts-game.fun/images/enemy/nothing.png";
         } else {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Action with id '%d' does not have a conclusive source!", id);
         }
