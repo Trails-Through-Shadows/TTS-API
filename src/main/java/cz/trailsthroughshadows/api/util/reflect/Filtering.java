@@ -50,8 +50,15 @@ public class Filtering {
                 return Ref.compare(fieldValue, filterValueMin, "gte") && Ref.compare(fieldValue, filterValueMax, "lte");
             }
 
+            // If matching string, ignore case
+            if (fieldValue instanceof String) {
+                fieldValue = fieldValue.toString().toLowerCase();
+                filterValue = filterValue.toLowerCase();
+            }
+
             return switch (filterOperator) {
-                case "eq" -> fieldValue.equals(Ref.parseValue(field, filterValue));
+                case "of" -> fieldValue.toString().contains(filterValue);
+                case "is", "eq" -> fieldValue.equals(Ref.parseValue(field, filterValue));
                 case "gt", "gte", "lt", "lte" ->
                         Ref.compare(fieldValue, Ref.parseValue(field, filterValue), filterOperator);
                 case "has" -> fieldValue.toString().contains(filterValue);
