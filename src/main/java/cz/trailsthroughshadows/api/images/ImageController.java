@@ -73,4 +73,6 @@ public class ImageController {
 
     }
 
+//    @GetMapping("/{type}/{file}")
+
 }

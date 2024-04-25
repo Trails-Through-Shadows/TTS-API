@@ -306,11 +306,13 @@ public class ActionController {
 
     @GetMapping("/actions/{id}/card")
     public ResponseEntity<LinkedHashMap<String, Object>> getCard(@PathVariable int id) {
-        ActionDTO entity = actionRepo
+        ActionDTO entitydto = actionRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
 
-        Initialization.hibernateInitializeAll(entity);
+        Initialization.hibernateInitializeAll(entitydto);
+
+        Action entity = Action.fromDTO(entitydto);
 
         enum Source {
             ENEMY,
