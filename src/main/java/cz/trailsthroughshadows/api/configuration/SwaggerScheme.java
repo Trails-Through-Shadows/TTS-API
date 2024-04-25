@@ -27,7 +27,7 @@ public class SwaggerScheme {
                 )
                 .info(new Info().title("TTS API")
                         .description("Our great TTS API!")
-                        .version("1.0").contact(new Contact().name("Administrator").email( "admin@tts-game.fun").url("admin@tts-game.fun"))
+                        .version("1.0").contact(new Contact().name("Administrator").email("admin@tts-game.fun").url("admin@tts-game.fun"))
                 )
                 .addSecurityItem(new SecurityRequirement().addList("BasicAuth", Arrays.asList("read", "write")));
     }

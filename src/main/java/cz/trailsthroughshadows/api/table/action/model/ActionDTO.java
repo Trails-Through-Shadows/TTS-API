@@ -8,10 +8,10 @@ import cz.trailsthroughshadows.algorithm.validation.text.Description;
 import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
-import cz.trailsthroughshadows.api.table.action.features.attack.Attack;
-import cz.trailsthroughshadows.api.table.action.features.movement.Movement;
+import cz.trailsthroughshadows.api.table.action.features.attack.AttackDTO;
+import cz.trailsthroughshadows.api.table.action.features.movement.MovementDTO;
 import cz.trailsthroughshadows.api.table.action.features.restorecards.RestoreCards;
-import cz.trailsthroughshadows.api.table.action.features.skill.Skill;
+import cz.trailsthroughshadows.api.table.action.features.skill.SkillDTO;
 import cz.trailsthroughshadows.api.table.action.features.summon.model.SummonAction;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -47,15 +47,15 @@ public class ActionDTO extends Validable {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "movement")
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private Movement movement;
+    private MovementDTO movement;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "skill")
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private Skill skill;
+    private SkillDTO skill;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "attack")
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private Attack attack;
+    private AttackDTO attack;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "restoreCards")
     @JsonSerialize(using = LazyFieldsSerializer.class)

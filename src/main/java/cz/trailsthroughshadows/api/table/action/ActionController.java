@@ -16,9 +16,9 @@ import cz.trailsthroughshadows.api.table.background.race.RaceRepo;
 import cz.trailsthroughshadows.api.table.background.race.model.Race;
 import cz.trailsthroughshadows.api.table.effect.EffectRepo;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
-import cz.trailsthroughshadows.api.table.effect.relation.foraction.AttackEffect;
-import cz.trailsthroughshadows.api.table.effect.relation.foraction.MovementEffect;
-import cz.trailsthroughshadows.api.table.effect.relation.foraction.SkillEffect;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.AttackEffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.MovementEffectDTO;
+import cz.trailsthroughshadows.api.table.effect.relation.foraction.SkillEffectDTO;
 import cz.trailsthroughshadows.api.table.enemy.EnemyRepo;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -32,7 +32,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +48,12 @@ public class ActionController {
     private ValidationService validation;
     private ActionRepo actionRepo;
     private EffectRepo effectRepo;
-
+    @Autowired
+    private EnemyRepo enemyRepo;
+    @Autowired
+    private ClazzRepo clazzRepo;
+    @Autowired
+    private RaceRepo raceRepo;
 
     @GetMapping("/actions")
     //@Cacheable(value = "action")
@@ -159,7 +163,6 @@ public class ActionController {
         return effect;
     }
 
-
     /**
      * should update or create everything in action
      *
@@ -178,23 +181,23 @@ public class ActionController {
         entityToUpdate.setDiscard(action.getDiscard());
         entityToUpdate.setLevelReq(action.getLevelReq());
 
-        List<AttackEffect> attackEffects = new ArrayList<>();
+        List<AttackEffectDTO> attackEffects = new ArrayList<>();
         if (action.getAttack() != null && action.getAttack().getEffects() != null) {
             attackEffects.addAll(action.getAttack().getEffects());
             action.getAttack().getEffects().clear();
         }
         entityToUpdate.setAttack(action.getAttack());
 
-        List<MovementEffect> movementEffects = new ArrayList<>();
+        List<MovementEffectDTO> movementEffects = new ArrayList<>();
         if (action.getMovement() != null && action.getMovement().getEffects() != null) {
             movementEffects.addAll(action.getMovement().getEffects());
             action.getMovement().getEffects().clear();
         }
         entityToUpdate.setMovement(action.getMovement());
 
-        List<SkillEffect> skillEffects = new ArrayList<>();
+        List<SkillEffectDTO> skillEffectDTOS = new ArrayList<>();
         if (action.getSkill() != null && action.getSkill().getEffects() != null) {
-            skillEffects.addAll(action.getSkill().getEffects());
+            skillEffectDTOS.addAll(action.getSkill().getEffects());
             action.getSkill().getEffects().clear();
         }
         entityToUpdate.setSkill(action.getSkill());
@@ -208,9 +211,9 @@ public class ActionController {
 
         // Movement effects
         if (entityToUpdate.getMovement() != null && entityToUpdate.getMovement().getEffects() != null) {
-            for (MovementEffect movementEffect : movementEffects) {
+            for (MovementEffectDTO movementEffect : movementEffects) {
                 EffectDTO effect = processEffects(movementEffect.getEffect());
-                movementEffect.setKey(new MovementEffect.MovementEffectId(entityToUpdate.getMovement().getId(), effect.getId()));
+                movementEffect.setKey(new MovementEffectDTO.MovementEffectId(entityToUpdate.getMovement().getId(), effect.getId()));
                 movementEffect.setEffect(effect);
             }
 
@@ -219,22 +222,22 @@ public class ActionController {
 
         // Skill effects
         if (entityToUpdate.getSkill() != null && entityToUpdate.getSkill().getEffects() != null) {
-            for (SkillEffect skillEffect : skillEffects) {
-                EffectDTO effect = processEffects(skillEffect.getEffect());
+            for (SkillEffectDTO skillEffectDTO : skillEffectDTOS) {
+                EffectDTO effect = processEffects(skillEffectDTO.getEffect());
 
-                skillEffect.setKey(new SkillEffect.SkillEffectId(entityToUpdate.getSkill().getId(), effect.getId()));
-                skillEffect.setEffect(effect);
+                skillEffectDTO.setKey(new SkillEffectDTO.SkillEffectId(entityToUpdate.getSkill().getId(), effect.getId()));
+                skillEffectDTO.setEffect(effect);
             }
 
-            entityToUpdate.getSkill().getEffects().addAll(skillEffects);
+            entityToUpdate.getSkill().getEffects().addAll(skillEffectDTOS);
         }
 
         // Attack effects
         if (entityToUpdate.getAttack() != null && entityToUpdate.getAttack().getEffects() != null) {
-            for (AttackEffect attackEffect : attackEffects) {
+            for (AttackEffectDTO attackEffect : attackEffects) {
                 EffectDTO effect = processEffects(attackEffect.getEffect());
 
-                attackEffect.setKey(new AttackEffect.AttackEffectId(entityToUpdate.getAttack().getId(), effect.getId()));
+                attackEffect.setKey(new AttackEffectDTO.AttackEffectId(entityToUpdate.getAttack().getId(), effect.getId()));
                 attackEffect.setEffect(effect);
             }
 
@@ -275,7 +278,6 @@ public class ActionController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' updated!", id), HttpStatus.OK);
     }
 
-
     @DeleteMapping("/actions/{id}")
     public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
         ActionDTO entity = actionRepo
@@ -301,13 +303,6 @@ public class ActionController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Actions %s created!", String.join(", ", ids)),
                 HttpStatus.OK);
     }
-
-    @Autowired
-    private EnemyRepo enemyRepo;
-    @Autowired
-    private ClazzRepo clazzRepo;
-    @Autowired
-    private RaceRepo raceRepo;
 
     @GetMapping("/actions/{id}/card")
     public ResponseEntity<LinkedHashMap<String, Object>> getCard(@PathVariable int id) {
