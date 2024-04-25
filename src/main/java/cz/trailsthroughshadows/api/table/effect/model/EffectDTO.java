@@ -125,8 +125,8 @@ public class EffectDTO extends Validable implements Serializable {
         CONFUSION("Confusion", false, true, false),
         CONFUSION_RESISTANCE("Confusion", false, true, true),
         PROTECTION("Protection", true, true, false),
-        VULNERABILITY("Vulnerability", true, true, false),
-        VULNERABILITY_RESISTANCE("Vulnerability", true, true, true);
+        WEAKNESS("Weakness", true, true, false),
+        WEAKNESS_RESISTANCE("Weakness", true, true, true);
 
         public final String displayName;
         public final boolean hasStrength, hasDuration, isResistance;

@@ -283,6 +283,7 @@ public class ActionController {
             ENEMY,
             CLASS,
             RACE,
+            UNKNOWN,
         }
 
         // enemies
@@ -334,12 +335,10 @@ public class ActionController {
             icon = races.get(0).getUrl();
         } else if (!enemies.isEmpty() && classes.isEmpty() && races.isEmpty()) {
             source = Source.ENEMY;
-
             color = "#000000";
-
-            icon = "https://api.tts-game.fun/images/enemy/nothing.png";
         } else {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Action with id '%d' does not have a conclusive source!", id);
+            source = Source.UNKNOWN;
+            color = "#000000";
         }
 
         log.info(entity.toString());
