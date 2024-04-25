@@ -84,7 +84,7 @@ public class ImageController {
             @PathVariable String file
     ) throws IOException {
 
-        String localpath = type + "/" + file;
+        String localpath = "svgs/" + type + "/" + file;
         var physicalPath = config.getPath();
         String currDir = System.getProperty("user.dir");
         String pathstr = currDir + "/" + physicalPath + "/" + localpath;
