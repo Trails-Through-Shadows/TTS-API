@@ -24,8 +24,15 @@ import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,11 +43,13 @@ import java.util.List;
 
 @Slf4j
 @RestController(value = "Action")
+@RestControllerAdvice
 public class ActionController {
 
     private ValidationService validation;
     private ActionRepo actionRepo;
     private EffectRepo effectRepo;
+
 
     @GetMapping("/actions")
     //@Cacheable(value = "action")
@@ -75,11 +84,40 @@ public class ActionController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Action::fromDTO).toList()), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Get a action by its id",
+            description = """
+                    # Get a action by its id
+                    By default it loads all fields and returns them
+
+                    Action contains attack, movement, skill, restoreCards, summonActions and some of them contains effects
+
+                    - **attack** - contains effects
+                    - **movement** - contains effects
+                    - **skill** - contains effects
+                    - **restoreCards** - doesnt contains effects
+                    - **summonActions** - contains effects
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the action",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Action.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Action not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @GetMapping("/actions/{id}")
     //@Cacheable(value = "action", key = "#id")
     public ResponseEntity<Action> findById(
+            @Parameter(description = "Id of the action to be obtained.\n\n Cannot be empty.", required = true)
             @PathVariable int id,
+            @Parameter(description = "Case sensitive fields which you want to be loaded", required = false)
             @RequestParam(required = false, defaultValue = "") List<String> include,
+            @Parameter(description = "- **false** - all fields are loaded \n - **true** - loaded only things that are in include", required = false)
             @RequestParam(required = false, defaultValue = "false") boolean lazy
     ) {
         ActionDTO entity = actionRepo
