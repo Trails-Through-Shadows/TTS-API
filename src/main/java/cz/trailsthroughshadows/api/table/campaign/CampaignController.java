@@ -6,7 +6,10 @@ import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.campaign.model.Campaign;
 import cz.trailsthroughshadows.api.table.campaign.model.CampaignDTO;
+import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO;
+import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
+import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,16 +34,27 @@ public class CampaignController {
             @RequestParam(required = false, defaultValue = "") List<String> include,
             @RequestParam(required = false, defaultValue = "true") boolean lazy
     ) {
-        Collection<CampaignDTO> entities = campaignRepo.findAll();
+        // TODO: Re-Implement filtering, sorting and pagination @rcMarty
+        // Issue: https://github.com/Trails-Through-Shadows/TTS-API/issues/31
+
+        List<CampaignDTO> entries = campaignRepo.findAll().stream()
+                .filter((entry) -> Filtering.match(entry, List.of(filter.split(","))))
+                .sorted((a, b) -> Sorting.compareTo(a, b, List.of(sort.split(","))))
+                .toList();
+
+        List<CampaignDTO> entriesPage = entries.stream()
+                .skip((long) Math.max(page, 0) * limit)
+                .limit(limit)
+                .toList();
 
         if (lazy && !include.isEmpty()) {
-            entities.forEach(e -> Initialization.hibernateInitializeAll(e, include));
+            entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
         } else if (!lazy) {
-            entities.forEach(Initialization::hibernateInitializeAll);
+            entriesPage.forEach(Initialization::hibernateInitializeAll);
         }
 
-        Pagination pagination = new Pagination(entities.size(), false, entities.size(), page, limit);
-        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entities), HttpStatus.OK);
+        Pagination pagination = new Pagination(entriesPage.size(), false, entriesPage.size(), page, limit);
+        return new ResponseEntity<>(RestPaginatedResult.of(pagination, entries), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
