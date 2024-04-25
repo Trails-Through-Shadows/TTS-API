@@ -1,42 +1,28 @@
 package cz.trailsthroughshadows.api.table.effect.relation.foraction;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.trailsthroughshadows.api.table.effect.model.Effect;
+import lombok.Getter;
+import org.hibernate.Hibernate;
+import org.modelmapper.ModelMapper;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
-import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
+@Getter
+public class SkillEffect extends SkillEffectDTO {
 
-@Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "SkillEffect")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class SkillEffect {
+    @JsonProperty("effect")
+    private Object mappedEffect;
 
-    @EmbeddedId
-    private SkillEffectId key;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonSerialize(using = LazyFieldsSerializer.class)
-    @JoinColumn(name = "idEffect", insertable = false, updatable = false)
-    private EffectDTO effect;
-
-    @Data
-    @Embeddable
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class SkillEffectId implements Serializable {
-        @Column(nullable = false)
-        private Integer idSkill;
-
-        @Column(nullable = false)
-        private Integer idEffect;
+    public static SkillEffect fromDTO(SkillEffectDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        ModelMapper modelMapper = new ModelMapper();
+        SkillEffect effect = modelMapper.map(dto, SkillEffect.class);
+        if (Hibernate.isInitialized(dto.getEffect())) {
+            effect.mappedEffect = Effect.fromDTO(dto.getEffect());
+        } else {
+            effect.mappedEffect = dto.getEffect();
+        }
+        return effect;
     }
-
 }

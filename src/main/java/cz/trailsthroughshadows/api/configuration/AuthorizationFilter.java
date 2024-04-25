@@ -24,10 +24,9 @@ import java.util.List;
 @Order(Ordered.HIGHEST_PRECEDENCE + 2)
 public class AuthorizationFilter extends OncePerRequestFilter {
 
+    private final List<String> ignoredPaths = List.of("/session/login", "/swagger-ui", "/api-docs", "/images");
     @Autowired
     private SessionHandler sessionHandler;
-
-    private final List<String> ignoredPaths = List.of("/session/login", "/swagger-ui", "/api-docs", "/images");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

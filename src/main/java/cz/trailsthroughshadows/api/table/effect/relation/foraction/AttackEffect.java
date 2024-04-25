@@ -1,41 +1,24 @@
 package cz.trailsthroughshadows.api.table.effect.relation.foraction;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.trailsthroughshadows.api.table.effect.model.Effect;
+import lombok.Getter;
+import org.modelmapper.ModelMapper;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
-import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+@Getter
+public class AttackEffect extends AttackEffectDTO {
 
-import java.io.Serializable;
+    @JsonProperty("effect")
+    private Effect mappedEffect;
 
-@Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "AttackEffect")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class AttackEffect implements Serializable {
-    @EmbeddedId
-    private AttackEffectId key;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "idEffect", insertable = false, updatable = false)
-    @JsonSerialize(using = LazyFieldsSerializer.class)
-    private EffectDTO effect;
-
-    @Data
-    @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class AttackEffectId implements Serializable {
-        @Column(nullable = false)
-        private Integer idAttack;
-
-        @Column(nullable = false)
-        private Integer idEffect;
+    public static AttackEffect fromDTO(AttackEffectDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        ModelMapper modelMapper = new ModelMapper();
+        AttackEffect effect = modelMapper.map(dto, AttackEffect.class);
+        if (dto.getEffect() != null) {
+            effect.mappedEffect = Effect.fromDTO(dto.getEffect());
+        }
+        return effect;
     }
-
 }

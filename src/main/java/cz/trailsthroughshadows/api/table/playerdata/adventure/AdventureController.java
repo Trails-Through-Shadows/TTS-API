@@ -103,7 +103,7 @@ public class AdventureController {
             HttpServletRequest request
     ) {
         Session session = sessionHandler.getSessionFromRequest(request);
-        return new ResponseEntity<>(adventureService.add(adventure, idLicense,session), HttpStatus.OK);
+        return new ResponseEntity<>(adventureService.add(adventure, idLicense, session), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

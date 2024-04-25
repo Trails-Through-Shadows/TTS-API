@@ -1,45 +1,24 @@
 package cz.trailsthroughshadows.api.table.effect.relation.foraction;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.trailsthroughshadows.api.table.effect.model.Effect;
+import lombok.Getter;
+import org.modelmapper.ModelMapper;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
-import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+@Getter
+public class MovementEffect extends MovementEffectDTO {
 
-import java.io.Serializable;
+    @JsonProperty("effect")
+    private Effect mappedEffect;
 
-@Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "MovementEffect")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class MovementEffect {
-
-    @EmbeddedId
-    private MovementEffectId key;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idEffect", insertable = false, updatable = false)
-    @JsonSerialize(using = LazyFieldsSerializer.class)
-    private EffectDTO effect;
-
-    @Data
-    @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MovementEffectId implements Serializable {
-
-        @Column
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Integer idMovement;
-
-        @Column(nullable = false)
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Integer idEffect;
-
+    public static MovementEffect fromDTO(MovementEffectDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        ModelMapper modelMapper = new ModelMapper();
+        MovementEffect effect = modelMapper.map(dto, MovementEffect.class);
+        if (dto.getEffect() != null) {
+            effect.mappedEffect = Effect.fromDTO(dto.getEffect());
+        }
+        return effect;
     }
 }
