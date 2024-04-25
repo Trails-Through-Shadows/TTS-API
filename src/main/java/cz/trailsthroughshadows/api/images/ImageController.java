@@ -96,6 +96,7 @@ public class ImageController {
             log.warn("File not found: {}", pathstr);
             Resource res = resourceLoader.getResource("classpath:/images/linux.svg");
             Path linux = new File(res.getURI()).toPath();
+            log.warn("Serving file: {}", linux.toString());
             FileSystemResource resource = new FileSystemResource(linux);
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(Files.probeContentType(linux)))
