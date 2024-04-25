@@ -47,9 +47,8 @@ public class EncounterEffect {
             case FIRE -> EffectDTO.EffectType.FIRE_RESISTANCE;
             case BLEED -> EffectDTO.EffectType.BLEED_RESISTANCE;
             case STUN -> EffectDTO.EffectType.STUN_RESISTANCE;
-            case CONFUSION -> EffectDTO.EffectType.CONFUSION_RESISTANCE;
             case ENFEEBLE -> EffectDTO.EffectType.ENFEEBLE_RESISTANCE;
-            case SLOW -> EffectDTO.EffectType.SLOW_RESISTANCE;
+            case WEAKNESS -> EffectDTO.EffectType.WEAKNESS_RESISTANCE;
             default -> null;
         };
     }
