@@ -118,12 +118,6 @@ public class EffectDTO extends Validable implements Serializable {
         EMPOWER("Empower", true, true, false),
         ENFEEBLE("Enfeeble", true, true, false),
         ENFEEBLE_RESISTANCE("Enfeeble", true, true, true),
-        SPEED("Speed", true, true, false),
-        SLOW("Slow", true, true, false),
-        SLOW_RESISTANCE("Slow", true, true, true),
-        GUIDANCE("Guidance", false, true, false),
-        CONFUSION("Confusion", false, true, false),
-        CONFUSION_RESISTANCE("Confusion", false, true, true),
         PROTECTION("Protection", true, true, false),
         WEAKNESS("Weakness", true, true, false),
         WEAKNESS_RESISTANCE("Weakness", true, true, true);
