@@ -3,13 +3,17 @@ package cz.trailsthroughshadows.api.images;
 import cz.trailsthroughshadows.api.configuration.ImageLoaderConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Slf4j
 @RestController
@@ -21,6 +25,7 @@ public class ImageController {
 
     @Autowired
     private ResourceLoader resourceLoader;
+
 
     @GetMapping("/{type}/{file}")
     public @ResponseBody byte[] getImage(
@@ -73,6 +78,35 @@ public class ImageController {
 
     }
 
-//    @GetMapping("/{type}/{file}")
+    @GetMapping(value = "/svg/{type}/{file:.+\\.svg}")
+    public ResponseEntity<Resource> getSwg(
+            @PathVariable String type,
+            @PathVariable String file
+    ) throws IOException {
+
+        String localpath = type + "/" + file;
+        var physicalPath = config.getPath();
+        String currDir = System.getProperty("user.dir");
+        String pathstr = currDir + "/" + physicalPath + "/" + localpath;
+
+        Path path = new File(pathstr).toPath();
+        log.info("Serving file: {}", pathstr);
+        //check if file exists
+        if (!Files.exists(path)) {
+            log.warn("File not found: {}", pathstr);
+            Resource res = resourceLoader.getResource("classpath:/images/linux.svg");
+            Path linux = new File(res.getURI()).toPath();
+            FileSystemResource resource = new FileSystemResource(linux);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(Files.probeContentType(linux)))
+                    .body(resource);
+
+        }
+
+        FileSystemResource resource = new FileSystemResource(path);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(Files.probeContentType(path)))
+                .body(resource);
+    }
 
 }
