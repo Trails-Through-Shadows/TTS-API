@@ -46,6 +46,15 @@ public class EncounterController {
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id)), HttpStatus.OK);
     }
 
+    @GetMapping("/{idAdventure}")
+    public ResponseEntity<List<Encounter>> getActiveEncounters(
+            @PathVariable Integer idAdventure,
+            HttpServletRequest request
+    ) {
+        String token = sessionHandler.getTokenFromRequest(request);
+        return new ResponseEntity<>(encounterHandler.getAllEncounters(token).stream().filter(e -> e.getAdventure().getId().equals(idAdventure)).toList(), HttpStatus.OK);
+    }
+
     @GetMapping("")
     public ResponseEntity<RestResponse> getAllEncounters(
             HttpServletRequest request
