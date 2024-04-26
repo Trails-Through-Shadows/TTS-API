@@ -355,7 +355,7 @@ public class ActionController {
                 default -> "#000000";
             };
 
-            icon = classes.get(0).getUrl();
+            icon = classes.get(0).getUrl().replace(".png", "_nobg.png");
         } else if (races.size() == 1 && enemies.isEmpty() && classes.isEmpty()) {
             source = Source.RACE;
 
@@ -367,7 +367,7 @@ public class ActionController {
                 default -> "#000000";
             };
 
-            icon = races.get(0).getUrl();
+            icon = races.get(0).getUrl().replace(".png", "_nobg.png");
         } else if (!enemies.isEmpty() && classes.isEmpty() && races.isEmpty()) {
             source = Source.ENEMY;
             color = "#000000";
