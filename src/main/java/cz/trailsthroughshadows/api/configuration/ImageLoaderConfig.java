@@ -12,4 +12,14 @@ public class ImageLoaderConfig {
 
     private final String url;
 
+    private String address;
+    private String port;
+
+    public String getUrl() {
+        if (address == null || port == null) {
+            return url;
+        }
+        return String.format("%s:%s", address, port);
+    }
+
 }

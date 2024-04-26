@@ -13,6 +13,6 @@ public class Effect extends EffectDTO {
     }
 
     public String getUrl() {
-        return ImageLoader.getPath("f-" + getType().toString().toLowerCase());
+        return ImageLoader.getPath("f-" + getType().toString().toLowerCase(), "svg");
     }
 }
