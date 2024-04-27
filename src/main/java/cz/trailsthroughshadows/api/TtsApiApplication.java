@@ -47,8 +47,8 @@ public class TtsApiApplication {
         log.info("Docs running on {}:{}/swagger-ui/index.html", address, port);
         log.info("API running on {}:{}", address, port);
 
-        imageLoaderConfig.setAddress(address);
-        imageLoaderConfig.setPort(port.toString());
+//        imageLoaderConfig.setAddress(address);
+//        imageLoaderConfig.setPort(port.toString());
     }
 
 //    @Autowired
