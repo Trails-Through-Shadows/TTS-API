@@ -25,6 +25,7 @@ public class DebugController {
 
 
         int start = Math.max(0, resource.getInputStream().available() - characters);
+        log.debug("available: {}", resource.getInputStream().available());
         try (InputStream in = resource.getInputStream()) {
             in.skipNBytes(start);
             return new String(in.readNBytes(characters));

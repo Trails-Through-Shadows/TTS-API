@@ -13,6 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
 import java.awt.*;
+import java.net.InetAddress;
 
 @Slf4j
 @EnableCaching
@@ -32,7 +33,15 @@ public class TtsApiApplication {
 
         ConfigurableApplicationContext cx = SpringApplication.run(Application.class, args);
 
-        String address = cx.getEnvironment().getProperty("server.address", "localhost");
+        //String address = cx.getEnvironment().getProperty("server.address", "localhost");
+
+        String address = "localhost";
+        try {
+            address = InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception e) {
+            log.error("Error getting host address", e);
+        }
+
         Integer port = cx.getEnvironment().getProperty("server.port", Integer.class, 8080);
 
         if (address.equals("0.0.0.0")) {
