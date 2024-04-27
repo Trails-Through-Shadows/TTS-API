@@ -33,15 +33,7 @@ public class TtsApiApplication {
 
         ConfigurableApplicationContext cx = SpringApplication.run(Application.class, args);
 
-        //String address = cx.getEnvironment().getProperty("server.address", "localhost");
-
-        String address = "localhost";
-        try {
-            address = InetAddress.getLocalHost().getHostAddress();
-        } catch (Exception e) {
-            log.error("Error getting host address", e);
-        }
-
+        String address = cx.getEnvironment().getProperty("server.address", "localhost");
         Integer port = cx.getEnvironment().getProperty("server.port", Integer.class, 8080);
 
         if (address.equals("0.0.0.0")) {
