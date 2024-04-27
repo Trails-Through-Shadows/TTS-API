@@ -4,7 +4,6 @@ import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 

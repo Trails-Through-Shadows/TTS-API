@@ -18,7 +18,7 @@ public class Obstacle extends ObstacleDTO {
         if (dto == null) {
             return null;
         }
-        
+
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Obstacle.class);
     }

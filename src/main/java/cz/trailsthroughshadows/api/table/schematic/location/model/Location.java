@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
+import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.HexEnemy;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.HexObstacle;
@@ -44,17 +45,20 @@ public class Location extends LocationDTO {
         log.debug("enemies are initialized: {}", Hibernate.isInitialized(dto.getEnemies()));
 
         if (Hibernate.isInitialized(dto.getEnemies())) {
-            loc.mappedHexEnemies = dto.getEnemies().stream()
-                    .map(HexEnemy::fromDTO)
-                    .peek(hexenemy -> dto.getMappedParts().stream()
-                            .map(part -> Part.getMappedEnemiesFromDTO(part, dto.getEnemies()))
-                            .flatMap(List::stream)
-                            .filter(enemy -> Objects.equals(((Enemy) hexenemy.getRemappedEnemy()).getId(), enemy.getId()))
-                            .findFirst()
-                            .ifPresent(hexenemy::setRemappedEnemy)
-                    )
-                    .map(e -> (Object) e)
-                    .toList();
+            loc.mappedHexEnemies = dto.getEnemies().stream().map(HexEnemy::fromDTO).map(e -> (Object) e).toList();
+            loc.getMappedHexEnemies().forEach(hexenemy -> {
+                        if (((HexEnemy) hexenemy).getRemappedEnemy() instanceof Enemy) {
+                            dto.getMappedParts().stream()
+                                    .map(part -> Part.getMappedEnemiesFromDTO(part, dto.getEnemies()))
+                                    .flatMap(List::stream)
+                                    .filter(enemy -> Objects.equals((((Enemy) ((HexEnemy) hexenemy).getRemappedEnemy())).getId(), enemy.getId()))
+                                    .findFirst()
+                                    .ifPresent(((HexEnemy) hexenemy)::setRemappedEnemy);
+                        }
+
+                    }
+            );
+
 
         } else {
             loc.mappedHexEnemies = dto.getEnemies().stream().map(e -> (Object) e).toList();
@@ -63,17 +67,18 @@ public class Location extends LocationDTO {
         log.debug("obstacles are initialized: {}", Hibernate.isInitialized(dto.getObstacles()));
 
         if (Hibernate.isInitialized(dto.getObstacles())) {
-            loc.mappedHexObstacles = dto.getObstacles().stream()
-                    .map(HexObstacle::fromDTO)
-                    .peek(hexobstacle -> dto.getMappedParts().stream()
-                            .map(part -> Part.getMappedObstaclesFromDTO(part, dto.getObstacles()))
-                            .flatMap(List::stream)
-                            .filter(obstacle -> Objects.equals(((Obstacle) hexobstacle.getRemappedObstacle()).getId(), obstacle.getId()))
-                            .findFirst()
-                            .ifPresent(hexobstacle::setRemappedObstacle)
-                    )
-                    .map(e -> (Object) e)
-                    .toList();
+            loc.mappedHexObstacles = dto.getObstacles().stream().map(HexObstacle::fromDTO).map(e -> (Object) e).toList();
+            loc.getMappedHexObstacles().forEach(hexobstacle -> {
+                        if (((HexObstacle) hexobstacle).getRemappedObstacle() instanceof Obstacle) {
+                            dto.getMappedParts().stream()
+                                    .map(part -> Part.getMappedObstaclesFromDTO(part, dto.getObstacles()))
+                                    .flatMap(List::stream)
+                                    .filter(obstacle -> Objects.equals((((Obstacle) ((HexObstacle) hexobstacle).getRemappedObstacle())).getId(), obstacle.getId()))
+                                    .findFirst()
+                                    .ifPresent(((HexObstacle) hexobstacle)::setRemappedObstacle);
+                        }
+                    }
+            );
 
         } else {
             loc.mappedHexObstacles = dto.getObstacles().stream().map(e -> (Object) e).toList();

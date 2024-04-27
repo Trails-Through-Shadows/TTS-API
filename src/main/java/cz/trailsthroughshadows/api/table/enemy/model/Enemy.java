@@ -25,7 +25,12 @@ public class Enemy extends EnemyDTO {
     private HexDTO startingHex;
     private String url;
 
+    private List<Object> remappedActions;
+
     public static Enemy fromDTO(EnemyDTO dto) {
+        if (dto == null) {
+            return null;
+        }
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Enemy.class);
     }

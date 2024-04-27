@@ -58,16 +58,16 @@ public class LocationController {
 
         if (lazy && !include.isEmpty()) {
             entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
-            if (include.contains("stories")) {
-                List<Location> loc = entriesPage.stream().map(Location::fromDTO).toList();
-                //loc.forEach(l -> l.findStories(campaignRepo));
-                return new ResponseEntity<>(RestPaginatedResult.of(pagination, loc), HttpStatus.OK);
-            }
+//            if (include.contains("stories")) {
+//                List<Location> loc = entriesPage.stream().map(Location::fromDTO).toList();
+//                //loc.forEach(l -> l.findStories(campaignRepo));
+//                return new ResponseEntity<>(RestPaginatedResult.of(pagination, loc), HttpStatus.OK);
+//            }
         } else if (!lazy) {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
-            List<Location> loc = entriesPage.stream().map(Location::fromDTO).toList();
-            //loc.forEach(l -> l.findStories(campaignRepo));
-            return new ResponseEntity<>(RestPaginatedResult.of(pagination, loc), HttpStatus.OK);
+//            List<Location> loc = entriesPage.stream().map(Location::fromDTO).toList();
+//            //loc.forEach(l -> l.findStories(campaignRepo));
+//            return new ResponseEntity<>(RestPaginatedResult.of(pagination, loc), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Location::fromDTO).toList()), HttpStatus.OK);
