@@ -93,6 +93,12 @@ public class Part extends PartDTO {
         return part.getEnemies();
     }
 
+    public static List<Obstacle> getMappedObstaclesFromDTO(PartDTO dto, List<HexObstacleDTO> obstacles) {
+        Part part = fromDTO(dto);
+        part.setFilterObstacles(obstacles);
+        return part.getObstacles();
+    }
+
     /**
      * Create a Part from a DTO and add the enemies, obstacles and doors to it based
      * on Part ID

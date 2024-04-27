@@ -17,7 +17,6 @@ public class HexObstacleDTO {
 
     @EmbeddedId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private HexObstacleId key;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,7 +24,7 @@ public class HexObstacleDTO {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private ObstacleDTO obstacle;
 
-    @Getter
+    @Data
     @Embeddable
     public static class HexObstacleId implements Serializable {
 

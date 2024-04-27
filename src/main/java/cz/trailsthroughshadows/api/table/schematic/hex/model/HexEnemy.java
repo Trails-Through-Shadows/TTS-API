@@ -15,16 +15,20 @@ public class HexEnemy extends HexEnemyDTO {
     private Object remappedEnemy;
 
     public static HexEnemy fromDTO(HexEnemyDTO dto) {
+
+        if (dto == null) {
+            return null;
+        }
+
         ModelMapper modelMapper = new ModelMapper();
         HexEnemy hexEnemy = modelMapper.map(dto, HexEnemy.class);
 
         if (Hibernate.isInitialized(dto.getEnemy())) {
-            hexEnemy.remappedEnemy = modelMapper.map(dto.getEnemy(), Enemy.class);
+            hexEnemy.remappedEnemy = Enemy.fromDTO(dto.getEnemy());
         } else {
             hexEnemy.remappedEnemy = dto.getEnemy();
         }
 
-        hexEnemy.remappedEnemy = modelMapper.map(dto.getEnemy(), Enemy.class);
         return hexEnemy;
     }
 }

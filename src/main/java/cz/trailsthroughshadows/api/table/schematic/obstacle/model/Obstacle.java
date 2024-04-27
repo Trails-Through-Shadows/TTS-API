@@ -15,6 +15,10 @@ public class Obstacle extends ObstacleDTO {
     private String url;
 
     public static Obstacle fromDTO(ObstacleDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Obstacle.class);
     }
