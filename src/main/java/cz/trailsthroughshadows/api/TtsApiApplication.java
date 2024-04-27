@@ -3,7 +3,6 @@ package cz.trailsthroughshadows.api;
 import cz.trailsthroughshadows.algorithm.test.Application;
 import cz.trailsthroughshadows.api.configuration.ImageLoaderConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -11,9 +10,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
-
-import java.awt.*;
-import java.net.InetAddress;
 
 @Slf4j
 @EnableCaching

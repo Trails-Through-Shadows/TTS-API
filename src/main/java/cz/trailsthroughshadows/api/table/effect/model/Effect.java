@@ -8,6 +8,10 @@ import org.modelmapper.ModelMapper;
 public class Effect extends EffectDTO {
 
     public static Effect fromDTO(EffectDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Effect.class);
     }

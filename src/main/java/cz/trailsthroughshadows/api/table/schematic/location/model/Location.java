@@ -1,17 +1,20 @@
 package cz.trailsthroughshadows.api.table.schematic.location.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
-import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
-import cz.trailsthroughshadows.api.table.campaign.model.Story;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.HexEnemy;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.HexObstacle;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationPartDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 
@@ -21,16 +24,45 @@ import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Slf4j
 public class Location extends LocationDTO {
 
-    private String url;
+    @JsonProperty("enemies")
+    List<Object> mappedHexEnemies;
 
-    private List<Story> stories;
+    //private List<Story> stories;
+    @JsonProperty("obstacles")
+    List<Object> mappedHexObstacles;
+    private String url;
 
     // TODO: Map locations only by specific campaign frrom database @rcMarty
     public static Location fromDTO(LocationDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Location.class);
+        Location loc = modelMapper.map(dto, Location.class);
+        log.debug("enemies are initialized: {}", Hibernate.isInitialized(dto.getEnemies()));
+        if (Hibernate.isInitialized(dto.getEnemies())) {
+            loc.mappedHexEnemies = dto.getEnemies().stream().map(HexEnemy::fromDTO).map(e -> (Object) e).toList();
+
+            loc.mappedHexEnemies.forEach(hexenemy -> {
+                HexEnemy hexEnemy = (HexEnemy) hexenemy;
+                hexEnemy.setRemappedEnemy(dto.getMappedParts().stream()
+                        .map(part -> Part.getMappedEnemiesFromDTO(part, dto.getEnemies()))
+                        .toList()
+                );
+            });
+
+        } else {
+            loc.mappedHexEnemies = dto.getEnemies().stream().map(e -> (Object) e).toList();
+        }
+
+        log.debug("obstacles are initialized: {}", Hibernate.isInitialized(dto.getObstacles()));
+        if (Hibernate.isInitialized(dto.getObstacles())) {
+            loc.mappedHexObstacles = dto.getObstacles().stream().map(HexObstacle::fromDTO).map(e -> (Object) e).toList();
+        } else {
+            loc.mappedHexObstacles = dto.getObstacles().stream().map(e -> (Object) e).toList();
+        }
+
+        return loc;
     }
 
     public String getUrl() {
@@ -39,12 +71,13 @@ public class Location extends LocationDTO {
         return ImageLoader.getPath(this.getTag());
     }
 
-    public List<Story> findStories(CampaignRepo campaignRepo) {
-        if (stories == null) {
-            stories = campaignRepo.findAllStoriesByCampaignId(this.getId());
-        }
-        return stories;
-    }
+
+//    public List<Story> findStories(CampaignRepo campaignRepo) {
+//        if (stories == null) {
+//            stories = campaignRepo.findAllStoriesByCampaignId(this.getId());
+//        }
+//        return stories;
+//    }
 
     @JsonIgnore
     public Part getStartPart() {

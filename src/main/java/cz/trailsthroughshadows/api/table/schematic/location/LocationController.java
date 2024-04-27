@@ -60,13 +60,13 @@ public class LocationController {
             entriesPage.forEach(e -> Initialization.hibernateInitializeAll(e, include));
             if (include.contains("stories")) {
                 List<Location> loc = entriesPage.stream().map(Location::fromDTO).toList();
-                loc.forEach(l -> l.findStories(campaignRepo));
+                //loc.forEach(l -> l.findStories(campaignRepo));
                 return new ResponseEntity<>(RestPaginatedResult.of(pagination, loc), HttpStatus.OK);
             }
         } else if (!lazy) {
             entriesPage.forEach(Initialization::hibernateInitializeAll);
             List<Location> loc = entriesPage.stream().map(Location::fromDTO).toList();
-            loc.forEach(l -> l.findStories(campaignRepo));
+            //loc.forEach(l -> l.findStories(campaignRepo));
             return new ResponseEntity<>(RestPaginatedResult.of(pagination, loc), HttpStatus.OK);
         }
 
@@ -83,18 +83,10 @@ public class LocationController {
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found! " + id));
 
-        if (lazy && !include.isEmpty()) {
-            Initialization.hibernateInitializeAll(entity, include);
-            if (include.contains("stories")) {
-                Location loc = Location.fromDTO(entity);
-                loc.findStories(campaignRepo);
-                return new ResponseEntity<>(loc, HttpStatus.OK);
-            }
-        } else if (!lazy) {
+        if (!lazy) {
             Initialization.hibernateInitializeAll(entity);
-            Location loc = Location.fromDTO(entity);
-            loc.findStories(campaignRepo);
-            return new ResponseEntity<>(loc, HttpStatus.OK);
+        } else {
+            Initialization.hibernateInitializeAll(entity, include);
         }
 
 
