@@ -33,7 +33,7 @@ public class TtsApiApplication {
 
         ConfigurableApplicationContext cx = SpringApplication.run(Application.class, args);
 
-        String address = cx.getEnvironment().getProperty("server.address", "localhost");
+        String address = cx.getEnvironment().getProperty("server.address", "pičovina");
         Integer port = cx.getEnvironment().getProperty("server.port", Integer.class, 8080);
 
         if (address.equals("0.0.0.0")) {
@@ -51,9 +51,9 @@ public class TtsApiApplication {
         imageLoaderConfig.setPort(port.toString());
     }
 
-    @Autowired
-    public void setImageLoaderConfig(ImageLoaderConfig imageLoaderConfig) {
-        TtsApiApplication.imageLoaderConfig = imageLoaderConfig;
-    }
+//    @Autowired
+//    public void setImageLoaderConfig(ImageLoaderConfig imageLoaderConfig) {
+//        TtsApiApplication.imageLoaderConfig = imageLoaderConfig;
+//    }
 
 }
