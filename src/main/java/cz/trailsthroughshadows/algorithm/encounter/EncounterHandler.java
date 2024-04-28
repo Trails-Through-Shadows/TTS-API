@@ -47,9 +47,10 @@ public class EncounterHandler {
         return encounters.size() + 1;
     }
 
-    public List<Encounter> getAllEncounters(String token) {
+    public List<Encounter> getAllEncounters(String token, Integer idAdventure) {
         return encounters.stream()
                 .filter(e -> sessionHandler.getSession(token).hasAccess(e.getIdLicense()))
+                .filter(e -> idAdventure == null || idAdventure == 0 || e.getAdventure().getId().equals(idAdventure))
                 .toList();
     }
 

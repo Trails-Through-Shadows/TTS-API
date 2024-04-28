@@ -52,11 +52,7 @@ public class EncounterController {
             HttpServletRequest request
     ) {
         String token = sessionHandler.getTokenFromRequest(request);
-        List<Encounter> encounters = encounterHandler.getAllEncounters(token);
-
-        if (idAdventure > 0) {
-            encounters = encounters.stream().filter(e -> e.getAdventure().getId().equals(idAdventure)).toList();
-        }
+        List<Encounter> encounters = encounterHandler.getAllEncounters(token, idAdventure);
 
         return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounters), HttpStatus.OK);
     }

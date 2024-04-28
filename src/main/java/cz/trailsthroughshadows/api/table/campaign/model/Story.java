@@ -32,6 +32,18 @@ public class Story extends Validable {
     @Column(nullable = false)
     private String story;
 
+    public static Story about(Encounter.EncounterState trigger) {
+        String text = switch (trigger) {
+            case NEW -> "Your story begins.";
+            case ONGOING -> "Your story is still being written.";
+            case COMPLETED -> "Your story had a good ending.";
+            case FAILED -> "Your story had a bad ending.";
+            default -> throw new IllegalStateException("Unexpected value: " + trigger);
+        };
+
+        return new Story(0, 0, trigger, text);
+    }
+
     //region Validation
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {

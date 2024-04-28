@@ -533,16 +533,11 @@ public class Encounter {
         return EncounterState.ONGOING;
     }
 
-    public String getStory() {
-        if (state == EncounterState.ONGOING) {
-            return "Keep going!";
-        }
-
+    public Story getStory() {
         return stories.stream()
                 .filter(s -> s.getTrigger().equals(state))
                 .findFirst()
-                .map(Story::getStory)
-                .orElse("This story has been lost to the shadows.");
+                .orElse(Story.about(state));
     }
 
     // misc
