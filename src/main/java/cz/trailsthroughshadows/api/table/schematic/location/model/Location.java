@@ -71,6 +71,7 @@ public class Location extends LocationDTO {
                             .map(part -> Part.getMappedObstaclesFromDTO(part, dto.getObstacles()))
                             .flatMap(List::stream)
                             .filter(obstacle -> Objects.equals((((Obstacle) ((HexObstacle) hexobstacle).getRemappedObstacle())).getId(), obstacle.getId()))
+                            .filter(obstacle -> Objects.equals((((HexObstacle) hexobstacle).getKey().getIdHex()), obstacle.getHex().getKey().getId()))
                             .findFirst()
                             .ifPresent(((HexObstacle) hexobstacle)::setRemappedObstacle);
                 }
