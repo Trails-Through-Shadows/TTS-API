@@ -3,7 +3,13 @@ package cz.trailsthroughshadows.api.table.schematic.location.model.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.trailsthroughshadows.algorithm.validation.Validable;
+import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
+import cz.trailsthroughshadows.algorithm.validation.text.Description;
+import cz.trailsthroughshadows.algorithm.validation.text.Tag;
+import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
+import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
@@ -11,6 +17,7 @@ import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +31,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "Location")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class LocationDTO {
+public class LocationDTO extends Validable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -105,4 +112,29 @@ public class LocationDTO {
         Initialization.hibernateInitializeAll(this);
     }
 
+    @Override
+    protected void validateInner(@Nullable ValidationConfig validationConfig) {
+        validateChild(new Title(title), validationConfig);
+        validateChild(new Description(description), validationConfig);
+        validateChild(new Tag(tag), validationConfig);
+
+        if (parts == null) {
+            errors.add(new ValidationError("Location", "parts", null, "Parts must not be null."));
+        }
+        if (doors == null) {
+            errors.add(new ValidationError("Location", "doors", null, "Doors must not be null."));
+        }
+        if (startHexes == null) {
+            errors.add(new ValidationError("Location", "startHexes", null, "Start hexes must not be null."));
+        }
+
+        if (parts.isEmpty()) {
+            errors.add(new ValidationError("Location", "parts", null, "Parts must not be empty."));
+        }
+    }
+
+    @Override
+    public String getValidableValue() {
+        return title;
+    }
 }

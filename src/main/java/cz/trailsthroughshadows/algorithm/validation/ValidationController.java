@@ -23,6 +23,8 @@ import cz.trailsthroughshadows.api.table.playerdata.adventure.model.AdventureDTO
 import cz.trailsthroughshadows.api.table.playerdata.character.CharacterRepo;
 import cz.trailsthroughshadows.api.table.playerdata.character.model.CharacterDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
+import cz.trailsthroughshadows.api.table.schematic.location.LocationRepo;
+import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.ObstacleRepo;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.PartRepo;
@@ -63,6 +65,19 @@ public class ValidationController {
     @PostMapping("/hex")
     public ResponseEntity<RestResponse> validateHex(@RequestBody HexDTO hex) {
         return validate(hex);
+    }
+
+    @PostMapping("/location")
+    public ResponseEntity<RestResponse> validateLocation(@RequestBody LocationDTO location) {
+        return validate(location);
+    }
+
+    @Autowired
+    LocationRepo locationRepo;
+
+    @PostMapping("/location/{id}")
+    public ResponseEntity<RestResponse> validateLocationById(@PathVariable int id) {
+        return validate(locationRepo.findById(id));
     }
 
     //endregion
