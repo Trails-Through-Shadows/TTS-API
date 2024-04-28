@@ -7,6 +7,7 @@ import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.campaign.model.CampaignLocation;
+import cz.trailsthroughshadows.api.table.campaign.model.Story;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.ClazzEffect;
 import cz.trailsthroughshadows.api.table.effect.relation.forcharacter.RaceEffect;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
@@ -49,6 +50,7 @@ public class Encounter {
     private List<Part> parts;
     private List<LocationDoorDTO> doorsToOpen = new ArrayList<>();
     List<CampaignLocation.Condition> conditions = new ArrayList<>();
+    List<Story> stories = new ArrayList<>();
 
     @Setter
     private ValidationService validation;
@@ -65,6 +67,7 @@ public class Encounter {
         startPart = location.getStartPart();
 
         conditions = adventure.getCampaign().getConditions(location.getId());
+        stories = adventure.getCampaign().getStories(location.getId());
 
         if (startPart == null) {
             log.warn("No unlocked parts in location " + location.getId());
@@ -528,6 +531,18 @@ public class Encounter {
         }
 
         return EncounterState.ONGOING;
+    }
+
+    public String getStory() {
+        if (state == EncounterState.ONGOING) {
+            return "Keep going!";
+        }
+
+        return stories.stream()
+                .filter(s -> s.getTrigger().equals(state))
+                .findFirst()
+                .map(Story::getStory)
+                .orElse("This story has been lost to the shadows.");
     }
 
     // misc

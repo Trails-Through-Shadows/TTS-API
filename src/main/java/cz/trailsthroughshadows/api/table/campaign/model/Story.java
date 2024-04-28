@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.campaign.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import cz.trailsthroughshadows.algorithm.encounter.Encounter;
 import cz.trailsthroughshadows.algorithm.validation.Validable;
 import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.algorithm.validation.text.Description;
@@ -10,8 +11,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @Data
 @Entity
@@ -28,7 +27,7 @@ public class Story extends Validable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private StoryTrigger trigger;
+    private Encounter.EncounterState trigger;
 
     @Column(nullable = false)
     private String story;
@@ -49,8 +48,4 @@ public class Story extends Validable {
     }
     //endregion
 
-
-    public enum StoryTrigger implements Serializable {
-        START, END
-    }
 }

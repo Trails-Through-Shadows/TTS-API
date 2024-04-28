@@ -206,4 +206,13 @@ public class EncounterController {
         encounterHandler.getEncounter(token, id).openDoor(door);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/{id}/story")
+    public ResponseEntity<RestResponse> getStory(
+            @PathVariable Integer id,
+            HttpServletRequest request
+    ) {
+        String token = sessionHandler.getTokenFromRequest(request);
+        return new ResponseEntity<>(ObjectResponse.of(HttpStatus.OK, encounterHandler.getEncounter(token, id).getStory()), HttpStatus.OK);
+    }
 }

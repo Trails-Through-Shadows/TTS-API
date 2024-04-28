@@ -69,6 +69,15 @@ public class CampaignDTO extends Validable {
                 .orElse(null);
     }
 
+    @JsonIgnore
+    public List<Story> getStories(Integer locationId) {
+        return locations.stream()
+                .filter(l -> l.getLocation().getId().equals(locationId))
+                .findFirst()
+                .map(CampaignLocation::getStories)
+                .orElse(null);
+    }
+
 
     //region Validation
 

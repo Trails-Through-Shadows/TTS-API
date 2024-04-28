@@ -38,7 +38,7 @@ public class CampaignLocation extends Validable {
     @Column(nullable = false, insertable = false, updatable = false)
     private Integer idCampaign;
 
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "idCampaignLocation", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<Story> stories;
 
