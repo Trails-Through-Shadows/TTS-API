@@ -34,9 +34,6 @@ public class Enemy extends EnemyDTO {
         }
         ModelMapper modelMapper = new ModelMapper();
         Enemy enemy = modelMapper.map(dto, Enemy.class);
-        enemy.getActions().forEach(enemyaction -> {
-            enemyaction.getKey().setIdEnemy(enemy.getId());
-        });
         return enemy;
     }
 

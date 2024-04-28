@@ -12,7 +12,6 @@ import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.action.model.ActionDTO;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import cz.trailsthroughshadows.api.table.effect.relation.forothers.EnemyEffectDTO;
-import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -63,13 +62,13 @@ public class EnemyDTO extends Validable implements Cloneable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<EnemyActionDTO> actions = new ArrayList<>();
 
+
     public void setEffects(List<EnemyEffectDTO> effects) {
         this.effects.clear();
         if (effects != null) {
             this.effects.addAll(effects);
             this.effects.forEach(effect -> effect.getKey().setIdEnemy(this.getId()));
         }
-
     }
 
     public void setActions(List<EnemyActionDTO> actions) {
@@ -91,11 +90,10 @@ public class EnemyDTO extends Validable implements Cloneable {
     public List<ActionDTO> getMappedActions() {
         if (actions == null)
             return new ArrayList<>();
-        return actions.stream().map(EnemyActionDTO::getAction).toList();
-    }
-
-    public void loadAll() {
-        Initialization.hibernateInitializeAll(this);
+        return actions.stream()
+                .peek(action -> action.getKey().setIdEnemy(this.getId()))
+                .map(EnemyActionDTO::getAction)
+                .toList();
     }
 
     @Override
