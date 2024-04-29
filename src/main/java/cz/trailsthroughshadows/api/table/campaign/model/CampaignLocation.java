@@ -71,6 +71,11 @@ public class CampaignLocation extends Validable {
         }
     }
 
+    public List<Story> getStories() {
+        // KURVAA ALEE
+        return stories.stream().filter(story -> story.getIdCampaignLocation().equals(id)).toList();
+    }
+
     public List<LocationPathDTO> getPaths() {
         // Zoze pice, jak to kurva funguje
         return paths.stream().filter(path -> path.getIdCampaign().equals(idCampaign)).toList();
