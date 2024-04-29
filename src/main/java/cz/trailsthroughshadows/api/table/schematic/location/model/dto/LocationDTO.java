@@ -113,7 +113,10 @@ public class LocationDTO extends Validable {
         List<HexDTO> hexes = new ArrayList<>();
         for (LocationStartDTO startHex : startHexes) {
             for (HexDTO hex : parts.get(0).getPart().getHexes()) {
-                hexes.add(hex);
+                if (hex.getKey().getId() == startHex.getIdHex()) {
+                    hexes.add(hex);
+                    break;
+                }
             }
         }
 
