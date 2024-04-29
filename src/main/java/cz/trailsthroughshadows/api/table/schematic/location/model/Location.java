@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
-import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.HexEnemy;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.HexObstacle;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
@@ -119,18 +117,15 @@ public class Location extends LocationDTO {
         return Part.fromDTO(tmp);
     }
 
-    /**
-     * Get all mapped Hexes from LocationStartDTO
-     *
-     * @return list of mapped hexes
-     */
-    @JsonIgnore
-    public List<Hex> getStartingHexes() {
-        List<Hex> hexes = startHexes.stream()
-                .map(s -> Hex.fromDTO(s.getHex()))
-                .toList();
-        return hexes;
-    }
+//    /**
+//     * Get all mapped Hexes from LocationStartDTO
+//     *
+//     * @return list of mapped hexes
+//     */
+//    @JsonIgnore
+//    public List<HexDTO> getStartingHexes() {
+//        return startHexes
+//    }
 
     @JsonIgnore
     public List<Part> getMappedParts() {

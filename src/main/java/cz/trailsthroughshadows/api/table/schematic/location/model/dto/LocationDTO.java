@@ -11,6 +11,7 @@ import cz.trailsthroughshadows.algorithm.validation.text.Title;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
@@ -101,6 +102,22 @@ public class LocationDTO extends Validable {
                 .map(HexObstacleDTO::getObstacle)
                 .map(enemyDTO -> modelMapper.map(enemyDTO, Obstacle.class))
                 .toList();
+    }
+
+    @JsonIgnore
+    public List<HexDTO> getMappedStartHexes() {
+        if (startHexes == null || parts.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        List<HexDTO> hexes = new ArrayList<>();
+        for (LocationStartDTO startHex : startHexes) {
+            for (HexDTO hex : parts.get(0).getPart().getHexes()) {
+                hexes.add(hex);
+            }
+        }
+
+        return hexes;
     }
 
     @JsonIgnore

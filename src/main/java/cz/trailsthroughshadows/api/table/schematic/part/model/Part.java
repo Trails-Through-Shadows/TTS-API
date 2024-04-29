@@ -2,7 +2,7 @@ package cz.trailsthroughshadows.api.table.schematic.part.model;
 
 import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.table.enemy.model.Enemy;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDoorDTO;
@@ -27,7 +27,7 @@ public class Part extends PartDTO {
 
     private List<LocationDoorDTO> doors;
 
-    private List<Hex> startingHexes;
+    private List<HexDTO> startingHexes;
 
     private Boolean unlocked = false;
 
@@ -125,11 +125,6 @@ public class Part extends PartDTO {
         return ImageLoader.getPath(getTag());
     }
 
-    public void setStartingHexes(List<Hex> startingHexes) {
-        // TODO @kkobari validation
-        this.startingHexes = startingHexes;
-    }
-
     private void setFilterEnemies(List<HexEnemyDTO> enemies) {
         this.setEnemies(enemies.stream()
                 .filter(e -> e.getKey().getIdPart() == this.getId())
@@ -152,15 +147,15 @@ public class Part extends PartDTO {
                 .toList());
     }
 
-    public Optional<Hex> getHex(int id) {
-        return hexes.stream().filter(h -> h.getKey().getId() == id).findFirst().map(Hex::fromDTO);
+    public Optional<HexDTO> getHex(int id) {
+        return hexes.stream().filter(h -> h.getKey().getId() == id).findFirst();
     }
 
-    public Optional<Enemy> getEnemy(Hex hex) {
+    public Optional<Enemy> getEnemy(HexDTO hex) {
         return enemies.stream().filter(e -> e.getStartingHex().equals(hex)).findFirst();
     }
 
-    public Optional<Obstacle> getObstacle(Hex hex) {
+    public Optional<Obstacle> getObstacle(HexDTO hex) {
         return obstacles.stream().filter(o -> o.getHex().equals(hex)).findFirst();
     }
 

@@ -6,7 +6,6 @@ import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
@@ -106,7 +105,10 @@ public class LocationController {
 
     @GetMapping("/locations/{idLocation}/parts/{idPart}")
     @Cacheable(value = "location", key="T(java.util.Objects).hash(#idLocation, #idPart)")
-    public ResponseEntity<Part> getPartByLocationId(@PathVariable int idLocation, @PathVariable int idPart) {
+    public ResponseEntity<Part> getPartByLocationId(
+            @PathVariable Integer idLocation,
+            @PathVariable Integer idPart
+    ) {
 
         LocationDTO locationDTO = locationRepo
                 .findById(idLocation)
@@ -120,10 +122,10 @@ public class LocationController {
         // TODO zoze add doors here
 
         Part retPart = Part.fromDTO(part, location.getObstacles(), location.getDoors());
-        List<Hex> startingHexes = location.getStartingHexes().stream()
-                .filter(hex -> hex.getKey().getIdPart() == idPart)
-                .toList();
-        retPart.setStartingHexes(startingHexes);
+
+        if (retPart.getId() == location.getParts().get(0).getKey().getIdPart()) {
+            retPart.setStartingHexes(location.getMappedStartHexes());
+        }
 
         return new ResponseEntity<>(retPart, HttpStatus.OK);
     }
