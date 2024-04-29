@@ -80,6 +80,7 @@ public class ActionDTO extends Validable {
     }
 
     public ActionDTO(Action action) {
+        this.id = action.getId();
         this.title = action.getTitle();
         this.description = action.getDescription();
         this.discard = action.getDiscard();
