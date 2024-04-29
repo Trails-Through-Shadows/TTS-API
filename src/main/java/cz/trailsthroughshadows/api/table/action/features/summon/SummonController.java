@@ -67,7 +67,7 @@ public class SummonController {
     ) {
         SummonDTO entity = summonRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found! " + id));
 
         if (!lazy) {
             Initialization.hibernateInitializeAll(entity);

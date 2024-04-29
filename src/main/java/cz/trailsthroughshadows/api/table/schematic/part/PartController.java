@@ -75,7 +75,7 @@ public class PartController {
     ) {
         PartDTO entity = partRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '{}' not found!", id));
 
         if (lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
@@ -91,7 +91,7 @@ public class PartController {
     public ResponseEntity<MessageResponse> deletePartById(@PathVariable int id) {
         PartDTO partDTO = partRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '{}' not found!", id));
 
         partRepo.delete(partDTO);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Part deleted!"), HttpStatus.OK);
@@ -102,7 +102,7 @@ public class PartController {
     public ResponseEntity<MessageResponse> updatePartById(@PathVariable int id, @RequestBody PartDTO part) {
         PartDTO partToUpdate = partRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '{}' not found!", id));
 
         validation.validate(part);
 

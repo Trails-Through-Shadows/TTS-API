@@ -126,7 +126,7 @@ public class ActionController {
     ) {
         ActionDTO entity = actionRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found!", id));
 
         if (!lazy) {
             Initialization.hibernateInitializeAll(entity);
@@ -174,7 +174,7 @@ public class ActionController {
 
         ActionDTO entityToUpdate = actionRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found!", id));
 
         entityToUpdate.setTitle(action.getTitle());
         entityToUpdate.setDescription(action.getDescription());
@@ -275,17 +275,17 @@ public class ActionController {
 
         ActionDTO updated = updateInner(id, action);
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' updated!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '{}' updated!", id), HttpStatus.OK);
     }
 
     @DeleteMapping("/actions/{id}")
     public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
         ActionDTO entity = actionRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found!", id));
 
         actionRepo.delete(entity);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '%d' deleted!", id),
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '{}' deleted!", id),
                 HttpStatus.OK);
     }
 
@@ -308,7 +308,7 @@ public class ActionController {
     public ResponseEntity<LinkedHashMap<String, Object>> getCard(@PathVariable int id) {
         ActionDTO entitydto = actionRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found!", id));
 
         Initialization.hibernateInitializeAll(entitydto);
 

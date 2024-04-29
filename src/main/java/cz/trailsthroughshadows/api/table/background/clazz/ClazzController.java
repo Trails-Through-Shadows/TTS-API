@@ -80,7 +80,7 @@ public class ClazzController {
     ) {
         ClazzDTO entity = clazzRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '%d' not found! ", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '{}' not found! ", id));
 
         if (lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
@@ -104,7 +104,7 @@ public class ClazzController {
 
         ClazzDTO clazzToUpdate = clazzRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '%d' not found! ", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '{}' not found! ", id));
 
         // Remove relations and save them for later
         List<ClazzEffect> entityEffects = new ArrayList<>();
@@ -144,7 +144,7 @@ public class ClazzController {
         if (clazzToUpdate.getActions() != null) {
             for (ClazzAction action : entityActions) {
                 ActionDTO actionDTO = actionRepo.findById(action.getKey().getIdAction())
-                        .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! ", action.getKey().getIdAction()));
+                        .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found! ", action.getKey().getIdAction()));
 
                 action.setKey(new ClazzAction.ClazzActionId(clazzToUpdate.getId(), actionDTO.getId()));
                 action.setAction(actionDTO);
@@ -158,7 +158,7 @@ public class ClazzController {
             clazzRepo.save(clazzToUpdate);
         }
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Class with id '%d' updated!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Class with id '{}' updated!", id), HttpStatus.OK);
     }
 
     @PostMapping("/classes")
@@ -228,11 +228,11 @@ public class ClazzController {
     ) {
         ClazzDTO entity = clazzRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '%d' not found! ", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Class with id '{}' not found! ", id));
 
         clazzRepo.delete(entity);
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Class with id '%d' deleted!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Class with id '{}' deleted!", id), HttpStatus.OK);
     }
 
     @Autowired

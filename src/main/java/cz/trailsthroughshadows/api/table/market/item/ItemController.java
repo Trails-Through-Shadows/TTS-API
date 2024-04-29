@@ -68,7 +68,7 @@ public class ItemController {
     ) {
         ItemDTO entity = itemRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '{}' not found! " + id));
 
         if (lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
@@ -96,7 +96,7 @@ public class ItemController {
 
         ItemDTO entityToUPdate = itemRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '{}' not found!", id));
 
         entityToUPdate.setAction(item.getAction());
         entityToUPdate.setTitle(item.getTitle());
@@ -108,7 +108,7 @@ public class ItemController {
 
         itemRepo.save(entityToUPdate);
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Item with id '%d' updated!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Item with id '{}' updated!", id), HttpStatus.OK);
     }
 
     @DeleteMapping("/items/{id}")
@@ -116,11 +116,11 @@ public class ItemController {
     public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
         ItemDTO entityToDelete = itemRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Item with id '{}' not found!", id));
 
         itemRepo.delete(entityToDelete);
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Item with id '%d' deleted!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Item with id '{}' deleted!", id), HttpStatus.OK);
     }
 
     @Autowired

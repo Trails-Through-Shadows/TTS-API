@@ -64,7 +64,7 @@ public class CampaignController {
     ) {
         CampaignDTO entity = campaignRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found! " + id));
 
         if (!lazy)
             Initialization.hibernateInitializeAll(entity);
@@ -84,12 +84,12 @@ public class CampaignController {
     ) {
         CampaignDTO entity = campaignRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found! " + id));
 
         CampaignLocation location = entity.getLocations().stream()
                 .filter(e -> e.getId() == idLocation)
                 .findFirst()
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found! " + idLocation));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '{}' not found! " + idLocation));
 
         if (!lazy)
             Initialization.hibernateInitializeAll(location);
@@ -115,7 +115,7 @@ public class CampaignController {
     public ResponseEntity<String> getTree(@PathVariable int id) {
         Campaign campaign = Campaign.fromDTO(campaignRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Campaign with id '%d' not found!", id)));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Campaign with id '{}' not found!", id)));
 
         return new ResponseEntity<>(campaign.getTree(), HttpStatus.OK);
     }

@@ -83,7 +83,7 @@ public class EnemyController {
     ) {
         EnemyDTO entity = enemyRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id '{}' not found!", id));
 
         if (lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
@@ -161,7 +161,7 @@ public class EnemyController {
             enemyRepo.save(enemyToUpdate);
         }
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' updated!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '{}' updated!", id), HttpStatus.OK);
     }
 
     @PostMapping("/enemies")
@@ -232,7 +232,7 @@ public class EnemyController {
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Enemy with id %d not found", id));
 
         enemyRepo.delete(enemyDTO);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '%d' deleted!", id),
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Enemy with id '{}' deleted!", id),
                 HttpStatus.OK);
     }
 

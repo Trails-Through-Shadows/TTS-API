@@ -4,6 +4,7 @@ import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
+import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
@@ -13,14 +14,13 @@ import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -81,7 +81,7 @@ public class LocationController {
     ) {
         LocationDTO entity = locationRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '{}' not found! " + id));
 
         if (!lazy) {
             Initialization.hibernateInitializeAll(entity);
@@ -98,13 +98,13 @@ public class LocationController {
 
         LocationDTO locationDTO = locationRepo
                 .findById(idLocation)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found!", idLocation));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '{}' not found!", idLocation));
         Location location = Location.fromDTO(locationDTO);
 
         PartDTO part = location.getMappedParts().stream()
                 .filter(p -> p.getId() == idPart)
                 .findFirst()
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '%d' not found!", idPart));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Part with id '{}' not found!", idPart));
         // TODO zoze add doors here
 
         Part retPart = Part.fromDTO(part, location.getObstacles(), location.getDoors());
@@ -114,6 +114,60 @@ public class LocationController {
         retPart.setStartingHexes(startingHexes);
 
         return new ResponseEntity<>(retPart, HttpStatus.OK);
+    }
+
+    @PostMapping("/locations")
+    @CacheEvict(value = "location", allEntries = true)
+    @Transactional(rollbackOn = Exception.class)
+    public ResponseEntity<MessageResponse> createLocation(@RequestBody List<LocationDTO> locations) {
+        log.debug("Creating locations: " + locations);
+
+        // Validate all locations
+        locations.forEach(validation::validate);
+
+        locationRepo.saveAll(locations);
+
+        String ids = locations.stream()
+                .map(LocationDTO::getId)
+                .map(String::valueOf)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("");
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Locations created: " + ids), HttpStatus.OK);
+    }
+
+    @PutMapping("/locations/{id}")
+    @CacheEvict(value = "location", allEntries = true)
+    public ResponseEntity<MessageResponse> updateLocationById(@PathVariable int id, @RequestBody LocationDTO location) {
+        LocationDTO locationToUpdate = locationRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '{}' not found!", id));
+
+        validation.validate(location);
+
+        locationToUpdate.setTag(location.getTag());
+        locationToUpdate.setTitle(location.getTitle());
+        locationToUpdate.setDescription(location.getDescription());
+        locationToUpdate.setEnemies(location.getEnemies());
+        locationToUpdate.setObstacles(location.getObstacles());
+        locationToUpdate.setDoors(location.getDoors());
+        locationToUpdate.setParts(location.getParts());
+        locationToUpdate.setStartHexes(location.getStartHexes());
+        locationToUpdate.setType(location.getType());
+
+        locationRepo.save(locationToUpdate);
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Location updated!"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/locations/{id}")
+    @CacheEvict(value = "location", allEntries = true)
+    public ResponseEntity<MessageResponse> deleteLocationById(@PathVariable int id) {
+        LocationDTO location = locationRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '{}' not found!", id));
+
+        locationRepo.delete(location);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Location deleted!"), HttpStatus.OK);
     }
 
     /**

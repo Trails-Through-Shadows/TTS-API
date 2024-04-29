@@ -83,7 +83,7 @@ public class EffectController {
             @RequestParam(required = false, defaultValue = "false") boolean lazy) {
         EffectDTO entity = effectRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '{}' not found!", id));
 
         if (lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
@@ -98,7 +98,7 @@ public class EffectController {
     public ResponseEntity<MessageResponse> updateEffect(@PathVariable int id, @RequestBody EffectDTO effect) {
         validation.validate(effect);
         EffectDTO existing = effectRepo.findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '{}' not found!", id));
 
         existing.setDescription(effect.getDescription());
         existing.setDuration(effect.getDuration());
@@ -126,10 +126,10 @@ public class EffectController {
     public ResponseEntity<MessageResponse> deleteEffect(@PathVariable int id) {
         EffectDTO effect = effectRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Effect with id '{}' not found!", id));
 
         effectRepo.delete(effect);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Effect with id '%d' deleted!", id),
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Effect with id '{}' deleted!", id),
                 HttpStatus.OK);
     }
 

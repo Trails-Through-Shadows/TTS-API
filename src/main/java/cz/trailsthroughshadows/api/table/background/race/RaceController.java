@@ -80,7 +80,7 @@ public class RaceController {
     ) {
         RaceDTO entity = raceRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Race with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Race with id '{}' not found!", id));
 
         if (lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
@@ -104,7 +104,7 @@ public class RaceController {
 
         RaceDTO raceToUpdate = raceRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Race with id '%d' not found! ", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Race with id '{}' not found! ", id));
 
         // Remove relations and save them for later
         List<RaceEffect> entityEffects = new ArrayList<>();
@@ -141,7 +141,7 @@ public class RaceController {
         if (raceToUpdate.getActions() != null) {
             for (RaceAction action : entityActions) {
                 ActionDTO actionDTO = actionRepo.findById(action.getKey().getIdAction())
-                        .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! ", action.getKey().getIdAction()));
+                        .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found! ", action.getKey().getIdAction()));
 
                 action.setKey(new RaceAction.RaceActionId(raceToUpdate.getId(), actionDTO.getId()));
                 action.setAction(actionDTO);
@@ -155,7 +155,7 @@ public class RaceController {
             raceRepo.save(raceToUpdate);
         }
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Race with id '%d' updated!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Race with id '{}' updated!", id), HttpStatus.OK);
     }
 
     @PostMapping("races/")
@@ -223,10 +223,10 @@ public class RaceController {
     public ResponseEntity<MessageResponse> deleteEntity(@PathVariable int id) {
         RaceDTO entity = raceRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Race with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Race with id '{}' not found!", id));
 
         raceRepo.delete(entity);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Race with id '%d' deleted!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Race with id '{}' deleted!", id), HttpStatus.OK);
     }
 
     @Autowired

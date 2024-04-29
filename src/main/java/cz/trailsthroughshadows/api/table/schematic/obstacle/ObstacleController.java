@@ -79,7 +79,7 @@ public class ObstacleController {
     ) {
         ObstacleDTO entity = obstacleRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found! " + id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '{}' not found! " + id));
 
         if (lazy && !include.isEmpty()) {
             Initialization.hibernateInitializeAll(entity, include);
@@ -97,10 +97,10 @@ public class ObstacleController {
     ) {
         ObstacleDTO obstacleDTO = obstacleRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '{}' not found!", id));
 
         obstacleRepo.delete(obstacleDTO);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' deleted!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '{}' deleted!", id), HttpStatus.OK);
     }
 
     @PutMapping("/obstacles/{id}")
@@ -116,7 +116,7 @@ public class ObstacleController {
 
         ObstacleDTO obstacleToUpdate = obstacleRepo
                 .findById(id)
-                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '%d' not found!", id));
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Obstacle with id '{}' not found!", id));
 
         // Remove relations and save them for later
         List<ObstacleEffectDTO> obstacleEffects = new ArrayList<>();
@@ -151,7 +151,7 @@ public class ObstacleController {
             obstacleRepo.save(obstacleToUpdate);
         }
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '%d' updated!", id), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Obstacle with id '{}' updated!", id), HttpStatus.OK);
     }
 
     @PostMapping("/obstacles")
