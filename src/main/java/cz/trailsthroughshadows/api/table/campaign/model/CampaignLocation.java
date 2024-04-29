@@ -99,6 +99,9 @@ public class CampaignLocation extends Validable {
         if (stories == null) {
             errors.add(new ValidationError("CampaignLocation", "stories", null, "Stories must not be null."));
         }
+//        if (paths == null) {
+//            errors.add(new ValidationError("CampaignLocation", "paths", null, "Paths must not be null."));
+//        }
 
         if (!errors.isEmpty()) return;
 
@@ -142,6 +145,11 @@ public class CampaignLocation extends Validable {
             if (result != Encounter.EncounterState.COMPLETED && result != Encounter.EncounterState.FAILED) {
                 errors.add(new ValidationError("Condition", "result", result, "Result must be either COMPLETED or FAILED."));
             }
+        }
+
+        @Override
+        public String toString() {
+            return "{type: %s, value: %d, result: %s}".formatted(type, value, result);
         }
 
         @Override

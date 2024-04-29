@@ -6,6 +6,7 @@ import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.campaign.model.*;
+import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationPathDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -19,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -152,29 +154,14 @@ public class CampaignController {
         // save relations
         Map<String, List<CampaignAchievements>> achievementsRelations = new HashMap<>();
         Map<String, List<CampaignLocation>> locationsRelations = new HashMap<>();
+        Map<String, List<LocationPathDTO>> pathsRelations = new HashMap<>();
 
         // remove relations
         campaigns.forEach(campaign -> {
-            achievementsRelations.put(campaign.getTitle(), new ArrayList<>(campaign.getAchievements()));
-            campaign.setAchievements(null);
+            campaign.setAchievements(new ArrayList<>());
+            campaign.setLocations(new ArrayList<>());
 
-            locationsRelations.put(campaign.getTitle(), new ArrayList<>(campaign.getLocations()));
-            campaign.setLocations(null);
-        });
-
-        // save campaigns
-        campaignRepo.saveAll(campaigns);
-
-        // post load relations
-        campaigns.forEach(campaign -> {
-            List<CampaignAchievements> achievements = achievementsRelations.get(campaign.getTitle());
-            List<CampaignLocation> locations = locationsRelations.get(campaign.getTitle());
-
-            campaign.setAchievements(achievements);
-            campaign.getAchievements().forEach(e -> e.setKey(new CampaignAchievements.CampaignAchievementsId(campaign.getId(), e.getAchievement().getId())));
-
-            campaign.setLocations(locations);
-            campaign.getLocations().forEach(e -> e.setIdCampaign(campaign.getId()));
+            // todo zoze glhf
 
             campaignRepo.save(campaign);
         });
