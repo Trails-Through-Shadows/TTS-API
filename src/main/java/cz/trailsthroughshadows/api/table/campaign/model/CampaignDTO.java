@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,11 +39,11 @@ public class CampaignDTO extends Validable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "key.idCampaign", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private List<CampaignAchievements> achievements = new ArrayList<>();
+    private List<CampaignAchievements> achievements;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "idCampaign", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    private List<CampaignLocation> locations = new ArrayList<>();
+    private List<CampaignLocation> locations ;
 
     @JsonIgnore
     public Collection<AchievementDTO> getMappedAchievements() {

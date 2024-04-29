@@ -26,6 +26,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,7 @@ public class LocationController {
     private CampaignRepo campaignRepo;
 
     @GetMapping("/locations")
+    @Cacheable(value = "location")
     public ResponseEntity<RestPaginatedResult<Location>> getLocations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -85,6 +87,7 @@ public class LocationController {
     }
 
     @GetMapping("/locations/{id}")
+    @Cacheable(value = "location", key = "#id")
     public ResponseEntity<Location> getLocationById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -105,6 +108,7 @@ public class LocationController {
     }
 
     @GetMapping("/locations/{idLocation}/parts/{idPart}")
+    @Cacheable(value = "location")
     public ResponseEntity<Part> getPartByLocationId(@PathVariable int idLocation, @PathVariable int idPart) {
 
         LocationDTO locationDTO = locationRepo

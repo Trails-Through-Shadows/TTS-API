@@ -29,14 +29,15 @@ import java.util.List;
 public class CampaignLocation extends Validable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
-    @JoinColumn(name = "idLocation", insertable = false, updatable = false)
+    @JoinColumn(name = "idLocation")
     private LocationDTO location;
 
-    @Column(nullable = false, insertable = false, updatable = false)
+    @Column(nullable = false)
     private Integer idCampaign;
 
     @OneToMany(mappedBy = "idCampaignLocation", fetch = FetchType.LAZY)
@@ -68,6 +69,11 @@ public class CampaignLocation extends Validable {
         } catch (Exception e) {
             conditions = List.of();
         }
+    }
+
+    public List<LocationPathDTO> getPaths() {
+        // Zoze pice, jak to kurva funguje
+        return paths.stream().filter(path -> path.getIdCampaign().equals(idCampaign)).toList();
     }
 
     @JsonIgnore
