@@ -6,6 +6,7 @@ import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.campaign.model.Campaign;
 import cz.trailsthroughshadows.api.table.campaign.model.CampaignDTO;
+import cz.trailsthroughshadows.api.table.campaign.model.CampaignLocation;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
@@ -72,6 +73,30 @@ public class CampaignController {
 
         return entity;
 
+    }
+
+    @GetMapping("/{id}/location/{idLocation}")
+    public CampaignLocation findById2(
+            @PathVariable int id,
+            @PathVariable int idLocation,
+            @RequestParam(required = false, defaultValue = "") List<String> include,
+            @RequestParam(required = false, defaultValue = "false") boolean lazy
+    ) {
+        CampaignDTO entity = campaignRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '%d' not found! " + id));
+
+        CampaignLocation location = entity.getLocations().stream()
+                .filter(e -> e.getId() == idLocation)
+                .findFirst()
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Location with id '%d' not found! " + idLocation));
+
+        if (!lazy)
+            Initialization.hibernateInitializeAll(location);
+        else
+            Initialization.hibernateInitializeAll(location, include);
+
+        return location;
     }
 
     @PostMapping("")
