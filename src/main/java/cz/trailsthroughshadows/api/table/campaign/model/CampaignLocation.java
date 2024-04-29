@@ -10,6 +10,7 @@ import cz.trailsthroughshadows.algorithm.validation.ValidationConfig;
 import cz.trailsthroughshadows.api.rest.json.LazyFieldsSerializer;
 import cz.trailsthroughshadows.api.rest.model.error.type.ValidationError;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
+import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationPathDTO;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,10 @@ public class CampaignLocation extends Validable {
     @OneToMany(mappedBy = "idCampaignLocation", fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     private List<Story> stories;
+
+    @OneToMany(mappedBy = "idStart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonSerialize(using = LazyFieldsSerializer.class)
+    protected List<LocationPathDTO> paths;
 
     @Column(nullable = false)
     private Boolean start;

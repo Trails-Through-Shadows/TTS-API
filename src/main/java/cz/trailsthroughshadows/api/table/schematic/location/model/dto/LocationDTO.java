@@ -62,10 +62,6 @@ public class LocationDTO extends Validable {
     @JsonSerialize(using = LazyFieldsSerializer.class)
     protected List<LocationStartDTO> startHexes;
 
-    @OneToMany(mappedBy = "idStart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonSerialize(using = LazyFieldsSerializer.class)
-    protected List<LocationPathDTO> paths;
-
     @OneToMany(mappedBy = "key.idLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonSerialize(using = LazyFieldsSerializer.class)
     protected List<HexEnemyDTO> enemies;

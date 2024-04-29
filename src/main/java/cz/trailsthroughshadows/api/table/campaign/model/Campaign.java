@@ -19,15 +19,15 @@ public class Campaign extends CampaignDTO {
         JsonArray nodes = new JsonArray();
         JsonArray links = new JsonArray();
 
-        for (LocationDTO location : getMappedLocations()) {
+        for (CampaignLocation location : getLocations()) {
             JsonObject node = new JsonObject();
             node.addProperty("key", location.getId());
-            node.addProperty("text", location.getTitle());
+            node.addProperty("text", location.getLocation().getTitle());
             node.addProperty("fill", Color.getRandom());
             nodes.add(node);
 
             JsonObject size = new JsonObject();
-            size.addProperty("width", TextUtils.getTextWidth(location.getTitle()) + 15);
+            size.addProperty("width", TextUtils.getTextWidth(location.getLocation().getTitle()) + 15);
             size.addProperty("height", 30);
             node.add("size", size);
 
