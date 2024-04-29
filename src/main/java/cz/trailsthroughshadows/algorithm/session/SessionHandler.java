@@ -12,11 +12,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 @Component
@@ -27,6 +30,9 @@ public class SessionHandler {
 
     @Autowired
     AdventureRepo adventureRepo;
+
+    @Value("${sessionRate.in.seconds}")
+    private long fixedRate;
 
     @Getter
     private final List<Session> sessions = new ArrayList<>();
@@ -112,11 +118,12 @@ public class SessionHandler {
 
         if (optionalSession.isPresent()) {
             log.debug("Session with this license key already exists! Returning existing session #{}.", optionalSession.get().getLicenseId());
+            optionalSession.get().setLastAccess(new Date());
             return new AuthResponse(optionalSession.get());
         }
 
         String randomToken = Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
-        Session session = new Session(randomToken, license.get().getId(), new ArrayList<>());
+        Session session = new Session(randomToken, license.get().getId(), new ArrayList<>(), new Date());
         log.debug("Creating new session for license #{}.", session.getLicenseId());
         sessions.add(session);
 
@@ -132,5 +139,18 @@ public class SessionHandler {
         sessions.remove(session);
 
         return new MessageResponse(HttpStatus.OK, "Logged out!");
+    }
+
+
+    @Scheduled(fixedRateString = "${sessionRate.in.seconds}", timeUnit = TimeUnit.SECONDS)
+    public void cleanSessions() {
+        Date now = new Date();
+        log.debug("Current session count: {}", sessions.size());
+        for (Session session : new ArrayList<>(sessions)) {
+            if (now.getTime() - session.getLastAccess().getTime() > fixedRate/1000) {
+                log.debug("  Removing session for license #{}.", session.getLicenseId());
+                sessions.remove(session);
+            }
+        }
     }
 }

@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +55,9 @@ public class Encounter {
 
     @Setter
     private ValidationService validation;
+
+    @Setter
+    private Date lastAccess = new Date();
 
     public Encounter(Integer id, Integer idLicense, Adventure adventure, Location location) {
         log.info("Creating encounter {}", id);

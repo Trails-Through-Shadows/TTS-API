@@ -9,11 +9,15 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Slf4j
 @EnableCaching
 @SpringBootApplication
+@Configuration
+@EnableScheduling
 @PropertySource("classpath:validation.properties")
 @PropertySource("classpath:image.properties")
 @ComponentScan(basePackages = "cz.trailsthroughshadows")

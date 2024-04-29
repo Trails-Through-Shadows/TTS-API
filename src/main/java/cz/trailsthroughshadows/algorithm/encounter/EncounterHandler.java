@@ -1,5 +1,6 @@
 package cz.trailsthroughshadows.algorithm.encounter;
 
+import cz.trailsthroughshadows.algorithm.session.Session;
 import cz.trailsthroughshadows.algorithm.session.SessionHandler;
 import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
@@ -12,11 +13,15 @@ import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDT
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -33,6 +38,9 @@ public class EncounterHandler {
 
     @Autowired
     ValidationService validation;
+
+    @Value("${encounterRate.in.seconds}")
+    private long fixedRate;
 
     @Getter
     private final List<Encounter> encounters = new ArrayList<>();
@@ -111,5 +119,20 @@ public class EncounterHandler {
         log.info("Encounter removed: {}", encounter.getId());
     }
 
+    @Scheduled(fixedRateString = "${encounterRate.in.seconds}", timeUnit = TimeUnit.SECONDS)
+    public void cleanEncounters() {
+        Date now = new Date();
+        log.debug("Current encounter count: {}", encounters.size());
+        for (Encounter encounter : new ArrayList<>(encounters)) {
+            if (now.getTime() - encounter.getLastAccess().getTime() > fixedRate/1000) {
+                log.debug("  Removing expired encounter #{}.", encounter.getId());
+                encounters.remove(encounter);
+            }
+            if (encounter.getState() == Encounter.EncounterState.FAILED || encounter.getState() == Encounter.EncounterState.COMPLETED) {
+                log.debug("  Removing encounter #{} with state {}.", encounter.getId(), encounter.getState());
+                encounters.remove(encounter);
+            }
+        }
+    }
 
 }
