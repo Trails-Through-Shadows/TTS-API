@@ -8,6 +8,7 @@ import cz.trailsthroughshadows.api.table.enemy.model.dto.EnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
@@ -32,12 +33,14 @@ public class Enemy extends EnemyDTO {
             return null;
         }
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Enemy.class);
+        Enemy enemy = modelMapper.map(dto, Enemy.class);
+        return enemy;
     }
 
     public static Enemy fromDTO(EnemyDTO dto, HexDTO hex) {
         Enemy enemy = fromDTO(dto);
         enemy.setStartingHex(hex);
+
         enemy.setDeck(new ArrayList<>(dto.getMappedActions().stream().map(Action::fromDTO).toList()));
 
         if (enemy.getDeck().isEmpty())

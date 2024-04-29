@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.api.table.effect.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.trailsthroughshadows.api.images.ImageLoader;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -28,7 +29,9 @@ public class EffectEnum {
     }
 
     public String getUrl() {
-        return "/effects/" + title;
+
+        return ImageLoader.getPath("f-" + title.toLowerCase(), "svg");
     }
+
 
 }
