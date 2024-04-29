@@ -29,7 +29,6 @@ public class EffectEnum {
     }
 
     public String getUrl() {
-
         return ImageLoader.getPath("f-" + title.toLowerCase(), "svg");
     }
 
