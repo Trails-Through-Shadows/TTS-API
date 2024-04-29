@@ -1,6 +1,7 @@
 package cz.trailsthroughshadows.algorithm.encounter.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.trailsthroughshadows.api.images.ImageLoader;
 import cz.trailsthroughshadows.api.table.effect.model.Effect;
 import cz.trailsthroughshadows.api.table.effect.model.EffectDTO;
 import lombok.Data;
@@ -14,6 +15,10 @@ public class EncounterEffect {
     private Integer strength;
     private Integer duration;
     private String description;
+
+    public String getUrl() {
+        return ImageLoader.getPath("f-" + getType().toString().toLowerCase(), "svg");
+    }
 
     public static EncounterEffect fromEffect(Effect effect) {
         EncounterEffect encounterEffect = new EncounterEffect();
