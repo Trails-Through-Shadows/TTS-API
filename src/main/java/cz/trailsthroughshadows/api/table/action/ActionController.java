@@ -32,6 +32,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,15 +50,18 @@ public class ActionController {
     private ValidationService validation;
     private ActionRepo actionRepo;
     private EffectRepo effectRepo;
+
     @Autowired
     private EnemyRepo enemyRepo;
+
     @Autowired
     private ClazzRepo clazzRepo;
+
     @Autowired
     private RaceRepo raceRepo;
 
     @GetMapping("/actions")
-    //@Cacheable(value = "action")
+    @Cacheable(value = "action", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Action>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -115,7 +120,7 @@ public class ActionController {
                     content = @Content)
     })
     @GetMapping("/actions/{id}")
-    //@Cacheable(value = "action", key = "#id")
+    @Cacheable(value = "action", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Action> findById(
             @Parameter(description = "Id of the action to be obtained.\n\n Cannot be empty.", required = true)
             @PathVariable int id,
@@ -270,6 +275,7 @@ public class ActionController {
     }
 
     @PutMapping("/actions/{id}")
+    @CacheEvict(value = "action", allEntries = true)
     public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody ActionDTO action) {
         validation.validate(action);
 
@@ -279,17 +285,18 @@ public class ActionController {
     }
 
     @DeleteMapping("/actions/{id}")
+    @CacheEvict(value = "action", allEntries = true)
     public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
         ActionDTO entity = actionRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found!", id));
 
         actionRepo.delete(entity);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '{}' deleted!", id),
-                HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '{}' deleted!", id), HttpStatus.OK);
     }
 
     @PostMapping("/actions")
+    @CacheEvict(value = "action", allEntries = true)
     public ResponseEntity<MessageResponse> createList(@RequestBody List<ActionDTO> actions) {
         List<String> ids = new ArrayList<>();
 
@@ -305,6 +312,7 @@ public class ActionController {
     }
 
     @GetMapping("/actions/{id}/card")
+    @Cacheable(value = "actionCard", key="T(java.util.Objects).hash(#id)")
     public ResponseEntity<LinkedHashMap<String, Object>> getCard(@PathVariable int id) {
         ActionDTO entitydto = actionRepo
                 .findById(id)

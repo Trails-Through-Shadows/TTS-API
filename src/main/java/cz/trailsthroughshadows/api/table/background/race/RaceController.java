@@ -39,7 +39,7 @@ public class RaceController {
     private ActionRepo actionRepo;
 
     @GetMapping("/races")
-    @Cacheable(value = "race")
+    @Cacheable(value = "race", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Race>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -72,7 +72,7 @@ public class RaceController {
     }
 
     @GetMapping("/races/{id}")
-    @Cacheable(value = "race", key = "#id")
+    @Cacheable(value = "race", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Race> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -92,7 +92,7 @@ public class RaceController {
     }
 
     @PutMapping("races/{id}")
-    @CacheEvict(value = "race", key = "#id")
+    @CacheEvict(value = "race", allEntries = true)
     public ResponseEntity<MessageResponse> updateRaceById(
             @PathVariable int id,
             @RequestBody RaceDTO entity
@@ -219,7 +219,7 @@ public class RaceController {
     }
 
     @DeleteMapping("/races/{id}")
-    @CacheEvict(value = "race", key = "#id")
+    @CacheEvict(value = "race", allEntries = true)
     public ResponseEntity<MessageResponse> deleteEntity(@PathVariable int id) {
         RaceDTO entity = raceRepo
                 .findById(id)

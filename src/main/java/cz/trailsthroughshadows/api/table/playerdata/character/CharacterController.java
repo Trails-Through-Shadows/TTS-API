@@ -16,6 +16,8 @@ import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +38,7 @@ public class CharacterController {
     AdventureService adventureService;
 
     @GetMapping("/{id}")
+    @Cacheable(value = "character",key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Character> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -60,6 +63,7 @@ public class CharacterController {
     }
 
     @GetMapping("")
+    @Cacheable(value = "character", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Character>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -97,6 +101,7 @@ public class CharacterController {
     }
 
     @PutMapping("/{id}")
+    @CacheEvict(value = "character", allEntries = true)
     public ResponseEntity<RestResponse> updateCharacter(
             @PathVariable int id,
             @RequestBody CharacterDTO character,
@@ -107,6 +112,7 @@ public class CharacterController {
     }
 
     @DeleteMapping("/{id}")
+    @CacheEvict(value = "character", allEntries = true)
     public ResponseEntity<RestResponse> deleteCharacter(
             @PathVariable int id,
             HttpServletRequest request

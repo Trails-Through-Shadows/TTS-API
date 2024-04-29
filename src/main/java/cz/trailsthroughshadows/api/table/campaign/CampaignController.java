@@ -44,7 +44,7 @@ public class CampaignController {
     private ValidationService validation;
 
     @GetMapping("")
-    @Cacheable(value = "campaign")
+    @Cacheable(value = "campaign", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<CampaignDTO>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -77,7 +77,7 @@ public class CampaignController {
     }
 
     @GetMapping("/{id}")
-    @Cacheable(value = "campaign")
+    @Cacheable(value = "campaign", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public CampaignDTO findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -96,8 +96,8 @@ public class CampaignController {
 
     }
 
-    @Cacheable(value = "campaign")
     @GetMapping("/{id}/location/{idLocation}")
+    @Cacheable(value = "campaign", key="T(java.util.Objects).hash(#id, #idLocation, #include, #lazy)")
     public CampaignLocation findById2(
             @PathVariable int id,
             @PathVariable int idLocation,
@@ -121,8 +121,8 @@ public class CampaignController {
         return location;
     }
 
+    @Transactional
     @PutMapping("/{id}")
-    @Transactional(rollbackOn = Exception.class)
     @CacheEvict(value = "campaign", allEntries = true)
     public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody CampaignDTO campaign) {
         log.debug("Updating campaign with id '{}': {}", id, campaign);
@@ -190,8 +190,8 @@ public class CampaignController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Campaign with id '{}' updated!", id), HttpStatus.OK);
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
-    @Transactional(rollbackOn = Exception.class)
     @CacheEvict(value = "campaign", allEntries = true)
     public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
         CampaignDTO campaign = campaignRepo

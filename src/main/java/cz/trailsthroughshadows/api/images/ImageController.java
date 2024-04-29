@@ -3,6 +3,7 @@ package cz.trailsthroughshadows.api.images;
 import cz.trailsthroughshadows.api.configuration.ImageLoaderConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -28,6 +29,7 @@ public class ImageController {
 
 
     @GetMapping("/{type}/{file}")
+    @Cacheable(value = "image", key = "T(java.util.Objects).hash(#type, #file, #width, #height, #size, #radius, #token)")
     public @ResponseBody byte[] getImage(
             @PathVariable String type,
             @PathVariable String file,
@@ -79,6 +81,7 @@ public class ImageController {
     }
 
     @GetMapping(value = "/svg/{type}/{file:.+\\.svg}")
+    @Cacheable(value = "svg", key = "T(java.util.Objects).hash(#type, #file)")
     public ResponseEntity<Resource> getSwg(
             @PathVariable String type,
             @PathVariable String file

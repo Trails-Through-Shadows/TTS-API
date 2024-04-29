@@ -25,7 +25,7 @@ public class SummonController {
     private SummonRepo summonRepo;
 
     @GetMapping("/")
-    @Cacheable(value = "summon")
+    @Cacheable(value = "summon" ,key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<SummonDTO>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,

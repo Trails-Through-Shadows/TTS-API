@@ -34,7 +34,7 @@ public class PartController {
     private PartRepo partRepo;
 
     @GetMapping("/parts")
-    @Cacheable(value = "parts")
+    @Cacheable(value = "parts", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Part>> getParts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,

@@ -12,6 +12,7 @@ import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class ItemController {
     private ItemRepo itemRepo;
 
     @GetMapping("/items")
-    @Cacheable(value = "item")
+    @Cacheable(value = "item", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Item>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -60,7 +61,7 @@ public class ItemController {
     }
 
     @GetMapping("/items/{id}")
-    @Cacheable(value = "item", key = "#id")
+    @Cacheable(value = "item", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Item> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -80,7 +81,7 @@ public class ItemController {
     }
 
     @PostMapping("/items")
-    @Cacheable(value = "item")
+    @CacheEvict(value = "item", allEntries = true)
     public ResponseEntity<MessageResponse> createEntity(@RequestBody List<ItemDTO> enTITIES) {
         enTITIES.forEach(validation::validate);
         List<ItemDTO> saved = itemRepo.saveAll(enTITIES);
@@ -90,7 +91,7 @@ public class ItemController {
     }
 
     @PutMapping("/items/{id}")
-    @Cacheable(value = "item", key = "#id")
+    @CacheEvict(value = "item", allEntries = true)
     public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody ItemDTO item) {
         validation.validate(item);
 
@@ -112,7 +113,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/items/{id}")
-    @Cacheable(value = "item", key = "#id")
+    @CacheEvict(value = "item", allEntries = true)
     public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
         ItemDTO entityToDelete = itemRepo
                 .findById(id)

@@ -6,10 +6,7 @@ import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
-import cz.trailsthroughshadows.api.table.market.market.model.Market;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.HexEnemy;
-import cz.trailsthroughshadows.api.table.schematic.hex.model.HexObstacle;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
@@ -45,7 +42,7 @@ public class LocationController {
     private CampaignRepo campaignRepo;
 
     @GetMapping("/locations")
-    @Cacheable(value = "location")
+    @Cacheable(value = "location", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Location>> getLocations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -87,7 +84,7 @@ public class LocationController {
     }
 
     @GetMapping("/locations/{id}")
-    @Cacheable(value = "location", key = "#id")
+    @Cacheable(value = "location", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Location> getLocationById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -108,7 +105,7 @@ public class LocationController {
     }
 
     @GetMapping("/locations/{idLocation}/parts/{idPart}")
-    @Cacheable(value = "location")
+    @Cacheable(value = "location", key="T(java.util.Objects).hash(#idLocation, #idPart)")
     public ResponseEntity<Part> getPartByLocationId(@PathVariable int idLocation, @PathVariable int idPart) {
 
         LocationDTO locationDTO = locationRepo
@@ -131,8 +128,8 @@ public class LocationController {
         return new ResponseEntity<>(retPart, HttpStatus.OK);
     }
 
+    @Transactional
     @PostMapping("/locations")
-    @Transactional(rollbackOn = Exception.class)
     @CacheEvict(value = "location", allEntries = true)
     public ResponseEntity<MessageResponse> createLocation(@RequestBody List<LocationDTO> locations) {
         log.debug("Creating locations: " + locations);
@@ -203,8 +200,8 @@ public class LocationController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Locations created: " + ids), HttpStatus.OK);
     }
 
+    @Transactional
     @PutMapping("/locations/{id}")
-    @Transactional(rollbackOn = Exception.class)
     @CacheEvict(value = "location", allEntries = true)
     public ResponseEntity<MessageResponse> updateLocationById(@PathVariable int id, @RequestBody LocationDTO location) {
         LocationDTO locationToUpdate = locationRepo
@@ -228,8 +225,8 @@ public class LocationController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Location updated!"), HttpStatus.OK);
     }
 
+    @Transactional
     @DeleteMapping("/locations/{id}")
-    @Transactional(rollbackOn = Exception.class)
     @CacheEvict(value = "location", allEntries = true)
     public ResponseEntity<MessageResponse> deleteLocationById(@PathVariable int id) {
         LocationDTO location = locationRepo

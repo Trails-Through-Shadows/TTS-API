@@ -29,7 +29,7 @@ public class EffectController {
     private EffectRepo effectRepo;
 
     @GetMapping("/effects")
-    @Cacheable(value = "effect")
+    @Cacheable(value = "effect", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Effect>> getEnemies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -76,7 +76,7 @@ public class EffectController {
     }
 
     @GetMapping("/effects/{id}")
-    // @Cacheable(value = "effect", key = "#id")
+    @Cacheable(value = "effect", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Effect> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,

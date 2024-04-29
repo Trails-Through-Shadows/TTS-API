@@ -35,7 +35,7 @@ public class ObstacleController {
     private EffectRepo effectRepo;
 
     @GetMapping("/obstacles")
-    @Cacheable(value = "obstacle")
+    @Cacheable(value = "obstacle", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Obstacle>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -71,7 +71,7 @@ public class ObstacleController {
     }
 
     @GetMapping("/obstacles/{id}")
-    @Cacheable(value = "obstacle", key = "#id")
+    @Cacheable(value = "obstacle", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Obstacle> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -91,7 +91,7 @@ public class ObstacleController {
     }
 
     @DeleteMapping("/obstacles/{id}")
-    @CacheEvict(value = "obstacle", key = "#id")
+    @CacheEvict(value = "obstacle",allEntries = true)
     public ResponseEntity<MessageResponse> deleteObstacleById(
             @PathVariable int id
     ) {
@@ -104,7 +104,7 @@ public class ObstacleController {
     }
 
     @PutMapping("/obstacles/{id}")
-    @CacheEvict(value = "obstacle", key = "#id")
+    @CacheEvict(value = "obstacle", allEntries = true)
     public ResponseEntity<MessageResponse> updateObstacleById(
             @PathVariable int id,
             @RequestBody ObstacleDTO obstacle

@@ -17,6 +17,8 @@ import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,7 @@ public class AdventureController {
     private CharacterService characterService;
 
     @GetMapping("/{id}")
+    @Cacheable(value = "adventure", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Adventure> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -61,6 +64,7 @@ public class AdventureController {
     }
 
     @GetMapping("")
+    @Cacheable(value = "adventure", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<AdventureDTO>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -97,6 +101,7 @@ public class AdventureController {
     }
 
     @PostMapping("/{idLicense}")
+    @CacheEvict(value = "adventure", allEntries = true)
     public ResponseEntity<RestResponse> addAdventure(
             @PathVariable int idLicense,
             @RequestBody AdventureDTO adventure,
@@ -107,6 +112,7 @@ public class AdventureController {
     }
 
     @PutMapping("/{id}")
+    @CacheEvict(value = "adventure", allEntries = true)
     public ResponseEntity<RestResponse> updateAdventure(
             @PathVariable int id,
             @RequestBody AdventureDTO adventure,
@@ -117,6 +123,7 @@ public class AdventureController {
     }
 
     @DeleteMapping("/{id}")
+    @CacheEvict(value = "adventure", allEntries = true)
     public ResponseEntity<RestResponse> deleteAdventure(
             @PathVariable int id,
             HttpServletRequest request
@@ -126,6 +133,7 @@ public class AdventureController {
     }
 
     @GetMapping("/{id}/characters")
+    @Cacheable(value = "character", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Character>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -165,6 +173,7 @@ public class AdventureController {
     }
 
     @PostMapping("/{id}/characters")
+    @CacheEvict(value = "character", allEntries = true)
     public ResponseEntity<RestResponse> addCharacter(
             @PathVariable int id,
             @RequestBody CharacterDTO character,

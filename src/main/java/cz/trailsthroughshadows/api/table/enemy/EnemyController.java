@@ -40,7 +40,7 @@ public class EnemyController {
     private ActionRepo actionRepo;
 
     @GetMapping("/enemies")
-    @Cacheable(value = "enemy")
+    @Cacheable(value = "enemy", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Enemy>> getEnemies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -75,7 +75,7 @@ public class EnemyController {
     }
 
     @GetMapping("/enemies/{id}")
-    @Cacheable(value = "enemy", key = "#id")
+    @Cacheable(value = "enemy", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Enemy> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -95,7 +95,7 @@ public class EnemyController {
     }
 
     @PutMapping("/enemies/{id}")
-    @CacheEvict(value = "enemy", key = "#id")
+    @CacheEvict(value = "enemy", allEntries = true)
     public ResponseEntity<MessageResponse> updateEnemyById(
             @PathVariable int id,
             @RequestBody EnemyDTO enemy
@@ -225,7 +225,7 @@ public class EnemyController {
     }
 
     @DeleteMapping("/enemies/{id}")
-    @CacheEvict(value = "enemy", key = "#id")
+    @CacheEvict(value = "enemy", allEntries = true)
     public ResponseEntity<MessageResponse> deleteEnemy(@PathVariable int id) {
         EnemyDTO enemyDTO = enemyRepo
                 .findById(id)

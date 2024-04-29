@@ -39,7 +39,7 @@ public class ClazzController {
     private ActionRepo actionRepo;
 
     @GetMapping("/classes")
-    @Cacheable(value = "class")
+    @Cacheable(value = "class", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Clazz>> getEnemies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -72,7 +72,7 @@ public class ClazzController {
     }
 
     @GetMapping("/classes/{id}")
-    @Cacheable(value = "class", key = "#id")
+    @Cacheable(value = "class", key="T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Clazz> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -92,7 +92,7 @@ public class ClazzController {
     }
 
     @PutMapping("classes/{id}")
-    @CacheEvict(value = "class", key = "#id")
+    @CacheEvict(value = "class", allEntries = true)
     public ResponseEntity<MessageResponse> updateEntity(
             @PathVariable int id,
             @RequestBody ClazzDTO entity
@@ -222,7 +222,7 @@ public class ClazzController {
     }
 
     @DeleteMapping("/classes/{id}")
-    @CacheEvict(value = "class", key = "#id")
+    @CacheEvict(value = "class", allEntries = true)
     public ResponseEntity<MessageResponse> deleteEntity(
             @PathVariable int id
     ) {
