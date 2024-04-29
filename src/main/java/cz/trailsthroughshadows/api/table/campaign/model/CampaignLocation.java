@@ -102,13 +102,9 @@ public class CampaignLocation extends Validable {
 
         if (!errors.isEmpty()) return;
 
-        for (Story story : stories) {
-            validateChild(story, validationConfig);
-        }
-
-        for (Condition condition : conditions) {
-            validateChild(condition, validationConfig);
-        }
+        stories.forEach(story -> validateChild(story, validationConfig));
+        conditions.forEach(condition -> validateChild(condition, validationConfig));
+        validateChild(location, validationConfig);
     }
 
     @Override

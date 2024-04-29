@@ -87,13 +87,8 @@ public class CampaignDTO extends Validable {
         validateChild(new Title(title), validationConfig);
         validateChild(new Description(description), validationConfig);
 
-        for (CampaignLocation location : locations) {
-            validateChild(location, validationConfig);
-        }
-
-        for (CampaignAchievements achievement : achievements) {
-            validateChild(achievement.getAchievement(), validationConfig);
-        }
+        locations.forEach(location -> validateChild(location, validationConfig));
+        achievements.forEach(achievement -> validateChild(achievement, validationConfig));
     }
 
     @Override

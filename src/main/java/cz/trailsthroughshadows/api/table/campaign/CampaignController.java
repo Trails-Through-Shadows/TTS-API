@@ -1,28 +1,38 @@
 package cz.trailsthroughshadows.api.table.campaign;
 
+import cz.trailsthroughshadows.algorithm.validation.ValidationService;
 import cz.trailsthroughshadows.api.rest.exception.RestException;
 import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
-import cz.trailsthroughshadows.api.table.campaign.model.Campaign;
-import cz.trailsthroughshadows.api.table.campaign.model.CampaignDTO;
-import cz.trailsthroughshadows.api.table.campaign.model.CampaignLocation;
+import cz.trailsthroughshadows.api.table.campaign.model.*;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/campaigns")
 public class CampaignController {
+    private static final Logger log = LoggerFactory.getLogger(CampaignController.class);
     @Autowired
     private CampaignRepo campaignRepo;
+
+    @Autowired
+    private ValidationService validation;
 
     @GetMapping("")
     public ResponseEntity<RestPaginatedResult<CampaignDTO>> findAllEntities(
@@ -99,16 +109,79 @@ public class CampaignController {
         return location;
     }
 
+    @PutMapping("/{id}")
+    @Transactional(rollbackOn = Exception.class)
+    @CacheEvict(value = "campaign", allEntries = true)
+    public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody CampaignDTO campaign) {
+        CampaignDTO campaignToUpdate = campaignRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Campaign with id '{}' not found!", id));
+
+        validation.validate(campaign);
+
+        campaignToUpdate.setTitle(campaign.getTitle());
+        campaignToUpdate.setDescription(campaign.getDescription());
+        campaignToUpdate.setAchievements(campaign.getAchievements());
+        campaignToUpdate.setLocations(campaign.getLocations());
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Campaign updated successfully!"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional(rollbackOn = Exception.class)
+    @CacheEvict(value = "campaign", allEntries = true)
+    public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
+        CampaignDTO campaign = campaignRepo
+                .findById(id)
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Campaign with id '{}' not found!", id));
+
+        campaignRepo.delete(campaign);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Campaign deleted successfully!"), HttpStatus.OK);
+    }
+
+
     @PostMapping("")
     //@CacheEvict(value = "campaign", allEntries = true)
     public ResponseEntity<MessageResponse> create(@RequestBody List<CampaignDTO> campaigns) {
+        log.info("Creating campaigns: {}", campaigns);
 
-        //TODO validation of the input
-
+        // validate all and set ids to null
+        campaigns.forEach(validation::validate);
         campaigns.forEach(e -> e.setId(null));
 
+        // save relations
+        Map<String, List<CampaignAchievements>> achievementsRelations = new HashMap<>();
+        Map<String, List<CampaignLocation>> locationsRelations = new HashMap<>();
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Campaigns created successfully!"), HttpStatus.OK);
+        // remove relations
+        campaigns.forEach(campaign -> {
+            achievementsRelations.put(campaign.getTitle(), new ArrayList<>(campaign.getAchievements()));
+            campaign.setAchievements(null);
+
+            locationsRelations.put(campaign.getTitle(), new ArrayList<>(campaign.getLocations()));
+            campaign.setLocations(null);
+        });
+
+        // save campaigns
+        campaignRepo.saveAll(campaigns);
+
+        // post load relations
+        campaigns.forEach(campaign -> {
+            List<CampaignAchievements> achievements = achievementsRelations.get(campaign.getTitle());
+            List<CampaignLocation> locations = locationsRelations.get(campaign.getTitle());
+
+            campaign.setAchievements(achievements);
+            campaign.getAchievements().forEach(e -> e.setKey(new CampaignAchievements.CampaignAchievementsId(campaign.getId(), e.getAchievement().getId())));
+
+            campaign.setLocations(locations);
+            campaign.getLocations().forEach(e -> e.setIdCampaign(campaign.getId()));
+
+            campaignRepo.save(campaign);
+        });
+
+        String ids = campaigns.stream().map(CampaignDTO::getId).map(String::valueOf).reduce((a, b) -> a + ", " + b).orElse("");
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Campaigns created: " + ids), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/tree", produces = MediaType.APPLICATION_JSON_VALUE)
