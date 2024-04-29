@@ -6,9 +6,17 @@ import cz.trailsthroughshadows.api.rest.model.pagination.Pagination;
 import cz.trailsthroughshadows.api.rest.model.pagination.RestPaginatedResult;
 import cz.trailsthroughshadows.api.rest.model.response.MessageResponse;
 import cz.trailsthroughshadows.api.table.campaign.CampaignRepo;
+import cz.trailsthroughshadows.api.table.market.market.model.Market;
 import cz.trailsthroughshadows.api.table.schematic.hex.model.Hex;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.HexEnemy;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.HexObstacle;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexEnemyDTO;
+import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDTO;
+import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationDoorDTO;
+import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationPartDTO;
+import cz.trailsthroughshadows.api.table.schematic.location.model.dto.LocationStartDTO;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
 import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
@@ -22,7 +30,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController(value = "Location")
@@ -117,15 +128,68 @@ public class LocationController {
     }
 
     @PostMapping("/locations")
-    @CacheEvict(value = "location", allEntries = true)
     @Transactional(rollbackOn = Exception.class)
+    @CacheEvict(value = "location", allEntries = true)
     public ResponseEntity<MessageResponse> createLocation(@RequestBody List<LocationDTO> locations) {
         log.debug("Creating locations: " + locations);
 
         // Validate all locations
         locations.forEach(validation::validate);
+        locations.forEach(location -> location.setId(null));
 
-        locationRepo.saveAll(locations);
+        // Remove relations and save them for later
+        Map<String, List<HexEnemyDTO>> hexEnemyRelations = new HashMap<>();
+        Map<String, List<HexObstacleDTO>> hexObstacleRelations = new HashMap<>();
+        Map<String, List<LocationPartDTO>> locationPartRelations = new HashMap<>();
+        Map<String, List<LocationDoorDTO>> locationDoorRelations = new HashMap<>();
+        Map<String, List<LocationStartDTO>> locationStartRelations = new HashMap<>();
+
+        locations.forEach(location -> {
+            hexEnemyRelations.put(location.getTag(), new ArrayList<>(location.getEnemies()));
+            location.setEnemies(null);
+
+            hexObstacleRelations.put(location.getTag(), new ArrayList<>(location.getObstacles()));
+            location.setObstacles(null);
+
+            locationPartRelations.put(location.getTag(), new ArrayList<>(location.getParts()));
+            location.setParts(null);
+
+            locationDoorRelations.put(location.getTag(), new ArrayList<>(location.getDoors()));
+            location.setDoors(null);
+
+            locationStartRelations.put(location.getTag(), new ArrayList<>(location.getStartHexes()));
+            location.setStartHexes(null);
+        });
+
+        // Save locations
+        locations.forEach(locationRepo::save);
+
+        // Post load relations
+        locations.forEach(location -> {
+            List<HexEnemyDTO> hexEnemies = hexEnemyRelations.get(location.getTag());
+            List<HexObstacleDTO> hexObstacles = hexObstacleRelations.get(location.getTag());
+            List<LocationPartDTO> locationParts = locationPartRelations.get(location.getTag());
+            List<LocationDoorDTO> locationDoors = locationDoorRelations.get(location.getTag());
+            List<LocationStartDTO> locationStarts = locationStartRelations.get(location.getTag());
+
+            location.setEnemies(hexEnemies);
+            location.getEnemies().forEach(hexEnemy -> hexEnemy.getKey().setIdLocation(location.getId()));
+
+            location.setObstacles(hexObstacles);
+            location.getObstacles().forEach(hexObstacle -> hexObstacle.getKey().setIdLocation(location.getId()));
+
+            location.setParts(locationParts);
+            location.getParts().forEach(locationPart -> locationPart.setKey(
+                    new LocationPartDTO.LocationPartId(location.getId(), locationPart.getPart().getId())));
+
+            location.setDoors(locationDoors);
+            location.getDoors().forEach(locationDoor -> locationDoor.getKey().setIdLocation(location.getId()));
+
+            location.setStartHexes(locationStarts);
+            location.getStartHexes().forEach(locationStart -> locationStart.setIdLocation(location.getId()));
+
+            locationRepo.save(location);
+        });
 
         String ids = locations.stream()
                 .map(LocationDTO::getId)
@@ -136,6 +200,7 @@ public class LocationController {
     }
 
     @PutMapping("/locations/{id}")
+    @Transactional(rollbackOn = Exception.class)
     @CacheEvict(value = "location", allEntries = true)
     public ResponseEntity<MessageResponse> updateLocationById(@PathVariable int id, @RequestBody LocationDTO location) {
         LocationDTO locationToUpdate = locationRepo
@@ -160,6 +225,7 @@ public class LocationController {
     }
 
     @DeleteMapping("/locations/{id}")
+    @Transactional(rollbackOn = Exception.class)
     @CacheEvict(value = "location", allEntries = true)
     public ResponseEntity<MessageResponse> deleteLocationById(@PathVariable int id) {
         LocationDTO location = locationRepo

@@ -5,6 +5,7 @@ import cz.trailsthroughshadows.api.rest.model.error.RestError;
 import cz.trailsthroughshadows.api.rest.model.error.RestSubError;
 import cz.trailsthroughshadows.api.rest.model.error.type.CompositeError;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.Transient;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 
@@ -18,11 +19,13 @@ public abstract class Validable {
     /**
      * List of errors that occurred during validation.
      */
+    @Transient
     protected List<RestSubError> errors = new ArrayList<>();
 
     /**
      * Custom field name for when the name has to be different then the class name.
      */
+    @Transient
     protected String fieldName;
 
     /**
@@ -113,6 +116,7 @@ public abstract class Validable {
      *
      * @return String representation of the object.
      */
+    @Transient
     @JsonIgnore
     public abstract String getValidableValue();
 
@@ -121,6 +125,7 @@ public abstract class Validable {
      *
      * @return The name of the object's class.
      */
+    @Transient
     @JsonIgnore
     public String getValidableClass() {
         String name = getClass().getSimpleName();
@@ -136,6 +141,7 @@ public abstract class Validable {
      *
      * @return The formatted value of the object.
      */
+    @Transient
     @JsonIgnore
     public String getValidableValueFormatted() {
         return getValidableValue() == null ? "" : " '%s'".formatted(getValidableValue());

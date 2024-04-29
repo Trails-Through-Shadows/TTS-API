@@ -88,6 +88,7 @@ public class PartController {
 
     @DeleteMapping("/parts/{id}")
     @CacheEvict(value = "part", allEntries = true)
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<MessageResponse> deletePartById(@PathVariable int id) {
         PartDTO partDTO = partRepo
                 .findById(id)
@@ -99,6 +100,7 @@ public class PartController {
 
     @PutMapping("/parts/{id}")
     @CacheEvict(value = "part", allEntries = true)
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<MessageResponse> updatePartById(@PathVariable int id, @RequestBody PartDTO part) {
         PartDTO partToUpdate = partRepo
                 .findById(id)

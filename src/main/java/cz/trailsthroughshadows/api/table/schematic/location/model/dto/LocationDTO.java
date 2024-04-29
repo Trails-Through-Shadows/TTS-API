@@ -117,16 +117,35 @@ public class LocationDTO extends Validable {
         if (parts == null) {
             errors.add(new ValidationError("Location", "parts", null, "Parts must not be null."));
         }
+        parts.forEach(part -> validateChild(part, validationConfig));
         if (doors == null) {
             errors.add(new ValidationError("Location", "doors", null, "Doors must not be null."));
         }
+        doors.forEach(door -> validateChild(door, validationConfig));
         if (startHexes == null) {
             errors.add(new ValidationError("Location", "startHexes", null, "Start hexes must not be null."));
+        }
+        startHexes.forEach(startHex -> validateChild(startHex, validationConfig));
+        if (enemies == null) {
+            errors.add(new ValidationError("Location", "enemies", null, "Enemies must not be null."));
+        }
+        enemies.forEach(enemy -> validateChild(enemy, validationConfig));
+        if (obstacles == null) {
+            errors.add(new ValidationError("Location", "obstacles", null, "Obstacles must not be null."));
+        }
+        obstacles.forEach(obstacle -> validateChild(obstacle, validationConfig));
+        if (type == null) {
+            errors.add(new ValidationError("Location", "type", null, "Type must not be null."));
         }
 
         if (parts.isEmpty()) {
             errors.add(new ValidationError("Location", "parts", null, "Parts must not be empty."));
         }
+        if (startHexes.size() < 6) {
+            errors.add(new ValidationError("Location", "startHexes", startHexes.size(), "Location has to have at least 6 start hexes."));
+        }
+
+        // TODO: validate that all parts are connected
     }
 
     @Override
