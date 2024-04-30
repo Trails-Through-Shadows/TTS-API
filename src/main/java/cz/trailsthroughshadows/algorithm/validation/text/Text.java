@@ -34,13 +34,21 @@ public abstract class Text extends Validable {
 
         // check allowed regex
         if (allowedChars != null && !text.matches(allowedChars)) {
-            errors.add(new ValidationError(className, "text", text,
+
+            String disallowedChars = "";
+            for (char c : text.toCharArray()) {
+                if (!String.valueOf(c).matches(allowedChars)) {
+                    disallowedChars += c;
+                }
+            }
+
+            errors.add(new ValidationError(className, "text", disallowedChars,
                     "%s contains disallowed characters!".formatted(className)));
         }
     }
 
     @Override
     public String getValidableValue() {
-        return text;
+        return null;
     }
 }
