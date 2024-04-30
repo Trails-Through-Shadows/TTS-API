@@ -21,7 +21,7 @@ public class Campaign extends CampaignDTO {
 
         for (CampaignLocation location : getLocations()) {
             JsonObject node = new JsonObject();
-            node.addProperty("key", location.getId());
+            node.addProperty("key", location.getLocation().getId());
             node.addProperty("text", location.getLocation().getTitle());
             node.addProperty("fill", Color.getRandom());
             nodes.add(node);
