@@ -15,6 +15,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -76,7 +77,6 @@ public class CampaignLocation extends Validable {
         if (stories == null) {
             return new ArrayList<>();
         }
-
         // KURVAA ALEE
         return stories.stream().filter(story -> story.getIdCampaignLocation() == null || story.getIdCampaignLocation().equals(id)).toList();
     }
@@ -85,17 +85,14 @@ public class CampaignLocation extends Validable {
         if (paths == null) {
             return new ArrayList<>();
         }
-
         // Zoze pice, jak to kurva funguje
         return paths.stream().filter(path -> path.getIdCampaign() == null || path.getIdCampaign().equals(idCampaign)).toList();
     }
 
-    @JsonIgnore
     public String getConditionString() {
         return conditionString;
     }
 
-    @JsonIgnore
     public void setConditionString(String conditionString) {
         this.conditionString = conditionString;
         postLoad();
