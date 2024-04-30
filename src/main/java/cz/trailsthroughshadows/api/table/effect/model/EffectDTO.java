@@ -84,7 +84,7 @@ public class EffectDTO extends Validable implements Serializable {
                     "Strength must not be null for this type of effect."));
         } else if ((getType() == EffectType.HEAL || getType() == EffectType.REGENERATION) && strength == -1) {
             // this is okay and im too tired to think
-        } else if (getType().isResistance && strength == -1) {
+        } else if (getType().isResistance && strength != null && strength == -1) {
             // resistances can have strength -1 too
         } else if (getType().hasStrength && strength < 1) {
             errors.add(new ValidationError("Effect", "strength", getStrength(),
