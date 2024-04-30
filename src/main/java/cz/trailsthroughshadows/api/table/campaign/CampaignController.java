@@ -178,11 +178,11 @@ public class CampaignController {
                     });
                 }
 
-                StringBuilder sb = new StringBuilder();
-                sb.append("[");
-                sb.append(cl.getConditions().stream().map(Object::toString).reduce((a, b) -> a + ", " + b).orElse(""));
-                sb.append("]");
-                cl.setConditionString(sb.toString());
+//                StringBuilder sb = new StringBuilder();
+//                sb.append("[");
+//                sb.append(cl.getConditions().stream().map(Object::toString).reduce((a, b) -> a + ", " + b).orElse(""));
+//                sb.append("]");
+                cl.setConditionString(cl.getConditionString());
 
                 campaignToUpdate.getLocations().clear();
                 campaignToUpdate.getLocations().addAll(locations);

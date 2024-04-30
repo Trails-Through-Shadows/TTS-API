@@ -60,14 +60,36 @@ public class ActionController {
     @Autowired
     private RaceRepo raceRepo;
 
+
+    @Operation(
+            summary = "Get all actions",
+            description = """
+                    # Get all actions
+                    By default it lazy loads items and returns them
+                    
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All actions",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Action.class))}),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @GetMapping("/actions")
     @Cacheable(value = "action", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Action>> findAllEntities(
+            @Parameter(description = "Page number, starts from 0", required = false)
             @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Number of items per page", required = false)
             @RequestParam(defaultValue = "100") int limit,
+            @Parameter(description = "Filtering string", required = false)
             @RequestParam(defaultValue = "") String filter,
+            @Parameter(description = "Sorting string", required = false)
             @RequestParam(defaultValue = "") String sort,
+            @Parameter(description = "Case sensitive fields which you want to be loaded", required = false)
             @RequestParam(required = false, defaultValue = "") List<String> include,
+            @Parameter(description = "- **false** - all fields are loaded \n - **true** - loaded only things that are in include", required = false)
             @RequestParam(required = false, defaultValue = "true") boolean lazy
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
@@ -142,12 +164,7 @@ public class ActionController {
         return new ResponseEntity<>(Action.fromDTO(entity), HttpStatus.OK);
     }
 
-    /**
-     * helper thing for effects
-     *
-     * @param inputEffect
-     * @return
-     */
+
     private EffectDTO processEffects(EffectDTO inputEffect) {
         List<EffectDTO> effects = effectRepo.findUnique(
                 inputEffect.getTarget(),
@@ -274,16 +291,56 @@ public class ActionController {
         return lateSave;
     }
 
+    @Operation(
+            summary = "Update an existing action",
+            description = """
+        # Update an existing action
+        This endpoint is used to update an existing action in the system. It requires two parameters:
+        1. `id` (Path Variable): This is the unique identifier of the action to be updated. It cannot be empty and is required for the operation.
+        2. `action` (Request Body): This is the action data that will be used to update the existing action. It cannot be null or empty and is required for the operation.
+        """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Action updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Action.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Action not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @PutMapping("/actions/{id}")
     @CacheEvict(value = "action", allEntries = true)
-    public ResponseEntity<MessageResponse> update(@PathVariable int id, @RequestBody ActionDTO action) {
+    public ResponseEntity<MessageResponse> update(
+            @Parameter(description = "Id of the action to be updated.\n\n Cannot be empty.", required = true)
+            @PathVariable int id,
+            @Parameter(description = "Action to add. Cannot null or empty.", required = true)
+            @RequestBody ActionDTO action) {
         validation.validate(action);
-
         ActionDTO updated = updateInner(id, action);
-
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '{}' updated!", id), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Delete an action",
+            description = """
+                    # Delete an action
+                    Check if action exists and delete it
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Action created",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Action.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Action not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @DeleteMapping("/actions/{id}")
     @CacheEvict(value = "action", allEntries = true)
     public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
