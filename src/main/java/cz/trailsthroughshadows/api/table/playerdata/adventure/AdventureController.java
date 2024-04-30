@@ -133,7 +133,7 @@ public class AdventureController {
     }
 
     @GetMapping("/{id}/characters")
-    @Cacheable(value = "character", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
+    @Cacheable(value = "adventure", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Character>> findAllEntities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int limit,
@@ -173,7 +173,7 @@ public class AdventureController {
     }
 
     @PostMapping("/{id}/characters")
-    @CacheEvict(value = "character", allEntries = true)
+    @CacheEvict(value = "adventure", allEntries = true)
     public ResponseEntity<RestResponse> addCharacter(
             @PathVariable int id,
             @RequestBody CharacterDTO character,
