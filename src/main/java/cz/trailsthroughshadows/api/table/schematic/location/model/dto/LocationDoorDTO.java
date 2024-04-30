@@ -29,6 +29,9 @@ public class LocationDoorDTO extends Validable implements Serializable {
     @Column(nullable = false, name = "sCoord")
     private Integer s;
 
+    @Transient
+    private boolean opened = false;
+
     @Override
     protected void validateInner(@Nullable ValidationConfig validationConfig) {
         if (key == null) {

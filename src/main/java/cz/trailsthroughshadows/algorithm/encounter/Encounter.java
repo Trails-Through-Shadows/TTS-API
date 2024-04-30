@@ -50,6 +50,7 @@ public class Encounter {
     private Part startPart;
     private List<Part> parts;
     private List<LocationDoorDTO> doorsToOpen = new ArrayList<>();
+    private List<LocationDoorDTO> doors = new ArrayList<>();
     List<CampaignLocation.Condition> conditions = new ArrayList<>();
     List<Story> stories = new ArrayList<>();
 
@@ -124,6 +125,12 @@ public class Encounter {
                     .map(EncounterEffect::fromEffect).toList();
             entities.addObstacle(obstacle);
         }
+
+        List<LocationDoorDTO> doors = location.getDoors().stream()
+                .filter(d -> d.getKey().getIdPartFrom().equals(idPart))
+                .toList();
+        log.info("Adding doors: {}", doors.size());
+        this.doors.addAll(doors);
     }
 
     // initiative
@@ -407,16 +414,24 @@ public class Encounter {
     // door
     public void openDoor(LocationDoorDTO door) {
         log.info("Opening door {}", door);
-        // todo more sophisticated door opening
+
+        LocationDoorDTO actualDoor = doors.stream()
+                .filter(d -> d.getQ() == door.getQ() && d.getR() == door.getR() && d.getS() == door.getS() && d.getKey().getIdPartFrom() == door.getKey().getIdPartFrom() && d.getKey().getIdPartTo() == door.getKey().getIdPartTo())
+                .findFirst()
+                .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Door not found", door));
 
         if (state != EncounterState.ONGOING) {
-            logError(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
+            throw logErrorReturn(HttpStatus.BAD_REQUEST, "Encounter not ongoing.");
         }
-        if (doorsToOpen.contains(door)) {
-            logError(HttpStatus.NOT_ACCEPTABLE, "Door already opened.");
+        if (doorsToOpen.contains(actualDoor)) {
+            throw logErrorReturn(HttpStatus.NOT_ACCEPTABLE, "This door is already set to open at the end of the round.");
+        }
+        if (actualDoor.isOpened()) {
+            throw logErrorReturn(HttpStatus.NOT_ACCEPTABLE, "This door is already opened.");
         }
 
-        doorsToOpen.add(door);
+        actualDoor.setOpened(true);
+        doorsToOpen.add(actualDoor);
     }
 
     // round
@@ -445,6 +460,14 @@ public class Encounter {
 
             discoverPart(partTo.getId());
             unlockedParts.add(partTo.getId());
+
+            // add other side of door to opened doors
+            LocationDoorDTO otherDoor = doors.stream()
+                    .filter(d -> d.getKey().getIdPartFrom().equals(door.getKey().getIdPartTo()) && d.getKey().getIdPartTo().equals(door.getKey().getIdPartFrom()))
+                    .findFirst()
+                    .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Door not found", door));
+
+            otherDoor.setOpened(true);
         }
         doorsToOpen.clear();
 

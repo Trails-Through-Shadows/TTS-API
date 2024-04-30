@@ -77,6 +77,31 @@ public class EncounterSerializer extends JsonSerializer<Encounter> {
         });
         gen.writeEndArray();
 
+        // doors
+        gen.writeFieldName("doors");
+        gen.writeStartArray();
+        value.getDoors().forEach(d -> {
+            try {
+                gen.writeStartObject();
+
+                gen.writeFieldName("key");
+                gen.writeStartObject();
+                gen.writeNumberField("idLocation", d.getKey().getIdLocation());
+                gen.writeNumberField("idPartFrom", d.getKey().getIdPartFrom());
+                gen.writeNumberField("idPartTo", d.getKey().getIdPartTo());
+                gen.writeEndObject();
+
+                gen.writeBooleanField("opened", d.isOpened());
+                gen.writeNumberField("q", d.getQ());
+                gen.writeNumberField("r", d.getR());
+                gen.writeNumberField("s", d.getS());
+                gen.writeEndObject();
+            } catch (IOException e) {
+                log.error("Error writing door", e);
+            }
+        });
+        gen.writeEndArray();
+
         gen.writeObjectField("conditions", value.getConditions());
         gen.writeObjectField("state", value.getState());
 
