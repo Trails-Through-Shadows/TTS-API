@@ -18,6 +18,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -72,13 +73,21 @@ public class CampaignLocation extends Validable {
     }
 
     public List<Story> getStories() {
+        if (stories == null) {
+            return new ArrayList<>();
+        }
+
         // KURVAA ALEE
-        return stories.stream().filter(story -> story.getIdCampaignLocation().equals(id)).toList();
+        return stories.stream().filter(story -> story.getIdCampaignLocation() == null || story.getIdCampaignLocation().equals(id)).toList();
     }
 
     public List<LocationPathDTO> getPaths() {
+        if (paths == null) {
+            return new ArrayList<>();
+        }
+
         // Zoze pice, jak to kurva funguje
-        return paths.stream().filter(path -> path.getIdCampaign().equals(idCampaign)).toList();
+        return paths.stream().filter(path -> path.getIdCampaign() == null || path.getIdCampaign().equals(idCampaign)).toList();
     }
 
     @JsonIgnore
