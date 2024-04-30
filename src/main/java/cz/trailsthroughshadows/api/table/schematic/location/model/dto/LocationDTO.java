@@ -17,6 +17,7 @@ import cz.trailsthroughshadows.api.table.schematic.hex.model.dto.HexObstacleDTO;
 import cz.trailsthroughshadows.api.table.schematic.location.model.Location;
 import cz.trailsthroughshadows.api.table.schematic.obstacle.model.Obstacle;
 import cz.trailsthroughshadows.api.table.schematic.part.model.Part;
+import cz.trailsthroughshadows.api.table.schematic.part.model.PartDTO;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -24,8 +25,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Entity
@@ -166,6 +166,33 @@ public class LocationDTO extends Validable {
         }
 
         // TODO: validate that all parts are connected
+        Map<PartDTO, List<PartDTO>> connections = new HashMap<>();
+        Stack<PartDTO> stack = new Stack<>();
+        stack.push(parts.get(0).getPart());
+
+        while (!stack.isEmpty()) {
+            PartDTO part = stack.pop();
+            if (connections.containsKey(part)) {
+                continue;
+            }
+            connections.put(part, new ArrayList<>());
+            for (LocationDoorDTO door : doors) {
+                if (door.getKey().getIdPartFrom() == part.getId()) {
+                    LocationPartDTO to = parts.stream().filter(p -> p.getPart().getId() == door.getKey().getIdPartTo()).findFirst().orElse(null);
+                    if (to == null) {
+                        errors.add(new ValidationError("Location", "doors", door.getKey().getIdPartTo(), "Door leads to non-existing part."));
+                    } else {
+                        connections.get(part).add(to.getPart());
+                        stack.push(to.getPart());
+                    }
+                }
+            }
+        }
+
+        if (connections.size() != parts.size()) {
+            errors.add(new ValidationError("Location", "parts", null, "Not all parts are connected."));
+        }
+
     }
 
     @Override
