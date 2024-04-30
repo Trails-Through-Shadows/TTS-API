@@ -161,16 +161,22 @@ public class CampaignController {
         if (campaignToUpdate.getLocations() != null) {
             for (CampaignLocation cl : locations) {
                 cl.setIdCampaign(campaign.getId());
-                cl.getStories().forEach(story -> {
-                    if (story.getId() == 0) {
-                        story.setId(null);
-                    }
 
-                    story.setIdCampaignLocation(cl.getId());
-                });
-                cl.getPaths().forEach(path -> {
-                    path.setIdCampaign(campaign.getId());
-                });
+                if (cl.getStories() != null) {
+                    cl.getStories().forEach(story -> {
+                        if (story.getId() == 0) {
+                            story.setId(null);
+                        }
+
+                        story.setIdCampaignLocation(cl.getId());
+                    });
+                }
+
+                if (cl.getPaths() != null) {
+                    cl.getPaths().forEach(path -> {
+                        path.setIdCampaign(campaign.getId());
+                    });
+                }
 
                 StringBuilder sb = new StringBuilder();
                 sb.append("[");
