@@ -16,6 +16,12 @@ import cz.trailsthroughshadows.api.util.Pair;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -38,14 +44,44 @@ public class ClazzController {
     private EffectRepo effectRepo;
     private ActionRepo actionRepo;
 
+    @Operation(
+            summary = "Get all classes",
+            description = """
+                    # Get all classes
+                    Retrieves all class records with support for advanced query capabilities such as pagination, filtering, sorting, and selective field loading. By default, it employs lazy loading of items.
+
+                    **Parameters**:
+                    - `page` - Specifies the page number, starting from 0.
+                    - `limit` - Number of items per page, default is 100.
+                    - `filter` - Defines the conditions for filtering the classes. Supported operations include eq, of, is, gt, gte, lt, lte, has, and bwn.
+                    - `sort` - Defines the order of the results. Format example: &sort=name:asc,complexity:desc.
+                    - `include` - Specifies which fields to load; if empty, all fields are considered.
+                    - `lazy` - Determines if only specified fields should be loaded (true) or all fields (false).
+
+                    These parameters allow for detailed customization of the returned data, accommodating various user needs for data retrieval and display.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All classes retrieved successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestPaginatedResult.class))}),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @GetMapping("/classes")
-    @Cacheable(value = "class", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
-    public ResponseEntity<RestPaginatedResult<Clazz>> getEnemies(
+    @Cacheable(value = "class", key = "T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
+    public ResponseEntity<RestPaginatedResult<Clazz>> getClasses(
+            @Parameter(description = "Page number, starts from 0. Helps in paginating the result set.", required = false)
             @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Number of items per page. Determines the size of each page of results.", required = false)
             @RequestParam(defaultValue = "100") int limit,
+            @Parameter(description = "Filter conditions in the format: &filter=name:eq:Warrior,complexity:lte:5,... Supported operations include: eq, of, is, gt, gte, lt, lte, has, bwn (between, numbers are split by _).", required = false)
             @RequestParam(defaultValue = "") String filter,
+            @Parameter(description = "Sorting parameters in the format: &sort=name:asc,complexity:desc,... Controls the order in which classes are returned.", required = false)
             @RequestParam(defaultValue = "") String sort,
+            @Parameter(description = "Specifies the fields to be loaded, which is case sensitive. If left empty, all fields are loaded.", required = false)
             @RequestParam(required = false, defaultValue = "") List<String> include,
+            @Parameter(description = "Controls the loading of fields: **true** loads only specified fields in 'include', **false** loads all fields.", required = false)
             @RequestParam(required = false, defaultValue = "true") boolean lazy
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
@@ -71,11 +107,39 @@ public class ClazzController {
         return new ResponseEntity<>(RestPaginatedResult.of(pagination, entriesPage.stream().map(Clazz::fromDTO).toList()), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Get Class by ID",
+            description = """
+                    # Get Class by ID
+                    Retrieves detailed information about a specific class using its unique identifier. This endpoint supports selective field loading through optional parameters, allowing for optimized data retrieval tailored to specific requirements.
+
+                    **Parameters**:
+                    - `id` - The unique identifier of the class to be retrieved. This is required and cannot be empty.
+                    - `include` - Optional. Specifies the case-sensitive fields to be loaded. If left empty, all fields are loaded.
+                    - `lazy` - Optional. Controls the loading of fields: if set to **true**, only fields specified in 'include' are loaded; if **false** or omitted, all fields are loaded.
+
+                    This method is designed to efficiently retrieve class data while allowing customization of the returned data set.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Class successfully retrieved",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Clazz.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Class not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @GetMapping("/classes/{id}")
-    @Cacheable(value = "class", key="T(java.util.Objects).hash(#id, #include, #lazy)")
+    @Cacheable(value = "class", key = "T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Clazz> findById(
+            @Parameter(description = "The unique identifier of the class to be retrieved. Cannot be empty.", required = true)
             @PathVariable int id,
+            @Parameter(description = "Specifies the case-sensitive fields to be loaded. Leave empty to load all fields.", required = false)
             @RequestParam(required = false, defaultValue = "") List<String> include,
+            @Parameter(description = "Controls the loading of fields: **false** - All fields are loaded; **true** - Only specified fields in 'include' are loaded.", required = false)
             @RequestParam(required = false, defaultValue = "false") boolean lazy
     ) {
         ClazzDTO entity = clazzRepo
@@ -91,10 +155,35 @@ public class ClazzController {
         return new ResponseEntity<>(Clazz.fromDTO(entity), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Update an existing class",
+            description = """
+                    # Update an existing class
+                    Updates a class entity using its unique identifier with the provided class details. This operation requires:
+                    - `id` - The unique identifier of the class to be updated. It must be provided as a path variable.
+                    - `entity` - The updated details of the class, provided within the request body.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Class successfully updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input or bad request",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Not authorized to perform this operation",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Class not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @PutMapping("classes/{id}")
     @CacheEvict(value = "class", allEntries = true)
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<MessageResponse> updateEntity(
+            @Parameter(description = "The unique identifier of the class to be updated. Cannot be empty.", required = true)
             @PathVariable int id,
+            @Parameter(description = "The class data to be used for the update. Cannot be null or empty.", required = true)
             @RequestBody ClazzDTO entity
     ) {
         log.debug("Updating class with id: " + id);
@@ -161,9 +250,33 @@ public class ClazzController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Class with id '{}' updated!", id), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Create multiple classes",
+            description = """
+                    # Create multiple classes
+                    This endpoint allows for the batch creation of multiple class entities at once. Clients must provide a list of class details in the request body.
+
+                    **Parameters**:
+                    - `clazzes` - List of class details; each must conform to the ClazzDTO specification for successful creation.
+
+                    This method is particularly useful for initializing class data or conducting bulk imports, offering an efficient way to handle multiple class records simultaneously.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All classes created successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid data in request body",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Not authorized to perform this operation",
+                    content = @Content),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @PostMapping("/classes")
     @CacheEvict(value = "class", allEntries = true)
     public ResponseEntity<MessageResponse> createEntity(
+            @Parameter(description = "List of class data to be created. Each entry must conform to the ClazzDTO structure and include all necessary details as required by the system.", required = true)
             @RequestBody List<ClazzDTO> clazzes
     ) {
         // Validate enemies
@@ -221,9 +334,35 @@ public class ClazzController {
         return effect;
     }
 
+    @Operation(
+            summary = "Delete a class",
+            description = """
+                    # Delete a class
+                    This endpoint allows for the deletion of a class specified by its unique identifier. The operation checks if the class exists within the system and then deletes it, thereby permanently removing it from the database.
+
+                    **Parameters**:
+                    - `id` - The unique identifier of the class to be deleted. This ID must be specified in the path to locate and delete the class.
+
+                    It is necessary to verify user authorization before performing this action to ensure that only qualified users can delete classes.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Class deleted successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input or request parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User does not have permission to delete the class",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Class not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "default", description = "Unexpected error occurred",
+                    content = @Content)
+    })
     @DeleteMapping("/classes/{id}")
     @CacheEvict(value = "class", allEntries = true)
     public ResponseEntity<MessageResponse> deleteEntity(
+            @Parameter(description = "The unique identifier of the class to be deleted. Cannot be empty.", required = true)
             @PathVariable int id
     ) {
         ClazzDTO entity = clazzRepo

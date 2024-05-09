@@ -65,31 +65,40 @@ public class ActionController {
             summary = "Get all actions",
             description = """
                     # Get all actions
-                    By default it lazy loads items and returns them
-                    
+                    This endpoint retrieves all actions with support for advanced query capabilities such as pagination, filtering, sorting, and selective field loading. By default, it employs lazy loading of items.
+
+                    **Parameters**:
+                    - `page` - Specifies the page number, starting from 0.
+                    - `limit` - Number of items per page, default is 100.
+                    - `filter` - Defines the conditions for filtering the actions. Supported operations include eq, of, is, gt, gte, lt, lte, has, and bwn.
+                    - `sort` - Defines the order of the results. Format example: &sort=id:asc,title:desc.
+                    - `include` - Specifies which fields to load; if empty, all fields are considered.
+                    - `lazy` - Determines if only specified fields should be loaded (true) or all fields (false).
+
+                    These parameters allow for detailed customization of the returned data, accommodating various user needs for data retrieval and display.
                     """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "All actions",
+            @ApiResponse(responseCode = "200", description = "All actions retrieved successfully",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Action.class))}),
+                            schema = @Schema(implementation = RestPaginatedResult.class))}),
             @ApiResponse(responseCode = "default", description = "Unexpected error",
                     content = @Content)
     })
     @GetMapping("/actions")
-    @Cacheable(value = "action", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
+    @Cacheable(value = "action", key = "T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Action>> findAllEntities(
-            @Parameter(description = "Page number, starts from 0", required = false)
+            @Parameter(description = "Page number, starts from 0. Helps in paginating the result set.", required = false)
             @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Number of items per page", required = false)
+            @Parameter(description = "Number of items per page. Determines the size of each page of results.", required = false)
             @RequestParam(defaultValue = "100") int limit,
-            @Parameter(description = "Filtering string", required = false)
+            @Parameter(description = "Filter conditions in the format: &filter=title:eq:fireball,id:bwn:1_20,type:is:false,... Supported operations include: eq, of, is, gt, gte, lt, lte, has, bwn (between, numbers are split by _).", required = false)
             @RequestParam(defaultValue = "") String filter,
-            @Parameter(description = "Sorting string", required = false)
+            @Parameter(description = "Sorting parameters in the format: &sort=id:asc,title:desc,... Controls the order in which actions are returned.", required = false)
             @RequestParam(defaultValue = "") String sort,
-            @Parameter(description = "Case sensitive fields which you want to be loaded", required = false)
+            @Parameter(description = "Specifies the fields to be loaded, which is case sensitive. If left empty, all fields are loaded.", required = false)
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @Parameter(description = "- **false** - all fields are loaded \n - **true** - loaded only things that are in include", required = false)
+            @Parameter(description = "Controls the loading of fields: **true** loads only specified fields in 'include', **false** loads all fields.", required = false)
             @RequestParam(required = false, defaultValue = "true") boolean lazy
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
@@ -116,25 +125,29 @@ public class ActionController {
     }
 
     @Operation(
-            summary = "Get a action by its id",
+            summary = "Get an action by its id",
             description = """
-                    # Get a action by its id
-                    By default it loads all fields and returns them
+                    # Get an action by its id
+                    Retrieves a specific action by its unique identifier. By default, it loads all fields and returns them unless specified otherwise through query parameters.
 
-                    Action contains attack, movement, skill, restoreCards, summonActions and some of them contains effects
+                    **Parameters**:
+                    - `id` - The unique identifier of the action to be retrieved. This is required and cannot be empty.
+                    - `include` - Optional. Specifies the case-sensitive fields to be loaded. If left empty, all fields are loaded.
+                    - `lazy` - Optional. Controls the loading of fields: if set to **true**, only fields specified in 'include' are loaded; if **false** or omitted, all fields are loaded.
 
-                    - **attack** - contains effects
-                    - **movement** - contains effects
-                    - **skill** - contains effects
-                    - **restoreCards** - doesnt contains effects
-                    - **summonActions** - contains effects
+                    The Action model includes:
+                    - **attack**: Contains effects
+                    - **movement**: Contains effects
+                    - **skill**: Contains effects
+                    - **restoreCards**: Does not contain effects
+                    - **summonActions**: Contains effects
                     """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the action",
+            @ApiResponse(responseCode = "200", description = "Action successfully found",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Action.class))}),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+            @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Action not found",
                     content = @Content),
@@ -142,15 +155,16 @@ public class ActionController {
                     content = @Content)
     })
     @GetMapping("/actions/{id}")
-    @Cacheable(value = "action", key="T(java.util.Objects).hash(#id, #include, #lazy)")
+    @Cacheable(value = "action", key = "T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Action> findById(
-            @Parameter(description = "Id of the action to be obtained.\n\n Cannot be empty.", required = true)
+            @Parameter(description = "The unique identifier of the action to be retrieved. Cannot be empty.", required = true)
             @PathVariable int id,
-            @Parameter(description = "Case sensitive fields which you want to be loaded", required = false)
+            @Parameter(description = "Specifies the case-sensitive fields to be loaded. Leave empty to load all fields.", required = false)
             @RequestParam(required = false, defaultValue = "") List<String> include,
-            @Parameter(description = "- **false** - all fields are loaded \n - **true** - loaded only things that are in include", required = false)
+            @Parameter(description = "Controls the loading of fields: **false** - All fields are loaded; **true** - Only specified fields in 'include' are loaded.", required = false)
             @RequestParam(required = false, defaultValue = "false") boolean lazy
     ) {
+
         ActionDTO entity = actionRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found!", id));
@@ -294,17 +308,19 @@ public class ActionController {
     @Operation(
             summary = "Update an existing action",
             description = """
-        # Update an existing action
-        This endpoint is used to update an existing action in the system. It requires two parameters:
-        1. `id` (Path Variable): This is the unique identifier of the action to be updated. It cannot be empty and is required for the operation.
-        2. `action` (Request Body): This is the action data that will be used to update the existing action. It cannot be null or empty and is required for the operation.
-        """
+                    # Update an existing action
+                    Updates an action using its unique identifier with the provided action details. This operation requires:
+                    - `id` - The unique identifier of the action to be updated. It must be provided as a path variable.
+                    - `action` - The updated details of the action, provided within the request body.
+                    """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Action updated",
+            @ApiResponse(responseCode = "200", description = "Action successfully updated",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Action.class))}),
-            @ApiResponse(responseCode = "400", description = "Invalid input",
+                            schema = @Schema(implementation = MessageResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input or bad request",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Not authorized to perform this operation",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Action not found",
                     content = @Content),
@@ -313,11 +329,14 @@ public class ActionController {
     })
     @PutMapping("/actions/{id}")
     @CacheEvict(value = "action", allEntries = true)
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<MessageResponse> update(
-            @Parameter(description = "Id of the action to be updated.\n\n Cannot be empty.", required = true)
+            @Parameter(description = "The unique identifier of the action to be updated. Cannot be empty.", required = true)
             @PathVariable int id,
-            @Parameter(description = "Action to add. Cannot null or empty.", required = true)
-            @RequestBody ActionDTO action) {
+            @Parameter(description = "The action data to be used for the update. Cannot be null or empty.", required = true)
+            @RequestBody ActionDTO action
+    ) {
+
         validation.validate(action);
         ActionDTO updated = updateInner(id, action);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '{}' updated!", id), HttpStatus.OK);
@@ -327,14 +346,21 @@ public class ActionController {
             summary = "Delete an action",
             description = """
                     # Delete an action
-                    Check if action exists and delete it
+                    This endpoint allows for the deletion of an action specified by its unique identifier. It checks if the action exists and then proceeds to delete it, permanently removing it from the system.
+
+                    **Parameters**:
+                    - `id` - The unique identifier of the action to be deleted. It must be provided in the path to execute the deletion.
+
+                    Users must be authorized to perform this operation, ensuring that only eligible users can delete actions.
                     """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Action created",
+            @ApiResponse(responseCode = "200", description = "Action deleted successfully",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Action.class))}),
-            @ApiResponse(responseCode = "400", description = "Invalid input",
+                            schema = @Schema(implementation = MessageResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input or request parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Not authorized to perform this operation",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Action not found",
                     content = @Content),
@@ -343,7 +369,11 @@ public class ActionController {
     })
     @DeleteMapping("/actions/{id}")
     @CacheEvict(value = "action", allEntries = true)
-    public ResponseEntity<MessageResponse> delete(@PathVariable int id) {
+    public ResponseEntity<MessageResponse> delete(
+            @Parameter(description = "The unique identifier of the action to be deleted. Cannot be empty.", required = true)
+            @PathVariable int id
+    ) {
+
         ActionDTO entity = actionRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found!", id));
@@ -352,9 +382,36 @@ public class ActionController {
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "Action with id '{}' deleted!", id), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Create multiple actions",
+            description = """
+                    # Create multiple actions
+                    This endpoint allows for the batch creation of multiple actions at once. Clients must provide a list of action data in the request body.
+
+                    **Parameters**:
+                    - `actions` - List of action details; each must conform to the ActionDTO specification for successful creation.
+
+                    This method is particularly useful for initializing data or bulk imports, offering an efficient way to handle multiple records simultaneously.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All actions created successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MessageResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid data in request body",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Not authorized to perform this operation",
+                    content = @Content),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @PostMapping("/actions")
     @CacheEvict(value = "action", allEntries = true)
-    public ResponseEntity<MessageResponse> createList(@RequestBody List<ActionDTO> actions) {
+    public ResponseEntity<MessageResponse> createList(
+            @Parameter(description = "List of action data to be created. Each entry must conform to the ActionDTO structure and include all necessary details as required by the system.", required = true)
+            @RequestBody List<ActionDTO> actions
+    ) {
+
         List<String> ids = new ArrayList<>();
 
         for (ActionDTO action : actions) {
@@ -368,9 +425,36 @@ public class ActionController {
                 HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Get Action Card Details",
+            description = """
+                    # Get Action Card Details by Action ID
+                    Retrieves details necessary for creating a card representation of a specific action using its unique identifier. This includes data related to the source of the action (like enemy, class, or race), along with specific visual representations such as color and icon based on the source.
+
+                    **Parameters**:
+                    - `id` - The unique identifier of the action whose card details are to be retrieved. This is required and cannot be empty.
+
+                    This endpoint will determine the source of the action (whether it's associated with an enemy, a class, or a race) and will return specific styling attributes such as color and icon.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Action card details successfully retrieved",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LinkedHashMap.class))}),
+            @ApiResponse(responseCode = "404", description = "Action not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "418", description = "Error while converting to JSON",
+                    content = @Content),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @GetMapping("/actions/{id}/card")
-    @Cacheable(value = "actionCard", key="T(java.util.Objects).hash(#id)")
-    public ResponseEntity<LinkedHashMap<String, Object>> getCard(@PathVariable int id) {
+    @Cacheable(value = "actionCard", key = "T(java.util.Objects).hash(#id)")
+    public ResponseEntity<LinkedHashMap<String, Object>> getCard(
+            @Parameter(description = "The unique identifier of the action to be retrieved. Cannot be empty.", required = true)
+            @PathVariable int id
+    ) {
+
         ActionDTO entitydto = actionRepo
                 .findById(id)
                 .orElseThrow(() -> RestException.of(HttpStatus.NOT_FOUND, "Action with id '{}' not found!", id));

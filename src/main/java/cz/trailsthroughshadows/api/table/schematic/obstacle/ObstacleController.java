@@ -13,6 +13,12 @@ import cz.trailsthroughshadows.api.table.schematic.obstacle.model.ObstacleDTO;
 import cz.trailsthroughshadows.api.util.reflect.Filtering;
 import cz.trailsthroughshadows.api.util.reflect.Initialization;
 import cz.trailsthroughshadows.api.util.reflect.Sorting;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -34,14 +40,44 @@ public class ObstacleController {
     private ObstacleRepo obstacleRepo;
     private EffectRepo effectRepo;
 
+    @Operation(
+            summary = "Get all obstacles",
+            description = """
+                    # Get all obstacles
+                    This endpoint retrieves all obstacle records with support for advanced query capabilities such as pagination, filtering, sorting, and selective field loading. By default, it employs lazy loading of items.
+
+                    **Parameters**:
+                    - `page` - Specifies the page number, starting from 0.
+                    - `limit` - Number of obstacles per page, default is 100.
+                    - `filter` - Defines the conditions for filtering the obstacles. Supported operations include eq, of, is, gt, gte, lt, lte, has, and bwn.
+                    - `sort` - Defines the order of the results. Format example: &sort=size:asc,difficulty:desc.
+                    - `include` - Specifies which fields to load; if empty, all fields are considered.
+                    - `lazy` - Determines if only specified fields should be loaded (true) or all fields (false).
+
+                    These parameters allow for detailed customization of the returned data, accommodating various user needs for data retrieval and display.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All obstacles retrieved successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestPaginatedResult.class))}),
+            @ApiResponse(responseCode = "default", description = "Unexpected error",
+                    content = @Content)
+    })
     @GetMapping("/obstacles")
-    @Cacheable(value = "obstacle", key="T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
-    public ResponseEntity<RestPaginatedResult<Obstacle>> findAllEntities(
+    @Cacheable(value = "obstacle", key = "T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
+    public ResponseEntity<RestPaginatedResult<Obstacle>> findAllObstacles(
+            @Parameter(description = "Page number, starts from 0. Helps in paginating the result set.", required = false)
             @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Number of obstacles per page. Determines the size of each page of results.", required = false)
             @RequestParam(defaultValue = "100") int limit,
+            @Parameter(description = "Filter conditions in the format: &filter=type:eq:Natural,height:gte:10,... Supported operations include: eq, of, is, gt, gte, lt, lte, has, bwn (between, numbers are split by _).", required = false)
             @RequestParam(defaultValue = "") String filter,
+            @Parameter(description = "Sorting parameters in the format: &sort=difficulty:asc,size:desc,... Controls the order in which obstacles are returned.", required = false)
             @RequestParam(defaultValue = "") String sort,
+            @Parameter(description = "Specifies the fields to be loaded, which is case sensitive. If left empty, all fields are loaded.", required = false)
             @RequestParam(required = false, defaultValue = "") List<String> include,
+            @Parameter(description = "Controls the loading of fields: **true** loads only specified fields in 'include', **false** loads all fields.", required = false)
             @RequestParam(required = false, defaultValue = "true") boolean lazy
     ) {
         // TODO: Re-Implement filtering, sorting and pagination @rcMarty
@@ -71,7 +107,7 @@ public class ObstacleController {
     }
 
     @GetMapping("/obstacles/{id}")
-    @Cacheable(value = "obstacle", key="T(java.util.Objects).hash(#id, #include, #lazy)")
+    @Cacheable(value = "obstacle", key = "T(java.util.Objects).hash(#id, #include, #lazy)")
     public ResponseEntity<Obstacle> findById(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") List<String> include,
@@ -91,7 +127,7 @@ public class ObstacleController {
     }
 
     @DeleteMapping("/obstacles/{id}")
-    @CacheEvict(value = "obstacle",allEntries = true)
+    @CacheEvict(value = "obstacle", allEntries = true)
     public ResponseEntity<MessageResponse> deleteObstacleById(
             @PathVariable int id
     ) {
