@@ -120,7 +120,7 @@ public class CharacterController {
             @ApiResponse(responseCode = "default", description = "Unexpected error",
                     content = @Content)
     })
-    @GetMapping("/characters")
+    @GetMapping("")
     @Cacheable(value = "character", key = "T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<Character>> findAllEntities(
             @Parameter(description = "Page number, starts from 0. Helps in paginating the result set.", required = false)

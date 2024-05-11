@@ -121,7 +121,7 @@ public class AdventureController {
             @ApiResponse(responseCode = "default", description = "Unexpected error",
                     content = @Content)
     })
-    @GetMapping("/adventures")
+    @GetMapping("")
     @Cacheable(value = "adventure", key = "T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<AdventureDTO>> findAllEntities(
             @Parameter(description = "Page number, starts from 0. Helps in paginating the result set.", required = false)

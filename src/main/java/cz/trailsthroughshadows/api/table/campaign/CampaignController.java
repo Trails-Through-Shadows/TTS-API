@@ -73,7 +73,7 @@ public class CampaignController {
             @ApiResponse(responseCode = "default", description = "Unexpected error",
                     content = @Content)
     })
-    @GetMapping("/campaigns")
+    @GetMapping("")
     @Cacheable(value = "campaign", key = "T(java.util.Objects).hash(#page, #limit, #filter, #sort, #include, #lazy)")
     public ResponseEntity<RestPaginatedResult<CampaignDTO>> findAllEntities(
             @Parameter(description = "Page number, starts from 0. Helps in paginating the result set.", required = false)
